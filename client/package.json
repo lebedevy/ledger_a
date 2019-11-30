@@ -2,7 +2,6 @@
     "name": "red_ledger",
     "version": "0.1.0",
     "private": true,
-    "proxy": "http://localhost:3001",
     "dependencies": {
         "@material-ui/core": "^4.7.0",
         "@material-ui/icons": "^4.5.1",
@@ -33,5 +32,6 @@
             "last 1 firefox version",
             "last 1 safari version"
         ]
-    }
+    },
+    "proxy": "http://localhost:3001"
 }
