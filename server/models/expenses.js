@@ -13,6 +13,11 @@ module.exports = (sequelize, DataTypes) => {
     );
     expense.associate = function(models) {
         // associations can be defined here
+        // expense.hasOne(models.categories);
+        // expense.hasMany(models.categories, {});
+        // expense.hasOne(models.categories);
+        expense.belongsTo(models.categories, { foreignKey: 'category_id', targetKey: 'id' });
+        expense.belongsTo(models.stores, { foreignKey: 'store_id', targetKey: 'id' });
     };
     return expense;
 };
