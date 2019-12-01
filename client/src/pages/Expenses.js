@@ -36,46 +36,16 @@ const styles = theme => ({
 });
 
 class Expenses extends Component {
-    state = {
-        expenses: [
-            { amount: 100.25, store: 'WalMart', category: 'Home' },
-            { amount: 15, store: 'NoFrills', category: 'Food' },
-            { amount: 9, store: 'Dollar Store', category: 'Office' },
-            { amount: 0.25, store: 'NoFrills', category: 'Food' },
-            { amount: 100.25, store: 'WalMart', category: 'Home' },
-            {
-                amount: 15,
-                store: 'NoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoFrills',
-                category: 'Food',
-            },
-            { amount: 9, store: 'Dollar Store', category: 'Office' },
-            { amount: 0.25, store: 'NoFrills', category: 'Food' },
-            { amount: 100.25, store: 'WalMart', category: 'Home' },
-            { amount: 15, store: 'NoFrills', category: 'Food' },
-            { amount: 9, store: 'Dollar Store', category: 'Office' },
-            { amount: 0.25, store: 'NoFrills', category: 'Food' },
-            { amount: 100.25, store: 'WalMart', category: 'Home' },
-            { amount: 15, store: 'NoFrills', category: 'Food' },
-            { amount: 9, store: 'Dollar Store', category: 'Office' },
-            { amount: 0.25, store: 'NoFrills', category: 'Food' },
-            { amount: 100.25, store: 'WalMart', category: 'Home' },
-            { amount: 15, store: 'NoFrills', category: 'Food' },
-            { amount: 9, store: 'Dollar Store', category: 'Office' },
-            { amount: 0.25, store: 'NoFrills', category: 'Food' },
-            { amount: 100.25, store: 'WalMart', category: 'Home' },
-            { amount: 15, store: 'NoFrills', category: 'Food' },
-            { amount: 9, store: 'Dollar Store', category: 'Office' },
-            { amount: 0.25, store: 'NoFrills', category: 'Food' },
-            { amount: 100.25, store: 'WalMart', category: 'Home' },
-            { amount: 15, store: 'NoFrills', category: 'Food' },
-            { amount: 9, store: 'Dollar Store', category: 'Office' },
-            { amount: 0.25, store: 'NoFrills', category: 'Food' },
-            { amount: 100.25, store: 'WalMart', category: 'Home' },
-            { amount: 15, store: 'NoFrills', category: 'Food' },
-            { amount: 9, store: 'Dollar Store', category: 'Office' },
-            { amount: 0.25, store: 'NoFrills', category: 'Food' },
-        ],
-    };
+    state = { expenses: [] };
+
+    async componentDidMount() {
+        const res = await fetch('/users/expenses/summary');
+        const data = await res.json();
+        console.log(data.expenses);
+        // data.expenses.forEach(el => console.log(el));
+        this.setState({ expenses: data.expenses });
+    }
+
     render() {
         const { classes } = this.props;
         const { expenses } = this.state;
@@ -86,11 +56,14 @@ class Expenses extends Component {
                 <div className={classes.expenseList}>
                     {expenses.map(el => {
                         total += el.amount;
+                        console.log(el.store);
                         return (
                             <div className={classes.expenseEntry}>
                                 <label className={classes.expenseItem}>{`$${el.amount}`}</label>
-                                <label className={classes.expenseItem}>{el.store}</label>
-                                <label className={classes.expenseItem}>{el.category}</label>
+                                <label className={classes.expenseItem}>{el.store.store_name}</label>
+                                <label className={classes.expenseItem}>
+                                    {el.category.category_name}
+                                </label>
                             </div>
                         );
                     })}

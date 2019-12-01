@@ -22,16 +22,81 @@ const styles = theme => ({
     },
 });
 
+const expenses = [
+    { amount: 100.25, store: 'WalMart', category: 'Home' },
+    { amount: 15, store: 'NoFrills', category: 'Food' },
+    { amount: 9, store: 'Dollar Store', category: 'Office' },
+    { amount: 0.25, store: 'NoFrills', category: 'Food' },
+    { amount: 100.25, store: 'WalMart', category: 'Home' },
+    {
+        amount: 15,
+        store: 'NoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoFrills',
+        category: 'Food',
+    },
+    { amount: 9, store: 'Dollar Store', category: 'Office' },
+    { amount: 0.25, store: 'NoFrills', category: 'Food' },
+    { amount: 100.25, store: 'WalMart', category: 'Home' },
+    { amount: 15, store: 'NoFrills', category: 'Food' },
+    { amount: 9, store: 'Dollar Store', category: 'Office' },
+    { amount: 0.25, store: 'NoFrills', category: 'Food' },
+    { amount: 100.25, store: 'WalMart', category: 'Home' },
+    { amount: 15, store: 'NoFrills', category: 'Food' },
+    { amount: 9, store: 'Dollar Store', category: 'Office' },
+    { amount: 0.25, store: 'NoFrills', category: 'Food' },
+    { amount: 100.25, store: 'WalMart', category: 'Home' },
+    { amount: 15, store: 'NoFrills', category: 'Food' },
+    { amount: 9, store: 'Dollar Store', category: 'Office' },
+    { amount: 0.25, store: 'NoFrills', category: 'Food' },
+    { amount: 100.25, store: 'WalMart', category: 'Home' },
+    { amount: 15, store: 'NoFrills', category: 'Food' },
+    { amount: 9, store: 'Dollar Store', category: 'Office' },
+    { amount: 0.25, store: 'NoFrills', category: 'Food' },
+    { amount: 100.25, store: 'WalMart', category: 'Home' },
+    { amount: 15, store: 'NoFrills', category: 'Food' },
+    { amount: 9, store: 'Dollar Store', category: 'Office' },
+    { amount: 0.25, store: 'NoFrills', category: 'Food' },
+    { amount: 100.25, store: 'WalMart', category: 'Home' },
+    { amount: 15, store: 'NoFrills', category: 'Food' },
+    { amount: 9, store: 'Dollar Store', category: 'Office' },
+    { amount: 0.25, store: 'NoFrills', category: 'Food' },
+];
+
 class AddExpense extends Component {
     state = { amount: '', store: '', category: '' };
     // Add store look up
     // add category lookup
     // store/category popup if did not exist in db before
 
-    addExpense(e) {
+    async addExpense(e) {
         e.preventDefault();
         const { amount, store, category } = this.state;
         console.log(amount, store, category);
+        const res = await fetch('/users/expenses/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                expenses: { amount, store, category, date: new Date() },
+            }),
+        });
+        const data = await res.json();
+        console.log(res, data);
+    }
+
+    // Adds expenses in bulk (save method for later)
+    populateTemp() {
+        expenses.forEach(async el => {
+            const { amount, store, category } = el;
+            console.log(amount, store, category);
+            const res = await fetch('/users/expenses/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    expenses: { amount, store, category, date: new Date() },
+                }),
+            });
+            const data = await res.json();
+            console.log(res, data);
+        });
     }
 
     updateField(field, e) {
@@ -62,6 +127,7 @@ class AddExpense extends Component {
                     />
                     <Button type="submit">Add Expense</Button>
                 </form>
+                <Button onClick={() => this.populateTemp()}>Add temp</Button>
             </div>
         );
     }

@@ -15,18 +15,17 @@ const styles = theme => ({
 });
 
 class App extends Component {
-    async componentDidMount() {
-        const res = await fetch('/');
-        console.log(res);
-        const data = await res.json();
-        console.log(data);
-    }
+    // async componentDidMount() {
+    //     const res = await fetch('/');
+    //     console.log(res);
+    // }
+
     render() {
         const { classes } = this.props;
         return (
             <Router className={classes.container}>
                 <Switch>
-                    <Route exact path="/">
+                    <Route exact path="/users/expenses/summary">
                         <Expenses />
                     </Route>
                     <Route exact path="/users/expenses/add">

@@ -24,6 +24,7 @@ router.post('/expenses/add', async (req, res, next) => {
     // });
 
     const user = await db.user.findOne({ where: { firstName: 'Yury' } });
+    if (user == null) return res.status(400).send({ message: 'User is null. Check seed' });
     console.log(user.dataValues);
     console.log(amount, store, category, date);
 
@@ -51,7 +52,10 @@ router.post('/expenses/add', async (req, res, next) => {
 });
 
 router.get('/expenses/summary', async (req, res, next) => {
-    const expenses = await db.expenses.findAll({ where: { user_id: 1 } });
+    const expenses = await db.expenses.findAll({
+        where: { user_id: 1 },
+        include: [db.categories, db.stores],
+    });
     console.log(expenses);
     res.status(200).send({ expenses: expenses });
 });
