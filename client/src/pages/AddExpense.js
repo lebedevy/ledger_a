@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { TextField, Button } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import { connect } from 'react-redux';
+import { getFormatedDate } from '../utility/utility';
 
 const styles = theme => ({
     container: {
@@ -65,10 +66,8 @@ const expenses = [
 class AddExpense extends Component {
     constructor(props) {
         super(props);
-        const date = props.date.today;
-        const setDate = `${date.getFullYear()}-${(date.getMonth() < 10 ? '0' : '') +
-            date.getMonth()}-${(date.getDate() < 10 ? '0' : '') + date.getDate()}`;
-        this.state = { amount: '', store: '', category: '', date: setDate };
+        const date = getFormatedDate(props.date.today);
+        this.state = { amount: '', store: '', category: '', date };
     }
 
     // Add store look up

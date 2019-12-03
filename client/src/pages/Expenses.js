@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { TextField } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
+import { getFormatedDate, getCurrencyFormat } from '../utility/utility';
 
 const styles = theme => ({
     container: {
@@ -12,21 +13,25 @@ const styles = theme => ({
         overflow: 'hidden',
     },
     expenseList: {
-        overflow: 'scroll',
-        flexGrow: 1,
+        'overflow-y': 'scroll',
+        'overflow-x': 'hidden',
+        flex: 1,
         display: 'flex',
         flexDirection: 'column',
+        background: '#ffffff',
+        borderRadius: '5px',
     },
     expenseEntry: {
-        padding: '2.5px',
-        paddingLeft: '10px',
-        margin: '2.5px',
+        padding: '0 1px',
         display: 'flex',
-        flexWrap: 'wrap',
         bottomBorder: '1px solid #00000060',
     },
     expenseItem: {
-        flex: 1,
+        padding: '2px 0',
+        flex: '1 1 0',
+        border: '1px solid #00000020',
+        minWidth: '0',
+        overflow: 'scroll',
     },
     summary: {
         padding: '10px',
@@ -56,20 +61,26 @@ class Expenses extends Component {
                 <div className={classes.expenseList}>
                     {expenses.map(el => {
                         total += el.amount;
-                        console.log(el.store);
+                        console.log(el);
+                        const date = new Date(el.date);
                         return (
                             <div className={classes.expenseEntry}>
-                                <label className={classes.expenseItem}>{`$${el.amount}`}</label>
+                                <label className={classes.expenseItem}>{`$${getCurrencyFormat(
+                                    el.amount
+                                )}`}</label>
                                 <label className={classes.expenseItem}>{el.store.store_name}</label>
                                 <label className={classes.expenseItem}>
                                     {el.category.category_name}
+                                </label>
+                                <label className={classes.expenseItem}>
+                                    {getFormatedDate(date)}
                                 </label>
                             </div>
                         );
                     })}
                 </div>
                 <div className={classes.summary}>
-                    <label>{`Total: ${total}`}</label>
+                    <label>{`Total: $${getCurrencyFormat(total)}`}</label>
                 </div>
             </div>
         );
