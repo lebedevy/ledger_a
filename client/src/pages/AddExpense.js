@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { TextField, Button } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
+import { connect } from 'react-redux';
 
 const styles = theme => ({
     container: {
@@ -62,15 +63,26 @@ const expenses = [
 ];
 
 class AddExpense extends Component {
-    state = { amount: '', store: '', category: '' };
+    constructor(props) {
+        super(props);
+        const date = props.date.today;
+        const setDate = `${date.getFullYear()}-${(date.getMonth() < 10 ? '0' : '') +
+            date.getMonth()}-${(date.getDate() < 10 ? '0' : '') + date.getDate()}`;
+        this.state = { amount: '', store: '', category: '', date: setDate };
+    }
+
     // Add store look up
     // add category lookup
     // store/category popup if did not exist in db before
 
     async addExpense(e) {
         e.preventDefault();
-        const { amount, store, category } = this.state;
-        console.log(amount, store, category);
+        const { amount, store, category, date } = this.state;
+        console.log(amount, store, category, date);
+        if (amount == null || amount == '')
+            return this.setState({ amountError: 'Must add expense amount' });
+        if (date == null || date == '') return this.setState({ dateError: 'Must add date' });
+        this.setState({ dateError: null, amountError: null });
         const res = await fetch('/users/expenses/add', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -105,13 +117,16 @@ class AddExpense extends Component {
 
     render() {
         const { classes } = this.props;
-        const { amount, store, category } = this.state;
+        const { amount, store, category, date, amountError, dateError } = this.state;
+        console.log(date);
         return (
             <div className={classes.container}>
                 <h2>Add Expense</h2>
                 <form className={classes.form} onSubmit={e => this.addExpense(e)}>
                     <TextField
                         placeholder="Amount"
+                        error={Boolean(amountError)}
+                        helperText={amountError}
                         value={amount}
                         onChange={e => this.updateField('amount', e)}
                     />
@@ -125,12 +140,28 @@ class AddExpense extends Component {
                         value={category}
                         onChange={e => this.updateField('category', e)}
                     />
+                    <TextField
+                        placeholder="Date"
+                        error={Boolean(dateError)}
+                        helperText={dateError}
+                        value={date}
+                        type="date"
+                        onChange={e => this.updateField('date', e)}
+                    />
                     <Button type="submit">Add Expense</Button>
                 </form>
-                <Button onClick={() => this.populateTemp()}>Add temp</Button>
+                <Button disabled onClick={() => this.populateTemp()}>
+                    Add temp
+                </Button>
             </div>
         );
     }
 }
 
-export default withStyles(styles)(AddExpense);
+// Get date from redux
+const mapStateToProps = state => {
+    const { date } = state;
+    return { date };
+};
+
+export default connect(mapStateToProps)(withStyles(styles)(AddExpense));
