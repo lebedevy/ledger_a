@@ -32,7 +32,7 @@ const styles = theme => ({
         flex: '1 1 0',
         border: '1px solid #00000020',
         minWidth: '0',
-        'overflow-x': 'auto',
+        overflow: 'scroll',
     },
     summary: {
         padding: '10px',
@@ -65,43 +65,41 @@ const styles = theme => ({
     },
 });
 
-class Expenses extends Component {
-    state = { expenses: [], openSort: false };
+class ExpensesAggregates extends Component {
+    state = { expenses: [], openSort: false, type: this.props.match.params.type };
 
     async componentDidMount() {
-        const res = await fetch('/users/expenses/summary');
+        const { type } = this.state;
+        const res = await fetch('/users/expenses/summary/' + type);
         const data = await res.json();
-        console.log(data.expenses);
+        console.log(data);
         // data.expenses.forEach(el => console.log(el));
-        this.setState({ expenses: data.expenses });
+        this.setState({ expenses: data });
     }
 
     render() {
         const { classes } = this.props;
-        const { expenses, openSort } = this.state;
+        const { expenses, openSort, type } = this.state;
         let total = 0;
+        console.log(expenses);
         return (
             <div className={classes.container}>
                 {openSort ? (
                     <Sort classes={classes} close={() => this.setState({ openSort: false })} />
                 ) : null}
-                <h2>Expenses</h2>
+                <h2>{`Expenses by ${type === 'cat' ? 'Category' : 'Store'}`}</h2>
                 <Button onClick={() => this.setState({ openSort: !openSort })}>Sort</Button>
                 <div className={classes.expenseList}>
                     {expenses.map(el => {
                         total += el.amount;
                         return (
                             <div className={classes.expenseEntry}>
+                                <label className={classes.expenseItem}>
+                                    {type === 'cat' ? el.category_name : el.store_name}
+                                </label>
                                 <label className={classes.expenseItem}>{`$${getCurrencyFormat(
                                     el.amount
                                 )}`}</label>
-                                <label className={classes.expenseItem}>{el.store.store_name}</label>
-                                <label className={classes.expenseItem}>
-                                    {el.category.category_name}
-                                </label>
-                                <label className={classes.expenseItem}>
-                                    {getFormatedDate(new Date(el.date))}
-                                </label>
                             </div>
                         );
                     })}
@@ -121,4 +119,4 @@ function Sort({ classes, close }) {
     );
 }
 
-export default withStyles(styles)(Expenses);
+export default withStyles(styles)(ExpensesAggregates);

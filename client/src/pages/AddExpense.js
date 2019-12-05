@@ -64,11 +64,7 @@ const expenses = [
 ];
 
 class AddExpense extends Component {
-    constructor(props) {
-        super(props);
-        const date = getFormatedDate(props.date.today);
-        this.state = { amount: '', store: '', category: '', date };
-    }
+    state = { amount: '', store: '', category: '', date: getFormatedDate(this.props.date.today) };
 
     // Add store look up
     // add category lookup
@@ -78,9 +74,9 @@ class AddExpense extends Component {
         e.preventDefault();
         const { amount, store, category, date } = this.state;
         console.log(amount, store, category, date);
-        if (amount == null || amount == '')
+        if (amount == null || amount === '')
             return this.setState({ amountError: 'Must add expense amount' });
-        if (date == null || date == '') return this.setState({ dateError: 'Must add date' });
+        if (date == null || date === '') return this.setState({ dateError: 'Must add date' });
         this.setState({ dateError: null, amountError: null });
         const res = await fetch('/users/expenses/add', {
             method: 'POST',

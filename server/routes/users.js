@@ -54,6 +54,7 @@ router.post('/expenses/add', async (req, res, next) => {
 router.get('/expenses/summary', async (req, res, next) => {
     const expenses = await db.expenses.findAll({
         where: { user_id: 1 },
+        order: ['date'],
         include: [db.categories, db.stores],
     });
     console.log(expenses);
@@ -72,4 +73,80 @@ router.post('/register', async (req, res, next) => {
     });
 });
 
+router.get('/expenses/summary/:type', async (req, res, next) => {
+    const { type } = req.params;
+    console.log(type);
+    // const expenses = await db.expenses.findAll({
+    //     where: { user_id: 1 },
+    //     include: [{ model: db.stores, attributes: [] }],
+    //     group: 'store_id',
+    //     attributes: ['store_id', [db.sequelize.fn('sum', db.sequelize.col('amount')), 'amount']],
+    // });
+    const expenses =
+        type === 'cat'
+            ? await db.categories.findAll({
+                  attributes: [
+                      'id',
+                      'category_name',
+                      [db.sequelize.fn('sum', db.sequelize.col('amount')), 'amount'],
+                  ],
+                  include: [
+                      {
+                          model: db.expenses,
+                          attributes: [],
+                          where: { user_id: 1 },
+                      },
+                  ],
+                  group: 'categories.id',
+              })
+            : await db.stores.findAll({
+                  attributes: [
+                      'id',
+                      'store_name',
+                      [db.sequelize.fn('sum', db.sequelize.col('amount')), 'amount'],
+                  ],
+                  include: [
+                      {
+                          model: db.expenses,
+                          attributes: [],
+                          where: { user_id: 1 },
+                      },
+                  ],
+                  group: 'stores.id',
+              });
+    console.log(expenses);
+    res.status(200).send(expenses);
+});
+
+router.get('/expenses/manage/merge/:type', async (req, res, next) => {
+    const { type } = req.params;
+    const expenses =
+        type === 'cat'
+            ? await db.categories.findAll({
+                  attributes: ['id', 'category_name'],
+                  include: [
+                      {
+                          model: db.expenses,
+                          attributes: [],
+                          where: { user_id: 1 },
+                      },
+                  ],
+                  group: 'categories.id',
+                  sort: ['category_name'],
+              })
+            : await db.stores.findAll({
+                  attributes: ['id', 'store_name'],
+                  include: [
+                      {
+                          model: db.expenses,
+                          attributes: [],
+                          where: { user_id: 1 },
+                      },
+                  ],
+                  group: 'stores.id',
+                  sort: ['store_name'],
+              });
+
+    res.status(200).send(expenses);
+});
 module.exports = router;
