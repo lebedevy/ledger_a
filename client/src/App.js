@@ -8,6 +8,8 @@ import ExpensesAggregates from './pages/ExpensesAggregates';
 import Merge from './pages/Merge';
 import Navbar from './components/Navbar';
 import AppDrawer from './components/AppDrawer';
+import Register from './pages/Register';
+import Login from './pages/Login';
 
 const styles = theme => ({
     container: {
@@ -26,12 +28,13 @@ class App extends Component {
 
     render() {
         const { classes } = this.props;
-        const open = true;
         return (
             <Router className={classes.container}>
                 <Route component={Navbar} />
                 <Route component={AppDrawer} />
                 <Switch>
+                    <Route exact path="/users/register" component={Register} />
+                    <Route exact path="/users/login" component={Login} />
                     <Route exact path="/users/expenses/summary">
                         <Expenses />
                     </Route>
