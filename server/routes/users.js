@@ -50,7 +50,7 @@ router.post('/login', async (req, res, next) => {
 });
 
 router.post('/logout', async (req, res, next) => {
-    clearCookie('jwt');
+    res.clearCookie('jwt');
     res.send({ message: 'User logged out.' });
 });
 module.exports = router;

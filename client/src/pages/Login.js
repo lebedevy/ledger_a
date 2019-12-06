@@ -22,8 +22,8 @@ const useStyles = makeStyles({
 });
 
 export default function Login({ history }) {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('test@test.com');
+    const [password, setPassword] = useState('test');
     const classes = useStyles();
 
     async function submit(e) {
@@ -35,7 +35,7 @@ export default function Login({ history }) {
             body: JSON.stringify({ email, password }),
         });
         console.log(res, history);
-        if (res.status === 200) history.push('/users/login');
+        if (res.status === 200) history.go('/users/login');
     }
 
     return (

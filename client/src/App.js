@@ -19,14 +19,15 @@ const styles = theme => ({
         display: 'flex',
         background: '#00000020',
     },
+    app: {
+        paddingTop: '50px',
+        boxSizing: 'border-box',
+        height: '100%',
+        width: '100%',
+    },
 });
 
 class App extends Component {
-    // async componentDidMount() {
-    //     const res = await fetch('/');
-    //     console.log(res);
-    // }
-
     render() {
         const { classes, user } = this.props;
         console.log(this.props);
@@ -41,7 +42,7 @@ class App extends Component {
                         </Route>
                     </Switch>
                 ) : (
-                    <React.Fragment>
+                    <div className={classes.app}>
                         <Route component={Navbar} />
                         <Route component={AppDrawer} />
                         <Switch>
@@ -65,7 +66,7 @@ class App extends Component {
                                 <Redirect to="/users/expenses/summary" />
                             </Route>
                         </Switch>
-                    </React.Fragment>
+                    </div>
                 )}
             </Router>
         );

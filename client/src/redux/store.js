@@ -7,7 +7,7 @@ const token = Cookies.get('jwt');
 const user = parseJwt(token);
 console.log(user);
 
-export default createStore(rootReducer, { user }, devToolsEnhancer());
+export default createStore(rootReducer, { user: user }, devToolsEnhancer());
 
 function parseJwt(token) {
     try {

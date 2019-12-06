@@ -1,5 +1,6 @@
 html,
-body {
+body,
+#root {
     margin: 0;
     height: 100%;
     width: 100%;
@@ -8,13 +9,6 @@ body {
         'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-}
-
-#root {
-    box-sizing: border-box;
-    padding-top: 50px;
-    height: 100%;
-    width: 100%;
 }
 
 code {

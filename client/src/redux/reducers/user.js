@@ -1,14 +1,16 @@
-import { SET_USER } from '../actionTypes';
+import { SET_USER, LOGOUT } from '../actionTypes';
 
 export default function(state = null, action) {
-    console.log(state, action);
+    console.log(state);
+    console.log(action);
     switch (action.type) {
         case SET_USER: {
             return {
-                ...state,
-                drawerState: true,
+                ...action.payload.content,
             };
         }
+        case LOGOUT:
+            return null;
         default:
             return state;
     }

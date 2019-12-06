@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Drawer, List, ListItem } from '@material-ui/core';
-import { closeDrawer } from '../redux/actions';
+import { closeDrawer, logout } from '../redux/actions';
 import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles({
@@ -12,12 +12,20 @@ const useStyles = makeStyles({
     },
 });
 
-function AppDrawer({ open, closeDrawer, history }) {
+function AppDrawer({ open, closeDrawer, history, setUser, logout }) {
     const classes = useStyles();
-
+    console.log(logout);
     function navTo(location) {
         console.log(location);
         history.push(location);
+        closeDrawer();
+    }
+
+    async function logoutUser() {
+        logout();
+        const res = await fetch('/users/logout', { method: 'POST' });
+        console.log(res);
+        if (res.status === 2000) history.go('/users/login');
         closeDrawer();
     }
 
@@ -34,6 +42,9 @@ function AppDrawer({ open, closeDrawer, history }) {
                 <ListItem button onClick={() => navTo('/users/expenses/summary/cat')}>
                     By category
                 </ListItem>
+                <ListItem button onClick={logoutUser}>
+                    Logout
+                </ListItem>
             </List>
         </Drawer>
     );
@@ -44,4 +55,6 @@ const mapStateToProps = state => {
     return { open: drawer.drawerState };
 };
 
-export default connect(mapStateToProps, { closeDrawer })(AppDrawer);
+const mapDispatchToProps = { closeDrawer, logout };
+
+export default connect(mapStateToProps, mapDispatchToProps)(AppDrawer);
