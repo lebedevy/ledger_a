@@ -68,7 +68,17 @@ const styles = theme => ({
 class ExpensesAggregates extends Component {
     state = { expenses: [], openSort: false, type: this.props.match.params.type };
 
-    async componentDidMount() {
+    componentDidMount() {
+        this.fetchExpenses();
+    }
+
+    componentDidUpdate(props) {
+        if (props !== this.props) {
+            this.setState({ type: this.props.match.params.type }, () => this.fetchExpenses());
+        }
+    }
+
+    async fetchExpenses() {
         const { type } = this.state;
         const res = await fetch('/users/expenses/summary/' + type);
         const data = await res.json();
@@ -81,7 +91,6 @@ class ExpensesAggregates extends Component {
         const { classes } = this.props;
         const { expenses, openSort, type } = this.state;
         let total = 0;
-        console.log(expenses);
         return (
             <div className={classes.container}>
                 {openSort ? (

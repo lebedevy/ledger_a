@@ -1,7 +1,7 @@
 import React from 'react';
 import { Fab } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import { getFormatedDate, getCurrencyFormat } from '../utility/utility';
+import { getCurrencyFormat } from '../utility/utility';
 
 export default function Summary({ classes, total }) {
     return (

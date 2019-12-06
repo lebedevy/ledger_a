@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Button } from '@material-ui/core';
+import { Button, IconButton } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import { getFormatedDate, getCurrencyFormat } from '../utility/utility';
 import Summary from '../components/Summary';
+import SortIcon from '@material-ui/icons/Sort';
 
 const styles = theme => ({
     container: {
@@ -44,25 +45,7 @@ const styles = theme => ({
         right: '10px',
         bottom: '10px',
     },
-    sort: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    sortBackground: {
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        background: '#00000060',
-    },
-    sortContainer: {
-        height: '500px',
-        width: '700px',
-        background: '#ffffff',
-        zIndex: 1,
-    },
+    header: { display: 'flex', justifyContent: 'space-between', margin: '0 10px' },
 });
 
 class Expenses extends Component {
@@ -82,11 +65,12 @@ class Expenses extends Component {
         let total = 0;
         return (
             <div className={classes.container}>
-                {openSort ? (
-                    <Sort classes={classes} close={() => this.setState({ openSort: false })} />
-                ) : null}
-                <h2>Expenses</h2>
-                <Button onClick={() => this.setState({ openSort: !openSort })}>Sort</Button>
+                <div className={classes.header}>
+                    <h2>Expenses</h2>
+                    <IconButton>
+                        <SortIcon className={classes.icon} />
+                    </IconButton>
+                </div>
                 <div className={classes.expenseList}>
                     {expenses.map(el => {
                         total += el.amount;
@@ -110,15 +94,6 @@ class Expenses extends Component {
             </div>
         );
     }
-}
-
-function Sort({ classes, close }) {
-    return (
-        <div className={classes.sort}>
-            <div className={classes.sortContainer}></div>
-            <div className={classes.sortBackground} onClick={close}></div>
-        </div>
-    );
 }
 
 export default withStyles(styles)(Expenses);
