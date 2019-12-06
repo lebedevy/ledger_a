@@ -99,6 +99,11 @@ class ExpensesAggregates extends Component {
                 <h2>{`Expenses by ${type === 'cat' ? 'Category' : 'Store'}`}</h2>
                 <Button onClick={() => this.setState({ openSort: !openSort })}>Sort</Button>
                 <div className={classes.expenseList}>
+                    {expenses.length === 0 ? (
+                        <label>{`No expenses for ${
+                            type === 'cat' ? 'categories' : 'stores'
+                        }`}</label>
+                    ) : null}
                     {expenses.map(el => {
                         total += el.amount;
                         return (

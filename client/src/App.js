@@ -46,12 +46,8 @@ class App extends Component {
                         <Route component={Navbar} />
                         <Route component={AppDrawer} />
                         <Switch>
-                            <Route exact path="/users/expenses/summary">
-                                <Expenses />
-                            </Route>
-                            <Route exact path="/users/expenses/add">
-                                <AddExpense />
-                            </Route>
+                            <Route exact path="/users/expenses/summary" component={Expenses} />
+                            <Route exact path="/users/expenses/add" component={AddExpense} />
                             <Route
                                 exact
                                 path="/users/expenses/summary/:type"

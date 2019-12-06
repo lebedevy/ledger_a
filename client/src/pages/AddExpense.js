@@ -82,11 +82,12 @@ class AddExpense extends Component {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                expenses: { amount, store, category, date: new Date() },
+                expenses: { amount, store, category, date },
             }),
         });
         const data = await res.json();
         console.log(res, data);
+        if (res.status === 200) this.props.history.push('/users/expenses/summary');
     }
 
     // Adds expenses in bulk (save method for later)

@@ -1,15 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../models');
+const checkAuth = require('../middleware/auth');
 
-router.post('/add', async (req, res, next) => {
+router.post('/add', checkAuth, async (req, res, next) => {
     const { expenses } = req.body;
     console.log(expenses);
     const { amount, store, category, date } = expenses;
-
-    const user = await db.user.findOne({ where: { firstName: 'Yury' } });
-    if (user == null) return res.status(400).send({ message: 'User is null. Check seed' });
-    console.log(user.dataValues);
     console.log(amount, store, category, date);
 
     // Create store
@@ -23,7 +20,7 @@ router.post('/add', async (req, res, next) => {
     console.log('\n\n', storeObj.dataValues, storeCreated, categoryObj.dataValues, catCreated);
     // Create expense record
     const record = await db.expenses.create({
-        user_id: user.id,
+        user_id: req.user.id,
         category_id: categoryObj.id,
         date,
         amount,
@@ -35,17 +32,18 @@ router.post('/add', async (req, res, next) => {
     res.status(200).send({ message: 'Expense added ok.' });
 });
 
-router.get('/summary', async (req, res, next) => {
+router.get('/summary', checkAuth, async (req, res, next) => {
     const expenses = await db.expenses.findAll({
-        where: { user_id: 1 },
+        where: { user_id: req.user.id },
         order: ['date'],
         include: [db.categories, db.stores],
     });
-    console.log(expenses);
+    console.log(req.user);
+    // console.log(expenses);
     res.status(200).send({ expenses: expenses });
 });
 
-router.get('/summary/:type', async (req, res, next) => {
+router.get('/summary/:type', checkAuth, async (req, res, next) => {
     const { type } = req.params;
     console.log(type);
     // const expenses = await db.expenses.findAll({
@@ -66,7 +64,7 @@ router.get('/summary/:type', async (req, res, next) => {
                       {
                           model: db.expenses,
                           attributes: [],
-                          where: { user_id: 1 },
+                          where: { user_id: req.user.id },
                       },
                   ],
                   group: 'categories.id',
@@ -81,7 +79,7 @@ router.get('/summary/:type', async (req, res, next) => {
                       {
                           model: db.expenses,
                           attributes: [],
-                          where: { user_id: 1 },
+                          where: { user_id: req.user.id },
                       },
                   ],
                   group: 'stores.id',
@@ -90,7 +88,7 @@ router.get('/summary/:type', async (req, res, next) => {
     res.status(200).send(expenses);
 });
 
-router.get('/manage/merge/:type', async (req, res, next) => {
+router.get('/manage/merge/:type', checkAuth, async (req, res, next) => {
     const { type } = req.params;
     const expenses =
         type === 'cat'

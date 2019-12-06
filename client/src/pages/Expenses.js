@@ -53,10 +53,14 @@ class Expenses extends Component {
 
     async componentDidMount() {
         const res = await fetch('/users/expenses/summary');
-        const data = await res.json();
-        console.log(data.expenses);
-        // data.expenses.forEach(el => console.log(el));
-        this.setState({ expenses: data.expenses });
+        if (res.status === 200) {
+            const data = await res.json();
+            console.log(data.expenses);
+            // data.expenses.forEach(el => console.log(el));
+            this.setState({ expenses: data.expenses });
+        } else {
+            console.error('Error fetching results');
+        }
     }
 
     render() {
@@ -72,6 +76,7 @@ class Expenses extends Component {
                     </IconButton>
                 </div>
                 <div className={classes.expenseList}>
+                    {expenses.length === 0 ? <label>No recorded expenses</label> : null}
                     {expenses.map(el => {
                         total += el.amount;
                         return (
