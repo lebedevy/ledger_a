@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const db = require('../models');
+const jwt = require('jsonwebtoken');
+
+const secret = 'hj2bas2361d55hKJhd9AHd9a.asd0121';
 
 /* GET users listing. */
 router.get('/', async (req, res, next) => {
@@ -39,9 +42,15 @@ router.post('/login', async (req, res, next) => {
     // Verify password
     if (await bcrypt.compare(password, user.dataValues.password)) {
         // create JWT
+        const token = jwt.sign({ email: user.dataValues.email }, secret);
         // Set cookie
+        res.cookie('jwt', token);
         return res.status(200).send({ message: 'ok' });
     } else return res.status(400).send({ message: 'Please ensure email and password are correct' });
 });
 
+router.post('/logout', async (req, res, next) => {
+    clearCookie('jwt');
+    res.send({ message: 'User logged out.' });
+});
 module.exports = router;

@@ -1,4 +1,4 @@
-import { SET_DATE, OPEN_DRAWER, CLOSE_DRAWER } from './actionTypes';
+import { SET_DATE, OPEN_DRAWER, CLOSE_DRAWER, SET_USER } from './actionTypes';
 
 export const setDate = content => ({
     type: SET_DATE,
@@ -20,3 +20,13 @@ export const closeDrawer = content => ({
         content,
     },
 });
+
+export const setUser = content => {
+    console.log(content);
+    return {
+        type: SET_USER,
+        payload: {
+            content,
+        },
+    };
+};

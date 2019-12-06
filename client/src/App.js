@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import { withStyles } from '@material-ui/styles';
 
 import AddExpense from './pages/AddExpense';
@@ -27,34 +28,53 @@ class App extends Component {
     // }
 
     render() {
-        const { classes } = this.props;
+        const { classes, user } = this.props;
+        console.log(this.props);
         return (
             <Router className={classes.container}>
-                <Route component={Navbar} />
-                <Route component={AppDrawer} />
-                <Switch>
-                    <Route exact path="/users/register" component={Register} />
-                    <Route exact path="/users/login" component={Login} />
-                    <Route exact path="/users/expenses/summary">
-                        <Expenses />
-                    </Route>
-                    <Route exact path="/users/expenses/add">
-                        <AddExpense />
-                    </Route>
-                    <Route
-                        exact
-                        path="/users/expenses/summary/:type"
-                        render={props => <ExpensesAggregates {...props} />}
-                    />
-                    <Route
-                        exact
-                        path="/users/expenses/manage/merge/:type"
-                        render={props => <Merge {...props} />}
-                    />
-                </Switch>
+                {user == null ? (
+                    <Switch>
+                        <Route exact path="/users/register" component={Register} />
+                        <Route exact path="/users/login" component={Login} />
+                        <Route>
+                            <Redirect to="/users/login" />
+                        </Route>
+                    </Switch>
+                ) : (
+                    <React.Fragment>
+                        <Route component={Navbar} />
+                        <Route component={AppDrawer} />
+                        <Switch>
+                            <Route exact path="/users/expenses/summary">
+                                <Expenses />
+                            </Route>
+                            <Route exact path="/users/expenses/add">
+                                <AddExpense />
+                            </Route>
+                            <Route
+                                exact
+                                path="/users/expenses/summary/:type"
+                                render={props => <ExpensesAggregates {...props} />}
+                            />
+                            <Route
+                                exact
+                                path="/users/expenses/manage/merge/:type"
+                                render={props => <Merge {...props} />}
+                            />
+                            <Route>
+                                <Redirect to="/users/expenses/summary" />
+                            </Route>
+                        </Switch>
+                    </React.Fragment>
+                )}
             </Router>
         );
     }
 }
 
-export default withStyles(styles)(App);
+const mapStateToProps = state => {
+    const { user } = state;
+    return { user };
+};
+
+export default connect(mapStateToProps)(withStyles(styles)(App));
