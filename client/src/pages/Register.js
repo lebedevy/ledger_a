@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
-import { TextField, Button } from '@material-ui/core';
-import { mergeClasses, makeStyles } from '@material-ui/styles';
+import React, { useState, useEffect } from 'react';
+import { TextField, Button, Link } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+import { EmailInput, PasswordInput } from '../components/ContainedInput';
+
+const backgroundImage = '/images/kim-gorga-bodXa3yTF0w-unsplash-min.jpg';
+// const backgroundImage = '/images/kim-gorga-bodXa3yTF0w-unsplash.jpg';
 
 const useStyles = makeStyles({
     container: {
@@ -10,7 +14,21 @@ const useStyles = makeStyles({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        background: '#00000020',
+    },
+    background: {
+        opacity: 0.85,
+        background: '#000000',
+        backgroundImage: `url(${backgroundImage})`,
+        filter: 'grayscale(100%)',
+        backgroundPosition: 'bottom right',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        right: 0,
+        left: 0,
+        zIndex: -1,
     },
     input: {
         background: '#ffffff',
@@ -20,9 +38,13 @@ const useStyles = makeStyles({
     button: {
         margin: '10px',
     },
+    header: {
+        color: '#ffffff',
+    },
 });
 
 export default function Register({ history }) {
+    const [loaded, setLoaded] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirm, setConfirm] = useState('');
@@ -30,6 +52,8 @@ export default function Register({ history }) {
     const [lastName, setLastName] = useState('');
     const [confirmError, setConfirmError] = useState(null);
     const classes = useStyles();
+
+    useEffect(() => setLoaded(true));
 
     async function submit(e) {
         e.preventDefault();
@@ -49,7 +73,16 @@ export default function Register({ history }) {
 
     return (
         <form className={classes.container} onSubmit={e => submit(e)}>
-            <h2>Register</h2>
+            {loaded ? (
+                <div className={classes.background}>
+                    <img
+                        style={{ display: 'none' }}
+                        src={backgroundImage}
+                        title="Photo by Kim Gorga on Unsplash"
+                    />
+                </div>
+            ) : null}
+            <h2 className={classes.header}>Register</h2>
             <TextField
                 className={classes.input}
                 value={firstName}
@@ -68,26 +101,8 @@ export default function Register({ history }) {
                 margin="dense"
                 variant="outlined"
             />
-            <TextField
-                className={classes.input}
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="Email"
-                type="email"
-                required
-                margin="dense"
-                variant="outlined"
-            />
-            <TextField
-                className={classes.input}
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="Password"
-                type="password"
-                required
-                margin="dense"
-                variant="outlined"
-            />
+            <EmailInput value={email} update={value => setEmail(value)} />
+            <PasswordInput value={password} update={value => setPassword(value)} />
             <TextField
                 className={classes.input}
                 value={confirm}
@@ -103,6 +118,9 @@ export default function Register({ history }) {
             <Button className={classes.button} type="submit" variant="contained" color="primary">
                 Register
             </Button>
+            <Link className={classes.header} href="/users/login">
+                Already have an account? Login
+            </Link>
         </form>
     );
 }
