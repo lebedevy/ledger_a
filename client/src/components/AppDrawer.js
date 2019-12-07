@@ -23,7 +23,7 @@ function AppDrawer({ open, closeDrawer, history, setUser, logout }) {
 
     async function logoutUser() {
         logout();
-        const res = await fetch('/users/logout', { method: 'POST' });
+        const res = await fetch('/api/users/logout', { method: 'POST' });
         console.log(res);
         if (res.status === 2000) history.go('/users/login');
         closeDrawer();

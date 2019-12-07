@@ -16,7 +16,7 @@ class Merge extends Component {
 
     async componentDidMount() {
         const { type } = this.state;
-        const res = await fetch('/users/expenses/manage/merge/' + type);
+        const res = await fetch('/api/users/expenses/manage/merge/' + type);
         const data = await res.json();
         console.log(data);
         // data.expenses.forEach(el => console.log(el));

@@ -61,7 +61,7 @@ export default function Register({ history }) {
         if (confirm !== password) setConfirmError('Please ensure passwords match!');
         else {
             setConfirmError(null);
-            const res = await fetch('/users/register', {
+            const res = await fetch('/api/users/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ firstName, lastName, email, password, confirm }),

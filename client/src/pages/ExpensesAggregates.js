@@ -80,7 +80,7 @@ class ExpensesAggregates extends Component {
 
     async fetchExpenses() {
         const { type } = this.state;
-        const res = await fetch('/users/expenses/summary/' + type);
+        const res = await fetch('api/users/expenses/summary/' + type);
         const data = await res.json();
         console.log(data);
         // data.expenses.forEach(el => console.log(el));

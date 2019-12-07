@@ -78,7 +78,7 @@ class AddExpense extends Component {
             return this.setState({ amountError: 'Must add expense amount' });
         if (date == null || date === '') return this.setState({ dateError: 'Must add date' });
         this.setState({ dateError: null, amountError: null });
-        const res = await fetch('/users/expenses/add', {
+        const res = await fetch('/api/users/expenses/add', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

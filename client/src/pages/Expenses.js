@@ -52,7 +52,7 @@ class Expenses extends Component {
     state = { expenses: [], openSort: false };
 
     async componentDidMount() {
-        const res = await fetch('/users/expenses/summary');
+        const res = await fetch('/api/users/expenses/summary');
         if (res.status === 200) {
             const data = await res.json();
             console.log(data.expenses);

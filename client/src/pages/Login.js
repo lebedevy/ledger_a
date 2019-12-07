@@ -26,6 +26,7 @@ const useStyles = makeStyles({
         bottom: 0,
         left: 0,
         right: 0,
+        zIndex: -1,
     },
     button: {
         margin: '10px',
@@ -43,7 +44,7 @@ export default function Login({ history }) {
     async function submit(e) {
         e.preventDefault();
         console.log(email, password);
-        const res = await fetch('/users/login', {
+        const res = await fetch('/api/users/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password }),
