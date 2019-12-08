@@ -1,4 +1,4 @@
-# red_ledger
+# Ledger A
 A ledger to keep track of expenses
 
 ##
