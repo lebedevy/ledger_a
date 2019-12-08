@@ -121,6 +121,7 @@ class AddExpense extends Component {
                 <form className={classes.form} onSubmit={e => this.addExpense(e)}>
                     <TextField
                         placeholder="Amount"
+                        type="number"
                         error={Boolean(amountError)}
                         helperText={amountError}
                         value={amount}

@@ -33,6 +33,7 @@ router.post('/add', checkAuth, async (req, res, next) => {
 });
 
 router.get('/summary', checkAuth, async (req, res, next) => {
+    console.info('Serving expense summary');
     const expenses = await db.expenses.findAll({
         where: { user_id: req.user.id },
         order: ['date'],
@@ -44,8 +45,10 @@ router.get('/summary', checkAuth, async (req, res, next) => {
 });
 
 router.get('/summary/:type', checkAuth, async (req, res, next) => {
+    console.info('Serving aggregated summary');
     const { type } = req.params;
     console.log(type);
+    console.log(req.user);
     // const expenses = await db.expenses.findAll({
     //     where: { user_id: 1 },
     //     include: [{ model: db.stores, attributes: [] }],

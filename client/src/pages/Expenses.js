@@ -71,9 +71,9 @@ class Expenses extends Component {
             <div className={classes.container}>
                 <div className={classes.header}>
                     <h2>Expenses</h2>
-                    <IconButton>
+                    {/* <IconButton>
                         <SortIcon className={classes.icon} />
-                    </IconButton>
+                    </IconButton> */}
                 </div>
                 <div className={classes.expenseList}>
                     {expenses.length === 0 ? <label>No recorded expenses</label> : null}

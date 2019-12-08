@@ -80,7 +80,7 @@ class ExpensesAggregates extends Component {
 
     async fetchExpenses() {
         const { type } = this.state;
-        const res = await fetch('api/users/expenses/summary/' + type);
+        const res = await fetch('/api/users/expenses/summary/' + type);
         const data = await res.json();
         console.log(data);
         // data.expenses.forEach(el => console.log(el));
@@ -97,7 +97,6 @@ class ExpensesAggregates extends Component {
                     <Sort classes={classes} close={() => this.setState({ openSort: false })} />
                 ) : null}
                 <h2>{`Expenses by ${type === 'cat' ? 'Category' : 'Store'}`}</h2>
-                <Button onClick={() => this.setState({ openSort: !openSort })}>Sort</Button>
                 <div className={classes.expenseList}>
                     {expenses.length === 0 ? (
                         <label>{`No expenses for ${
