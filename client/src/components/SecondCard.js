@@ -11,51 +11,29 @@ const timeImage = '/images/icons8-clock-64.png';
 // #C9D6EA
 
 const pointOne =
-    'Tracking your expenses can help you understand where your money is going, and avoid surprises.';
-const pointTwo = 'Log your expenses on the go, and stay up to date.';
-const pointThree = 'Anywhere, anytime.';
+    'Tracking your expenses can help you understand where your money is going, and avoid surprises';
+const pointTwo = 'Log your expenses on the go, and stay up to date';
+const pointThree = 'Anytime, anywhere';
 
 const useStyles = makeStyles({
-    pageTitle: {
-        fontSize: '4em',
-    },
-    pageTitleMobile: {
-        fontSize: '3em',
-    },
     presentation: {
+        position: 'relative',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         textAlign: 'center',
+        padding: '10px',
+        background: 'linear-gradient(#96C3CE,#73C1C6)',
         '& label': {
             color: 'white',
             fontSize: '1.2em',
         },
     },
-    firstCard: {
-        position: 'relative',
-        background: 'linear-gradient(#96C3CE,#73C1C6)',
-        // height: window.innerHeight,
-        padding: '10px',
-    },
-    firstCardBackground: {
-        borderRadius: '3px',
-        position: 'absolute',
-        background: 'linear-gradient(#FFA552,#BA5624)',
-        // background: '#663F46',
-        zIndex: -1,
-        top: '-8px',
-        left: '-8px',
-    },
     firstDeskopt: {
         borderRadius: '2px',
         boxShadow: '5px 5px 5px #1A444F',
         margin: '25px',
-    },
-    more: {
-        background: '#BA5624',
-        color: 'black',
     },
     summary: {
         flex: 1,
@@ -66,17 +44,20 @@ const useStyles = makeStyles({
     },
     button: {
         marginTop: '10px',
+        fontWeight: 'bold',
     },
 });
 
 function SecondCard() {
+    const classes = useStyles();
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
     const [screenHeight, setScreenHeight] = useState(window.innerHeight);
 
     useEffect(() => {
         function handleResize() {
             setScreenWidth(window.innerWidth);
-            setScreenHeight(window.innerHeight);
+            if (Math.abs(screenHeight - window.innerHeight) > 50)
+                setScreenHeight(window.innerHeight);
         }
         window.addEventListener('resize', handleResize);
 
@@ -86,14 +67,9 @@ function SecondCard() {
         };
     });
 
-    const classes = useStyles();
     return (
         <div
-            className={clsx(
-                classes.presentation,
-                classes.firstCard,
-                window.innerWidth > 600 && classes.firstDeskopt
-            )}
+            className={clsx(classes.presentation, window.innerWidth > 600 && classes.firstDeskopt)}
             style={{ height: screenHeight - (screenWidth > 600 ? 50 : 0) }}
         >
             <div className={classes.summary}>

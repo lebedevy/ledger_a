@@ -23,7 +23,8 @@ const useStyles = makeStyles({
         flexDirection: 'column',
         justifyContent: 'space-around',
         alignItems: 'center',
-        background: 'gray',
+        background: '#5D576B',
+        color: '#ffffff',
     },
 });
 

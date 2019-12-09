@@ -16,25 +16,26 @@ const useStyles = makeStyles({
     },
     pageTitleMobile: {
         fontSize: '3em',
+        margin: '5px auto',
     },
     presentation: {
+        position: 'relative',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         textAlign: 'center',
+        padding: '10px',
+        background: 'linear-gradient(#96C3CE,#73C1C6)',
         '& label': {
             color: 'white',
             fontSize: '1.2em',
         },
+        '& h1': {
+            color: '#ffffff',
+        },
     },
-    firstCard: {
-        position: 'relative',
-        background: 'linear-gradient(#96C3CE,#73C1C6)',
-        // height: window.innerHeight,
-        padding: '10px',
-    },
-    firstCardBackground: {
+    backdrop: {
         borderRadius: '3px',
         position: 'absolute',
         background: 'linear-gradient(#FFA552,#BA5624)',
@@ -61,17 +62,20 @@ const useStyles = makeStyles({
     },
     button: {
         marginTop: '10px',
+        fontWeight: 'bold',
     },
 });
 
 function FirstCard() {
+    const classes = useStyles();
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
     const [screenHeight, setScreenHeight] = useState(window.innerHeight);
 
     useEffect(() => {
         function handleResize() {
             setScreenWidth(window.innerWidth);
-            setScreenHeight(window.innerHeight);
+            if (Math.abs(screenHeight - window.innerHeight) > 50)
+                setScreenHeight(window.innerHeight);
         }
         window.addEventListener('resize', handleResize);
 
@@ -81,20 +85,15 @@ function FirstCard() {
         };
     });
 
-    const classes = useStyles();
     return (
         <div
-            className={clsx(
-                classes.presentation,
-                classes.firstCard,
-                window.innerWidth > 600 && classes.firstDeskopt
-            )}
+            className={clsx(classes.presentation, window.innerWidth > 600 && classes.firstDeskopt)}
             style={{ height: screenHeight - (screenWidth > 600 ? 50 : 0) }}
         >
             <div className={classes.summary}>
                 {screenWidth > 600 ? (
                     <div
-                        className={classes.firstCardBackground}
+                        className={classes.backdrop}
                         style={{ height: screenHeight - 50, width: screenWidth - 75 }}
                     />
                 ) : null}
@@ -118,7 +117,7 @@ function FirstCard() {
                     Register
                 </Button>
             </div>
-            <IconButton className={classes.more}>
+            <IconButton className={clsx(classes.more, classes.button)}>
                 <ExpandMoreIcon
                     fontSize={screenWidth > 600 ? 'medium' : 'small'}
                     onClick={() =>

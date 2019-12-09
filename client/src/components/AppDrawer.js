@@ -10,6 +10,17 @@ const useStyles = makeStyles({
         fontSize: '1.2em',
         borderBottom: '1px solid #00000020',
     },
+    drawer: {
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    logout: {
+        borderTop: '1px solid #00000050',
+        height: '70px',
+        alignSelf: 'flex-end',
+        background: '#00000010',
+    },
 });
 
 function AppDrawer({ open, closeDrawer, history, setUser, logout }) {
@@ -31,7 +42,7 @@ function AppDrawer({ open, closeDrawer, history, setUser, logout }) {
 
     return (
         <Drawer open={open} onClose={closeDrawer}>
-            <List>
+            <List className={classes.drawer}>
                 <ListItem className={classes.header}>Expenses Summary</ListItem>
                 <ListItem button onClick={() => navTo('/users/expenses/summary/')}>
                     By period
@@ -42,10 +53,10 @@ function AppDrawer({ open, closeDrawer, history, setUser, logout }) {
                 <ListItem button onClick={() => navTo('/users/expenses/summary/cat')}>
                     By category
                 </ListItem>
-                <ListItem button onClick={logoutUser}>
-                    Logout
-                </ListItem>
             </List>
+            <ListItem button onClick={logoutUser} className={classes.logout}>
+                Logout
+            </ListItem>
         </Drawer>
     );
 }
