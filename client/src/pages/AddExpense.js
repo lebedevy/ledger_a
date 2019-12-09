@@ -1,21 +1,13 @@
 import React, { Component } from 'react';
-import { TextField, Button } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import { connect } from 'react-redux';
 import { getFormatedDate } from '../utility/utility';
+import ExpenseManager from '../components/ExpenseManager';
 
 const styles = theme => ({
     container: {
         height: '100%',
         width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        background: '#00000025',
-    },
-    form: {
-        padding: '10px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -70,8 +62,7 @@ class AddExpense extends Component {
     // add category lookup
     // store/category popup if did not exist in db before
 
-    async addExpense(e) {
-        e.preventDefault();
+    async addExpense() {
         const { amount, store, category, date } = this.state;
         console.log(amount, store, category, date);
         if (amount == null || amount === '')
@@ -95,7 +86,7 @@ class AddExpense extends Component {
         expenses.forEach(async el => {
             const { amount, store, category } = el;
             console.log(amount, store, category);
-            const res = await fetch('/users/expenses/add', {
+            const res = await fetch('/api/users/expenses/add', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -107,46 +98,29 @@ class AddExpense extends Component {
         });
     }
 
-    updateField(field, e) {
-        this.setState({ [field]: e.target.value });
+    updateField(field, value) {
+        console.log(field, value);
+        this.setState({ [field]: value });
     }
 
     render() {
         const { classes } = this.props;
         const { amount, store, category, date, amountError, dateError } = this.state;
-        console.log(date);
         return (
             <div className={classes.container}>
                 <h2>Add Expense</h2>
-                <form className={classes.form} onSubmit={e => this.addExpense(e)}>
-                    <TextField
-                        placeholder="Amount"
-                        type="number"
-                        error={Boolean(amountError)}
-                        helperText={amountError}
-                        value={amount}
-                        onChange={e => this.updateField('amount', e)}
-                    />
-                    <TextField
-                        placeholder="Store"
-                        value={store}
-                        onChange={e => this.updateField('store', e)}
-                    />
-                    <TextField
-                        placeholder="Expense category"
-                        value={category}
-                        onChange={e => this.updateField('category', e)}
-                    />
-                    <TextField
-                        placeholder="Date"
-                        error={Boolean(dateError)}
-                        helperText={dateError}
-                        value={date}
-                        type="date"
-                        onChange={e => this.updateField('date', e)}
-                    />
-                    <Button type="submit">Add Expense</Button>
-                </form>
+                <ExpenseManager
+                    amount={amount}
+                    setAmount={value => this.updateField('amount', value)}
+                    category={category}
+                    setCategory={value => this.updateField('category', value)}
+                    store={store}
+                    setStore={value => this.updateField('store', value)}
+                    date={date}
+                    setDate={value => this.updateField('date', value)}
+                    submit={() => this.addExpense()}
+                    buttonLabel="Add Expense"
+                />
                 {/* <Button disabled onClick={() => this.populateTemp()}>
                     Add temp
                 </Button> */}

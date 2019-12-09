@@ -32,6 +32,71 @@ router.post('/add', checkAuth, async (req, res, next) => {
     res.status(200).send({ message: 'Expense added ok.' });
 });
 
+router.get('/edit/:id', checkAuth, async (req, res, next) => {
+    console.log('Getting expense');
+    const { id } = req.params;
+    const expense = await db.expenses.findOne({
+        where: { id, user_id: req.user.id },
+        include: [{ model: db.categories }, { model: db.stores }],
+    });
+    if (expense) {
+        if (expense.user_id === req.user.id) {
+            console.log(expense);
+            const { id, amount, date } = expense;
+            const store = expense.store.store_name;
+            const category = expense.category.category_name;
+            console.log(id, amount, store, category);
+            return res.status(200).send({ expense: { id, amount, store, category, date } });
+        }
+        console.info('User attempted access to unathorized expense resource.');
+    }
+    return res.status(400).send({ message: 'Please ensure the correct expense is requested' });
+});
+
+router.post('/edit/:id', checkAuth, async (req, res, next) => {
+    console.info('Updating expense...');
+    const { amount, store, category, date } = req.body;
+    const { id } = req.params;
+    const expense = await db.expenses.findOne({
+        where: { id, user_id: req.user.id },
+        include: [{ model: db.categories }, { model: db.stores }],
+    });
+    if (expense) {
+        if (expense.user_id === req.user.id) {
+            let category_id = null,
+                store_id = null;
+
+            // Create or get store
+            if (store != null || store != '') {
+                const [storeObj, storeCreated] = await db.stores.findOrCreate({
+                    where: { store_name: store },
+                });
+                console.info(`Store created?: ${storeCreated}`);
+                store_id = storeObj.id;
+            }
+
+            // Create or get category
+            if (category != null || category != '') {
+                const [categoryObj, catCreated] = await db.categories.findOrCreate({
+                    where: {
+                        category_name: category,
+                    },
+                });
+                console.info(`Category created?: ${catCreated}`);
+                category_id = categoryObj.id;
+            }
+
+            // Update fields
+            const update = await expense.update({ category_id, store_id, amount, date });
+            return res.status(200).send({ message: 'Update ok' });
+        }
+        console.info('User attempted update unathorized expense resource.');
+    }
+    return res.status(400).send({
+        message: 'Please ensure all the parameters are correct',
+    });
+});
+
 router.get('/summary', checkAuth, async (req, res, next) => {
     console.info('Serving expense summary');
     const expenses = await db.expenses.findAll({

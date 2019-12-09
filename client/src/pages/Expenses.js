@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { Button, IconButton } from '@material-ui/core';
-import { withStyles } from '@material-ui/styles';
-import { getFormatedDate, getCurrencyFormat } from '../utility/utility';
+import { withStyles, makeStyles } from '@material-ui/styles';
 import Summary from '../components/Summary';
+import ExpenseSummary from '../components/ExpenseSummary';
 import SortIcon from '@material-ui/icons/Sort';
+import { Button } from '@material-ui/core';
 
 const styles = theme => ({
     container: {
@@ -22,11 +22,6 @@ const styles = theme => ({
         flexDirection: 'column',
         background: '#ffffff',
         borderRadius: '5px',
-    },
-    expenseEntry: {
-        padding: '0 1px',
-        display: 'flex',
-        bottomBorder: '1px solid #00000060',
     },
     expenseItem: {
         padding: '2px 0',
@@ -49,7 +44,7 @@ const styles = theme => ({
 });
 
 class Expenses extends Component {
-    state = { expenses: [], openSort: false };
+    state = { expenses: [], openSort: false, expand: null };
 
     async componentDidMount() {
         const res = await fetch('/api/users/expenses/summary');
@@ -65,7 +60,7 @@ class Expenses extends Component {
 
     render() {
         const { classes } = this.props;
-        const { expenses, openSort } = this.state;
+        const { expenses, openSort, expand } = this.state;
         let total = 0;
         return (
             <div className={classes.container}>
@@ -77,21 +72,20 @@ class Expenses extends Component {
                 </div>
                 <div className={classes.expenseList}>
                     {expenses.length === 0 ? <label>No recorded expenses</label> : null}
-                    {expenses.map(el => {
+                    {expenses.map((el, ind) => {
                         total += el.amount;
-                        return (
-                            <div className={classes.expenseEntry}>
-                                <label className={classes.expenseItem}>{`$${getCurrencyFormat(
-                                    el.amount
-                                )}`}</label>
-                                <label className={classes.expenseItem}>{el.store.store_name}</label>
-                                <label className={classes.expenseItem}>
-                                    {el.category.category_name}
-                                </label>
-                                <label className={classes.expenseItem}>
-                                    {getFormatedDate(new Date(el.date))}
-                                </label>
-                            </div>
+                        return el.id === expand ? (
+                            <ExpenseFull
+                                el={el}
+                                ind={ind}
+                                expand={() => this.setState({ expand: null })}
+                            />
+                        ) : (
+                            <ExpenseSummary
+                                el={el}
+                                ind={ind}
+                                expand={() => this.setState({ expand: el.id })}
+                            />
                         );
                     })}
                 </div>
@@ -99,6 +93,38 @@ class Expenses extends Component {
             </div>
         );
     }
+}
+
+const useStyles = makeStyles({
+    expense: {
+        border: '1px solid #00000080',
+        borderRadius: '5px',
+    },
+    details: {
+        display: 'flex',
+        // height: '50px',
+        // background: 'black',
+        '& button': {
+            flex: 1,
+        },
+    },
+});
+
+function ExpenseFull(props) {
+    const classes = useStyles();
+    return (
+        <div className={classes.expense}>
+            <ExpenseSummary {...props} />
+            <div className={classes.details}>
+                <Button variant="outlined" href={`/users/expenses/edit/${props.el.id}`}>
+                    Edit
+                </Button>
+                <Button variant="outlined" disabled>
+                    Delete
+                </Button>
+            </div>
+        </div>
+    );
 }
 
 export default withStyles(styles)(Expenses);
