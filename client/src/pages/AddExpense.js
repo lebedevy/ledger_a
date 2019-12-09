@@ -147,9 +147,9 @@ class AddExpense extends Component {
                     />
                     <Button type="submit">Add Expense</Button>
                 </form>
-                <Button disabled onClick={() => this.populateTemp()}>
+                {/* <Button disabled onClick={() => this.populateTemp()}>
                     Add temp
-                </Button>
+                </Button> */}
             </div>
         );
     }

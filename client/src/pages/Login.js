@@ -31,12 +31,16 @@ const useStyles = makeStyles({
     button: {
         margin: '10px',
     },
+    error: {
+        color: 'red',
+    },
 });
 
 export default function Login({ history }) {
     const [loaded, setLoaded] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loginError, setLoginError] = useState(null);
     const classes = useStyles();
 
     useEffect(() => setLoaded(true));
@@ -51,6 +55,8 @@ export default function Login({ history }) {
         });
         console.log(res, history);
         if (res.status === 200) history.go('/users/login');
+        if (res.status === 400) setLoginError('Please ensure your password and email are correct');
+        if (res.status === 500) setLoginError('Server error. Please try again later.');
     }
 
     return (
@@ -67,6 +73,7 @@ export default function Login({ history }) {
             <h2>Login</h2>
             <EmailInput value={email} update={value => setEmail(value)} />
             <PasswordInput value={password} update={value => setPassword(value)} />
+            {loginError ? <label className={classes.error}>{loginError}</label> : null}
             <Button className={classes.button} type="submit" variant="contained" color="primary">
                 Login
             </Button>

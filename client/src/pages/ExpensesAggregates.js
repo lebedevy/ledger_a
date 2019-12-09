@@ -93,9 +93,6 @@ class ExpensesAggregates extends Component {
         let total = 0;
         return (
             <div className={classes.container}>
-                {openSort ? (
-                    <Sort classes={classes} close={() => this.setState({ openSort: false })} />
-                ) : null}
                 <h2>{`Expenses by ${type === 'cat' ? 'Category' : 'Store'}`}</h2>
                 <div className={classes.expenseList}>
                     {expenses.length === 0 ? (

@@ -11,6 +11,7 @@ import Navbar from './components/Navbar';
 import AppDrawer from './components/AppDrawer';
 import Register from './pages/Register';
 import Login from './pages/Login';
+import LandingPage from './pages/LandingPage';
 
 const styles = theme => ({
     container: {
@@ -35,6 +36,7 @@ class App extends Component {
             <Router className={classes.container}>
                 {user == null ? (
                     <Switch>
+                        <Route exact path="/" component={LandingPage} />
                         <Route exact path="/users/register" component={Register} />
                         <Route exact path="/users/login" component={Login} />
                         <Route>
