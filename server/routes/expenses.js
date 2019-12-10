@@ -45,7 +45,7 @@ router.get('/edit/:id', checkAuth, async (req, res, next) => {
             const { id, amount, date } = expense;
             const store = expense.store.store_name;
             const category = expense.category.category_name;
-            console.log(id, amount, store, category);
+            // console.log(id, amount, store, category, date);
             return res.status(200).send({ expense: { id, amount, store, category, date } });
         }
         console.info('User attempted access to unathorized expense resource.');
@@ -88,6 +88,7 @@ router.post('/edit/:id', checkAuth, async (req, res, next) => {
 
             // Update fields
             const update = await expense.update({ category_id, store_id, amount, date });
+            // console.log(update);
             return res.status(200).send({ message: 'Update ok' });
         }
         console.info('User attempted update unathorized expense resource.');
@@ -105,7 +106,7 @@ router.get('/summary', checkAuth, async (req, res, next) => {
         include: [db.categories, db.stores],
     });
     console.log(req.user);
-    // console.log(expenses);
+    console.log(expenses);
     res.status(200).send({ expenses: expenses });
 });
 
@@ -152,7 +153,7 @@ router.get('/summary/:type', checkAuth, async (req, res, next) => {
                   ],
                   group: 'stores.id',
               });
-    console.log(expenses);
+    // console.log(expenses);
     res.status(200).send(expenses);
 });
 
@@ -186,6 +187,20 @@ router.get('/manage/merge/:type', checkAuth, async (req, res, next) => {
               });
 
     res.status(200).send(expenses);
+});
+
+router.post('/delete', checkAuth, async (req, res, next) => {
+    console.log(req.body);
+    const { id } = req.body;
+    if (id == null) return res.status(400).send({ message: 'Please verify request data.' });
+    // Ensure user owns resource, and delete if so
+    const expense = await db.expenses.findOne({ where: { id, user_id: req.user.id } });
+    console.log(expense);
+    if (expense) {
+        const result = await expense.destroy();
+        console.log(result);
+    } else return res.status(400).send({ message: 'Please verify request data.' });
+    return res.status(200).send({ message: 'ok' });
 });
 
 module.exports = router;

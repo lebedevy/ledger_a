@@ -30,16 +30,6 @@ const styles = theme => ({
         minWidth: '0',
         'overflow-x': 'auto',
     },
-    summary: {
-        padding: '10px',
-        height: '50px',
-        background: '#96C3CE',
-    },
-    addExpense: {
-        position: 'absolute',
-        right: '10px',
-        bottom: '10px',
-    },
     header: { display: 'flex', justifyContent: 'space-between', margin: '0 10px' },
 });
 
@@ -55,6 +45,31 @@ class Expenses extends Component {
             this.setState({ expenses: data.expenses });
         } else {
             console.error('Error fetching results');
+        }
+    }
+
+    async deleteExpense(id, ind) {
+        console.log(id, ind);
+        const { expenses } = this.state;
+        // Make sure the correct expense is being deleted
+        if (expenses[ind].id === id) {
+            // call api to remove
+            const res = await fetch(`/api/users/expenses/delete`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id }),
+            });
+
+            if (res.ok) {
+                // Remove from array
+                let update = expenses.slice();
+                update.splice(ind, 1);
+                this.setState({ expenses: update });
+            } else {
+                //    Show error message
+                const data = await res.json();
+                console.error(data);
+            }
         }
     }
 
@@ -79,6 +94,7 @@ class Expenses extends Component {
                                 el={el}
                                 ind={ind}
                                 expand={() => this.setState({ expand: null })}
+                                deleteExpense={() => this.deleteExpense(el.id, ind)}
                             />
                         ) : (
                             <ExpenseSummary
@@ -89,7 +105,7 @@ class Expenses extends Component {
                         );
                     })}
                 </div>
-                <Summary total={total} classes={classes} />
+                <Summary total={total} />
             </div>
         );
     }
@@ -99,12 +115,14 @@ const useStyles = makeStyles({
     expense: {
         border: '1px solid #00000080',
         borderRadius: '5px',
+        background: '#00000010',
     },
     details: {
         display: 'flex',
-        // height: '50px',
-        // background: 'black',
         '& button': {
+            flex: 1,
+        },
+        '& a': {
             flex: 1,
         },
     },
@@ -112,14 +130,19 @@ const useStyles = makeStyles({
 
 function ExpenseFull(props) {
     const classes = useStyles();
+
     return (
         <div className={classes.expense}>
             <ExpenseSummary {...props} />
             <div className={classes.details}>
-                <Button variant="outlined" href={`/users/expenses/edit/${props.el.id}`}>
+                <Button
+                    variant="outlined"
+                    color="primary"
+                    href={`/users/expenses/edit/${props.el.id}`}
+                >
                     Edit
                 </Button>
-                <Button variant="outlined" disabled>
+                <Button variant="outlined" color="primary" onClick={props.deleteExpense}>
                     Delete
                 </Button>
             </div>
