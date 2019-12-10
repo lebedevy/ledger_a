@@ -32,7 +32,7 @@ export default function EditExpense({ match, history }) {
         setAmount(data.expense.amount);
         setStore(data.expense.store);
         setCategory(data.expense.category);
-        setDate(getFormatedDate(new Date(data.expense.date)));
+        setDate(data.expense.date);
     }
 
     useEffect(() => {

@@ -1,8 +1,7 @@
 import React from 'react';
-import { withStyles, makeStyles } from '@material-ui/styles';
-import { Button, IconButton } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 import { getFormatedDate, getCurrencyFormat } from '../utility/utility';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+// import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 const useStyles = makeStyles({
     expenseEntry: {
@@ -31,7 +30,7 @@ function ExpenseSummary({ el, ind, expand }) {
             <label>{`$${getCurrencyFormat(el.amount)}`}</label>
             <label>{el.store.store_name}</label>
             <label>{el.category.category_name}</label>
-            <label>{getFormatedDate(new Date(el.date))}</label>
+            <label>{el.date}</label>
             {/* {window.innerWidth > 600 ? (
                 <IconButton size="small">
                     <MoreVertIcon fontSize="small" />
