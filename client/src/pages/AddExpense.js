@@ -65,10 +65,6 @@ class AddExpense extends Component {
     async addExpense() {
         const { amount, store, category, date } = this.state;
         console.log(amount, store, category, date);
-        if (amount == null || amount === '')
-            return this.setState({ amountError: 'Must add expense amount' });
-        if (date == null || date === '') return this.setState({ dateError: 'Must add date' });
-        this.setState({ dateError: null, amountError: null });
         const res = await fetch('/api/users/expenses/add', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -105,7 +101,7 @@ class AddExpense extends Component {
 
     render() {
         const { classes } = this.props;
-        const { amount, store, category, date, amountError, dateError } = this.state;
+        const { amount, store, category, date } = this.state;
         return (
             <div className={classes.container}>
                 <h2>Add Expense</h2>

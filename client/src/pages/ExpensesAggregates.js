@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { Button } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
-import { getFormatedDate, getCurrencyFormat } from '../utility/utility';
+import { getCurrencyFormat } from '../utility/utility';
 import Summary from '../components/Summary';
 
 const styles = theme => ({
@@ -33,16 +32,6 @@ const styles = theme => ({
         border: '1px solid #00000020',
         minWidth: '0',
         overflow: 'scroll',
-    },
-    summary: {
-        padding: '10px',
-        height: '50px',
-        background: '#96C3CE',
-    },
-    addExpense: {
-        position: 'absolute',
-        right: '10px',
-        bottom: '10px',
     },
     sort: {
         display: 'flex',
@@ -114,7 +103,7 @@ class ExpensesAggregates extends Component {
                         );
                     })}
                 </div>
-                <Summary total={total} classes={classes} />
+                <Summary total={total} />
             </div>
         );
     }
