@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { withStyles, makeStyles } from '@material-ui/styles';
 import Summary from '../components/Summary';
 import ExpenseSummary from '../components/ExpenseSummary';
+import ExpenseFull from '../components/ExpenseFull';
 import SortIcon from '@material-ui/icons/Sort';
-import { Button } from '@material-ui/core';
+import { Button, TextField } from '@material-ui/core';
+import { getFormatedDate } from '../utility/utility';
 
 const styles = theme => ({
     container: {
@@ -15,7 +18,7 @@ const styles = theme => ({
         overflow: 'hidden',
     },
     expenseList: {
-        'overflow-y': 'scroll',
+        'overflow-y': 'auto',
         'overflow-x': 'hidden',
         flex: 1,
         display: 'flex',
@@ -30,14 +33,31 @@ const styles = theme => ({
         minWidth: '0',
         'overflow-x': 'auto',
     },
-    header: { display: 'flex', justifyContent: 'space-between', margin: '0 10px' },
+    header: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        margin: '0 10px',
+    },
 });
 
 class Expenses extends Component {
-    state = { expenses: [], openSort: false, expand: null };
+    state = { expenses: [], expand: null, start: '', end: '' };
 
     async componentDidMount() {
-        const res = await fetch('/api/users/expenses/summary');
+        // Set period dates
+        const month = this.props.date.today.getMonth();
+        const year = this.props.date.today.getFullYear();
+        const start = getFormatedDate(new Date(year, month, 1));
+        const end = getFormatedDate(new Date(year, month + 1, 0));
+        console.log(start, end, month, year);
+
+        this.setState({ start, end });
+        this.getExpenses(start, end);
+    }
+
+    async getExpenses(start, end) {
+        const res = await fetch(`/api/users/expenses/summary?start=${start}&end=${end}`);
         if (res.status === 200) {
             const data = await res.json();
             console.log(data.expenses);
@@ -73,9 +93,14 @@ class Expenses extends Component {
         }
     }
 
+    updateDate(field, value) {
+        // Will need to debounce
+        this.setState({ [field]: value }, () => this.getExpenses(this.state.start, this.state.end));
+    }
+
     render() {
         const { classes } = this.props;
-        const { expenses, openSort, expand } = this.state;
+        const { expenses, expand, start, end } = this.state;
         let total = 0;
         return (
             <div className={classes.container}>
@@ -84,6 +109,12 @@ class Expenses extends Component {
                     {/* <IconButton>
                         <SortIcon className={classes.icon} />
                     </IconButton> */}
+                    <Dashboard
+                        start={start}
+                        end={end}
+                        updateStart={val => this.updateDate('start', val)}
+                        updateEnd={val => this.updateDate('end', val)}
+                    />
                 </div>
                 <div className={classes.expenseList}>
                     {expenses.length === 0 ? <label>No recorded expenses</label> : null}
@@ -111,43 +142,20 @@ class Expenses extends Component {
     }
 }
 
-const useStyles = makeStyles({
-    expense: {
-        border: '1px solid #00000080',
-        borderRadius: '5px',
-        background: '#00000010',
-    },
-    details: {
-        display: 'flex',
-        '& button': {
-            flex: 1,
-        },
-        '& a': {
-            flex: 1,
-        },
-    },
-});
-
-function ExpenseFull(props) {
-    const classes = useStyles();
-
+function Dashboard({ start, end, updateStart, updateEnd }) {
     return (
-        <div className={classes.expense}>
-            <ExpenseSummary {...props} />
-            <div className={classes.details}>
-                <Button
-                    variant="outlined"
-                    color="primary"
-                    href={`/users/expenses/edit/${props.el.id}`}
-                >
-                    Edit
-                </Button>
-                <Button variant="outlined" color="primary" onClick={props.deleteExpense}>
-                    Delete
-                </Button>
-            </div>
+        <div>
+            <label>From</label>
+            <TextField type="date" value={start} onChange={e => updateStart(e.target.value)} />
+            <label>To</label>
+            <TextField type="date" value={end} onChange={e => updateEnd(e.target.value)} />
         </div>
     );
 }
 
-export default withStyles(styles)(Expenses);
+const mapStateToProps = state => {
+    const { date } = state;
+    return { date };
+};
+
+export default connect(mapStateToProps)(withStyles(styles)(Expenses));

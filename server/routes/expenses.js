@@ -100,13 +100,18 @@ router.post('/edit/:id', checkAuth, async (req, res, next) => {
 
 router.get('/summary', checkAuth, async (req, res, next) => {
     console.info('Serving expense summary');
+    console.log(req.query);
+    const where = { user_id: req.user.id };
+    if (req.query.start && req.query.end) {
+        where.date = { [db.Sequelize.Op.between]: [req.query.start, req.query.end] };
+    }
     const expenses = await db.expenses.findAll({
-        where: { user_id: req.user.id },
+        where,
         order: ['date'],
         include: [db.categories, db.stores],
     });
-    console.log(req.user);
-    console.log(expenses);
+    // console.log(req.user);
+    // console.log(expenses);
     res.status(200).send({ expenses: expenses });
 });
 
