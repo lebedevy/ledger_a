@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { withStyles, makeStyles } from '@material-ui/styles';
+import { IconButton } from '@material-ui/core';
+import { withStyles } from '@material-ui/styles';
 import Summary from '../components/Summary';
 import ExpenseSummary from '../components/ExpenseSummary';
 import ExpenseFull from '../components/ExpenseFull';
+import Dashboard from '../components/SearchDashboard';
 import SortIcon from '@material-ui/icons/Sort';
-import { Button, TextField } from '@material-ui/core';
 import { getFormatedDate } from '../utility/utility';
 
 const styles = theme => ({
@@ -33,16 +34,20 @@ const styles = theme => ({
         minWidth: '0',
         'overflow-x': 'auto',
     },
-    header: {
+    headerContainer: {
         display: 'flex',
         flexDirection: 'column',
+    },
+    header: {
+        display: 'flex',
+        // flexDirection: 'column',
         justifyContent: 'space-between',
         margin: '0 10px',
     },
 });
 
 class Expenses extends Component {
-    state = { expenses: [], expand: null, start: '', end: '' };
+    state = { expenses: [], expand: null, start: '', end: '', dashboard: true };
 
     async componentDidMount() {
         // Set period dates
@@ -100,21 +105,25 @@ class Expenses extends Component {
 
     render() {
         const { classes } = this.props;
-        const { expenses, expand, start, end } = this.state;
+        const { expenses, expand, start, end, dashboard } = this.state;
         let total = 0;
         return (
             <div className={classes.container}>
-                <div className={classes.header}>
-                    <h2>Expenses</h2>
-                    {/* <IconButton>
-                        <SortIcon className={classes.icon} />
-                    </IconButton> */}
-                    <Dashboard
-                        start={start}
-                        end={end}
-                        updateStart={val => this.updateDate('start', val)}
-                        updateEnd={val => this.updateDate('end', val)}
-                    />
+                <div className={classes.headerContainer}>
+                    <div className={classes.header}>
+                        <h2>Expenses</h2>
+                        <IconButton onClick={() => this.setState({ dashboard: !dashboard })}>
+                            <SortIcon className={classes.icon} />
+                        </IconButton>
+                    </div>
+                    {dashboard ? (
+                        <Dashboard
+                            start={start}
+                            end={end}
+                            updateStart={val => this.updateDate('start', val)}
+                            updateEnd={val => this.updateDate('end', val)}
+                        />
+                    ) : null}
                 </div>
                 <div className={classes.expenseList}>
                     {expenses.length === 0 ? <label>No recorded expenses</label> : null}
@@ -140,17 +149,6 @@ class Expenses extends Component {
             </div>
         );
     }
-}
-
-function Dashboard({ start, end, updateStart, updateEnd }) {
-    return (
-        <div>
-            <label>From</label>
-            <TextField type="date" value={start} onChange={e => updateStart(e.target.value)} />
-            <label>To</label>
-            <TextField type="date" value={end} onChange={e => updateEnd(e.target.value)} />
-        </div>
-    );
 }
 
 const mapStateToProps = state => {
