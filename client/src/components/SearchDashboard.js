@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
+import clsx from 'clsx';
 
 const useStyles = makeStyles({
     container: {
         display: 'flex',
-        // justifyContent: 'center',
         alignItems: 'center',
         margin: '10px',
         '& label': {
@@ -16,6 +16,10 @@ const useStyles = makeStyles({
             // width: '130px',
         },
     },
+    item: {
+        display: 'flex',
+        alignItems: 'center',
+    },
 });
 
 export default function Dashboard({ start, end, updateStart, updateEnd }) {
@@ -23,22 +27,26 @@ export default function Dashboard({ start, end, updateStart, updateEnd }) {
 
     return (
         <div className={classes.container}>
-            <label>From</label>
-            <TextField
-                type="date"
-                value={start}
-                variant="outlined"
-                margin="dense"
-                onChange={e => updateStart(e.target.value)}
-            />
-            <label>To</label>
-            <TextField
-                type="date"
-                margin="dense"
-                variant="outlined"
-                value={end}
-                onChange={e => updateEnd(e.target.value)}
-            />
+            <div className={clsx(window.innerWidth > 600 && classes.item)}>
+                <label>From</label>
+                <TextField
+                    type="date"
+                    value={start}
+                    variant="outlined"
+                    margin="dense"
+                    onChange={e => updateStart(e.target.value)}
+                />
+            </div>
+            <div className={clsx(window.innerWidth > 600 && classes.item)}>
+                <label>To</label>
+                <TextField
+                    type="date"
+                    margin="dense"
+                    variant="outlined"
+                    value={end}
+                    onChange={e => updateEnd(e.target.value)}
+                />
+            </div>
         </div>
     );
 }
