@@ -47,7 +47,7 @@ const styles = theme => ({
 });
 
 class Expenses extends Component {
-    state = { expenses: [], expand: null, start: '', end: '', dashboard: true };
+    state = { expenses: [], expand: null, start: '', end: '', dashboard: false };
 
     async componentDidMount() {
         // Set period dates
