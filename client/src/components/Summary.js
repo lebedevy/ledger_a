@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/styles';
 const useStyles = makeStyles({
     summary: {
         padding: '10px',
-        height: '50px',
+        height: '70px',
         background: '#96C3CE',
     },
     addExpense: {

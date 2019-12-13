@@ -1,6 +1,6 @@
 import React from 'react';
 import { TextField, Button } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles, withStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles({
     form: {
@@ -9,9 +9,23 @@ const useStyles = makeStyles({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        background: '#00000025',
+        background: '#FBF5F3',
+        borderRadius: '5px',
+        '& button': { marginTop: '10px' },
     },
 });
+
+const FormatedTextField = withStyles({
+    root: {
+        width: '100%',
+        '& label.Mui-focused': {
+            color: '#E28413',
+        },
+        '& .MuiInput-underline:after': {
+            borderBottomColor: '#E28413',
+        },
+    },
+})(TextField);
 
 export default function ExpenseManager({
     amount,
@@ -34,7 +48,8 @@ export default function ExpenseManager({
 
     return (
         <form className={classes.form} onSubmit={e => submitExpense(e)}>
-            <TextField
+            <FormatedTextField
+                className={classes.root}
                 placeholder="Amount"
                 type="number"
                 required
@@ -43,22 +58,26 @@ export default function ExpenseManager({
                 value={amount}
                 onChange={e => setAmount(e.target.value)}
             />
-            <TextField placeholder="Store" value={store} onChange={e => setStore(e.target.value)} />
-            <TextField
+            <FormatedTextField
+                placeholder="Store"
+                value={store}
+                onChange={e => setStore(e.target.value)}
+            />
+            <FormatedTextField
                 placeholder="Expense category"
                 value={category}
                 onChange={e => setCategory(e.target.value)}
             />
-            <TextField
+            <FormatedTextField
                 placeholder="Date"
                 required
-                // error={Boolean(dateError)}
-                // helperText={dateError}
                 value={date}
                 type="date"
                 onChange={e => setDate(e.target.value)}
             />
-            <Button type="submit">{buttonLabel}</Button>
+            <Button type="submit" color="primary" variant="contained">
+                {buttonLabel}
+            </Button>
         </form>
     );
 }
