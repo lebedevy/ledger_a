@@ -33,6 +33,7 @@ const useStyles = makeStyles({
     },
     error: {
         color: 'red',
+        textAlign: 'center',
     },
 });
 

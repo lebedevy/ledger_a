@@ -10,6 +10,9 @@ const useStyles = makeStyles({
         height: '70px',
         background: '#96C3CE',
     },
+    total: {
+        fontWeight: 'bold',
+    },
     addExpense: {
         position: 'absolute',
         right: '10px',
@@ -21,7 +24,8 @@ export default function Summary({ total }) {
     const classes = useStyles();
     return (
         <div className={classes.summary}>
-            <label>{`Total: $${getCurrencyFormat(total)}`}</label>
+            <label>Total: </label>
+            <label className={classes.total}>${getCurrencyFormat(total)}</label>
             <Fab
                 className={classes.addExpense}
                 size="medium"

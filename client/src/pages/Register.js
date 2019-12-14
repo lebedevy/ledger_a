@@ -14,6 +14,7 @@ const useStyles = makeStyles({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
+        background: '#00000055',
     },
     background: {
         opacity: 0.85,

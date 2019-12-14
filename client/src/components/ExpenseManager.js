@@ -4,20 +4,31 @@ import { makeStyles, withStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles({
     form: {
+        position: ' relative',
         padding: '10px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        background: '#FBF5F3',
+        background: '#FBF5F399',
         borderRadius: '5px',
         '& button': { marginTop: '10px' },
+    },
+    backlay: {
+        borderRadius: '5px',
+        background: '#FBF5F380',
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        right: 0,
+        left: 0,
     },
 });
 
 const FormatedTextField = withStyles({
     root: {
         width: '100%',
+        padding: '5px',
         '& label.Mui-focused': {
             color: '#E28413',
         },
@@ -48,6 +59,7 @@ export default function ExpenseManager({
 
     return (
         <form className={classes.form} onSubmit={e => submitExpense(e)}>
+            <div className={classes.backlay} />
             <FormatedTextField
                 className={classes.root}
                 placeholder="Amount"

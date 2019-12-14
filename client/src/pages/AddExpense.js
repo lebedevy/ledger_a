@@ -12,7 +12,8 @@ const styles = theme => ({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        background: '#00000025',
+        // background: '#ffffff80',
+        background: '#96C3CE',
     },
 });
 
@@ -22,11 +23,11 @@ const expenses = [
     { amount: 9, store: 'Dollar Store', category: 'Office' },
     { amount: 0.25, store: 'NoFrills', category: 'Food' },
     { amount: 100.25, store: 'WalMart', category: 'Home' },
-    {
-        amount: 15,
-        store: 'NoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoFrills',
-        category: 'Food',
-    },
+    // {
+    //     amount: 15,
+    //     store: 'NoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoFrills',
+    //     category: 'Food',
+    // },
     { amount: 9, store: 'Dollar Store', category: 'Office' },
     { amount: 0.25, store: 'NoFrills', category: 'Food' },
     { amount: 100.25, store: 'WalMart', category: 'Home' },
@@ -78,20 +79,30 @@ class AddExpense extends Component {
     }
 
     // Adds expenses in bulk (save method for later)
-    populateTemp() {
-        expenses.forEach(async el => {
+    async populateTemp() {
+        for (let i = 0; i < expenses.length; i++) {
+            const el = expenses[i];
             const { amount, store, category } = el;
             console.log(amount, store, category);
             const res = await fetch('/api/users/expenses/add', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    expenses: { amount, store, category, date: new Date() },
+                    expenses: {
+                        amount: Math.floor(Math.random() * 250) + 1,
+                        store,
+                        category,
+                        date: new Date(
+                            2019,
+                            Math.floor(Math.random() * 2) + 10,
+                            Math.floor(Math.random() * 30 + 1)
+                        ),
+                    },
                 }),
             });
             const data = await res.json();
             console.log(res, data);
-        });
+        }
     }
 
     updateField(field, value) {

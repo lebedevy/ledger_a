@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/styles';
-import { getCurrencyFormat } from '../utility/utility';
 import Summary from '../components/Summary';
+import AggregateSummary from '../components/AggregateSummary';
 
 const styles = theme => ({
     container: {
@@ -20,37 +20,6 @@ const styles = theme => ({
         flexDirection: 'column',
         background: '#ffffff',
         borderRadius: '5px',
-    },
-    expenseEntry: {
-        padding: '0 1px',
-        display: 'flex',
-        bottomBorder: '1px solid #00000060',
-    },
-    expenseItem: {
-        padding: '2px 0',
-        flex: '1 1 0',
-        border: '1px solid #00000020',
-        minWidth: '0',
-        overflow: 'scroll',
-    },
-    sort: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    sortBackground: {
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        background: '#00000060',
-    },
-    sortContainer: {
-        height: '500px',
-        width: '700px',
-        background: '#ffffff',
-        zIndex: 1,
     },
 });
 
@@ -78,7 +47,7 @@ class ExpensesAggregates extends Component {
 
     render() {
         const { classes } = this.props;
-        const { expenses, openSort, type } = this.state;
+        const { expenses, type } = this.state;
         let total = 0;
         return (
             <div className={classes.container}>
@@ -91,31 +60,13 @@ class ExpensesAggregates extends Component {
                     ) : null}
                     {expenses.map(el => {
                         total += el.amount;
-                        return (
-                            <div className={classes.expenseEntry}>
-                                <label className={classes.expenseItem}>
-                                    {type === 'cat' ? el.category_name : el.store_name}
-                                </label>
-                                <label className={classes.expenseItem}>{`$${getCurrencyFormat(
-                                    el.amount
-                                )}`}</label>
-                            </div>
-                        );
+                        return <AggregateSummary type={type} el={el} />;
                     })}
                 </div>
                 <Summary total={total} />
             </div>
         );
     }
-}
-
-function Sort({ classes, close }) {
-    return (
-        <div className={classes.sort}>
-            <div className={classes.sortContainer}></div>
-            <div className={classes.sortBackground} onClick={close}></div>
-        </div>
-    );
 }
 
 export default withStyles(styles)(ExpensesAggregates);
