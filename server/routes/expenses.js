@@ -116,10 +116,12 @@ router.get('/summary', checkAuth, async (req, res, next) => {
 });
 
 router.get('/summary/:type', checkAuth, async (req, res, next) => {
-    console.info('Serving aggregated summary');
     const { type } = req.params;
-    console.log(type);
-    console.log(req.user);
+    console.info('Serving aggregated summary ', type);
+    const where = { user_id: req.user.id };
+    if (req.query.start && req.query.end) {
+        where.date = { [db.Sequelize.Op.between]: [req.query.start, req.query.end] };
+    }
     // const expenses = await db.expenses.findAll({
     //     where: { user_id: 1 },
     //     include: [{ model: db.stores, attributes: [] }],
@@ -138,7 +140,7 @@ router.get('/summary/:type', checkAuth, async (req, res, next) => {
                       {
                           model: db.expenses,
                           attributes: [],
-                          where: { user_id: req.user.id },
+                          where,
                       },
                   ],
                   group: 'categories.id',
@@ -153,7 +155,7 @@ router.get('/summary/:type', checkAuth, async (req, res, next) => {
                       {
                           model: db.expenses,
                           attributes: [],
-                          where: { user_id: req.user.id },
+                          where,
                       },
                   ],
                   group: 'stores.id',

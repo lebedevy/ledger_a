@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/styles';
 import Summary from '../components/Summary';
 import AggregateSummary from '../components/AggregateSummary';
@@ -28,18 +29,20 @@ class ExpensesAggregates extends Component {
     state = { expenses: [], openSort: false, type: this.props.match.params.type };
 
     componentDidMount() {
-        this.fetchExpenses();
+        this.fetchExpenses(this.props.start, this.props.end);
     }
 
     componentDidUpdate(props) {
         if (props !== this.props) {
-            this.setState({ type: this.props.match.params.type }, () => this.fetchExpenses());
+            this.setState({ type: this.props.match.params.type }, () =>
+                this.fetchExpenses(this.props.start, this.props.end)
+            );
         }
     }
 
-    async fetchExpenses() {
+    async fetchExpenses(start, end) {
         const { type } = this.state;
-        const res = await fetch('/api/users/expenses/summary/' + type);
+        const res = await fetch(`/api/users/expenses/summary/${type}?start=${start}&end=${end}`);
         const data = await res.json();
         console.log(data);
         // data.expenses.forEach(el => console.log(el));
@@ -70,4 +73,11 @@ class ExpensesAggregates extends Component {
     }
 }
 
-export default withStyles(styles)(ExpensesAggregates);
+const mapStateToProps = state => {
+    const { date } = state;
+    const { start, end } = date.period;
+    console.log(start, end);
+    return { date, start, end };
+};
+
+export default connect(mapStateToProps)(withStyles(styles)(ExpensesAggregates));
