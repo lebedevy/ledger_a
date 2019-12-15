@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Fab } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import { getCurrencyFormat } from '../utility/utility';
@@ -18,22 +19,38 @@ const useStyles = makeStyles({
         right: '10px',
         bottom: '10px',
     },
+    dates: {
+        display: 'block',
+        padding: '10px 0',
+        fontSize: '0.9em',
+        fontStyle: 'italic',
+    },
 });
 
-export default function Summary({ total }) {
+function Summary({ total, start, end, history }) {
     const classes = useStyles();
     return (
         <div className={classes.summary}>
             <label>Total: </label>
             <label className={classes.total}>${getCurrencyFormat(total)}</label>
+            <br />
+            <label className={classes.dates}>{`${start} to ${end}`}</label>
             <Fab
                 className={classes.addExpense}
                 size="medium"
                 color="secondary"
-                href="/users/expenses/add"
+                onClick={() => history.push('/users/expenses/add')}
             >
                 <AddIcon />
             </Fab>
         </div>
     );
 }
+
+const mapStateToProps = state => {
+    const { date } = state;
+    const { start, end } = date.period;
+    return { start, end };
+};
+
+export default connect(mapStateToProps)(Summary);

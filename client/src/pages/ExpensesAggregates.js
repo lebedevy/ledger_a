@@ -67,7 +67,7 @@ class ExpensesAggregates extends Component {
                         return <AggregateSummary type={type} el={el} />;
                     })}
                 </div>
-                <Summary total={total} />
+                <Summary total={total} history={this.props.history} />
             </div>
         );
     }

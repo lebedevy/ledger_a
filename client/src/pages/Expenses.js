@@ -103,7 +103,7 @@ class Expenses extends Component {
                         );
                     })}
                 </div>
-                <Summary total={total} />
+                <Summary total={total} history={this.props.history} />
             </div>
         );
     }

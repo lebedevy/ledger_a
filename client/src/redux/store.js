@@ -5,9 +5,8 @@ import { devToolsEnhancer } from 'redux-devtools-extension';
 
 const token = Cookies.get('jwt');
 const user = parseJwt(token);
-console.log(user);
-
-export default createStore(rootReducer, { user: user }, devToolsEnhancer());
+console.info('Initializing store...');
+export default createStore(rootReducer, { user }, devToolsEnhancer());
 
 function parseJwt(token) {
     try {

@@ -210,4 +210,34 @@ router.post('/delete', checkAuth, async (req, res, next) => {
     return res.status(200).send({ message: 'ok' });
 });
 
+router.get('/categories', checkAuth, async (req, res, next) => {
+    console.info('Getting user categories');
+    console.log(req.query);
+    const where = { user_id: req.user.id };
+    const categories = await db.categories.findAll({
+        attributes: ['category_name'],
+        include: {
+            model: db.expenses,
+            attributes: [],
+            where,
+        },
+    });
+    res.status(200).send({ categories });
+});
+
+router.get('/stores', checkAuth, async (req, res, next) => {
+    console.info('Getting user stores');
+    console.log(req.query);
+    const where = { user_id: req.user.id };
+    const stores = await db.stores.findAll({
+        attributes: ['store_name'],
+        include: {
+            model: db.expenses,
+            attributes: [],
+            where,
+        },
+    });
+    res.status(200).send({ stores });
+});
+
 module.exports = router;

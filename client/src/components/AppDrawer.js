@@ -25,7 +25,7 @@ const useStyles = makeStyles({
 
 function AppDrawer({ open, closeDrawer, history, setUser, logout }) {
     const classes = useStyles();
-    console.log(logout);
+
     function navTo(location) {
         console.log(location);
         history.push(location);

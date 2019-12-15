@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { connect } from 'react-redux';
+import { Autocomplete } from '@material-ui/lab';
 import { TextField, Button } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/styles';
+import { setCategories, setStores } from '../redux/actions';
 
 const useStyles = makeStyles({
     form: {
@@ -13,6 +16,7 @@ const useStyles = makeStyles({
         background: '#FBF5F399',
         borderRadius: '5px',
         '& button': { marginTop: '10px' },
+        '& div': { width: '100%' },
     },
     backlay: {
         borderRadius: '5px',
@@ -38,7 +42,7 @@ const FormatedTextField = withStyles({
     },
 })(TextField);
 
-export default function ExpenseManager({
+function ExpenseManager({
     amount,
     store,
     category,
@@ -49,8 +53,41 @@ export default function ExpenseManager({
     setDate,
     submit,
     buttonLabel,
+    categories,
+    stores,
+    setCategories,
+    setStores,
 }) {
     const classes = useStyles();
+
+    useEffect(() => {
+        if (categories === null) {
+            console.log('Categories not set.');
+            getCategories();
+        }
+        if (stores === null) {
+            console.log('Stores not set.');
+            getStores();
+        }
+    });
+
+    async function getCategories() {
+        const catRes = await fetch('/api/users/expenses/categories');
+        if (catRes.status === 200) {
+            const data = await catRes.json();
+            const output = data.categories.map(el => el['category_name']);
+            setCategories(output);
+        }
+    }
+
+    async function getStores() {
+        const strRes = await fetch('/api/users/expenses/stores');
+        if (strRes.status === 200) {
+            const data = await strRes.json();
+            const result = data.stores.map(el => el['store_name']);
+            setStores(result);
+        }
+    }
 
     function submitExpense(e) {
         e.preventDefault();
@@ -65,20 +102,26 @@ export default function ExpenseManager({
                 placeholder="Amount"
                 type="number"
                 required
-                // error={Boolean(amountError)}
-                // helperText={amountError}
                 value={amount}
                 onChange={e => setAmount(e.target.value)}
             />
-            <FormatedTextField
-                placeholder="Store"
-                value={store}
-                onChange={e => setStore(e.target.value)}
+            <Autocomplete
+                freeSolo
+                options={stores || []}
+                disableClearable
+                inputValue={store}
+                onInputChange={(e, val) => setStore(val)}
+                renderInput={params => <FormatedTextField {...params} placeholder="Store" />}
             />
-            <FormatedTextField
-                placeholder="Expense category"
-                value={category}
-                onChange={e => setCategory(e.target.value)}
+            <Autocomplete
+                freeSolo
+                options={categories || []}
+                disableClearable
+                inputValue={category}
+                onInputChange={(e, val) => setCategory(val)}
+                renderInput={params => (
+                    <FormatedTextField {...params} placeholder="Expense category" fullWidth />
+                )}
             />
             <FormatedTextField
                 placeholder="Date"
@@ -93,3 +136,10 @@ export default function ExpenseManager({
         </form>
     );
 }
+
+const mapStateToProps = state => {
+    const { categories, stores } = state;
+    return { categories, stores };
+};
+
+export default connect(mapStateToProps, { setCategories, setStores })(ExpenseManager);

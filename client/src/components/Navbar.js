@@ -14,7 +14,7 @@ const useStyles = makeStyles({
 
 function Navbar({ openDrawer }) {
     const classes = useStyles();
-    console.log(openDrawer);
+
     return (
         <AppBar>
             <Toolbar>

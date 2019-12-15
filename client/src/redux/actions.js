@@ -1,4 +1,13 @@
-import { SET_DATE, OPEN_DRAWER, CLOSE_DRAWER, SET_USER, LOGOUT, SET_PERIOD } from './actionTypes';
+import {
+    SET_DATE,
+    OPEN_DRAWER,
+    CLOSE_DRAWER,
+    SET_USER,
+    LOGOUT,
+    SET_PERIOD,
+    SET_CATEGORIES,
+    SET_STORES,
+} from './actionTypes';
 
 export const setDate = content => ({
     type: SET_DATE,
@@ -37,6 +46,20 @@ export const logout = content => ({
 
 export const setPeriod = content => ({
     type: SET_PERIOD,
+    payload: {
+        content,
+    },
+});
+
+export const setCategories = content => ({
+    type: SET_CATEGORIES,
+    payload: {
+        content,
+    },
+});
+
+export const setStores = content => ({
+    type: SET_STORES,
     payload: {
         content,
     },
