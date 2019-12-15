@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withStyles } from '@material-ui/styles';
 import Summary from '../components/Summary';
 import AggregateSummary from '../components/AggregateSummary';
+import Header from '../components/Header';
 
 const styles = theme => ({
     container: {
@@ -51,7 +52,7 @@ class ExpensesAggregates extends Component {
         let total = 0;
         return (
             <div className={classes.container}>
-                <h2>{`Expenses by ${type === 'cat' ? 'Category' : 'Store'}`}</h2>
+                <Header title={`Expenses by ${type === 'cat' ? 'Category' : 'Store'}`} />
                 <div className={classes.expenseList}>
                     {expenses.length === 0 ? (
                         <label>{`No expenses for ${

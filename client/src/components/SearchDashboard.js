@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { connect } from 'react-redux';
 import { TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import clsx from 'clsx';
+import { setPeriod } from '../redux/actions';
 
 const useStyles = makeStyles({
     container: {
@@ -22,7 +24,7 @@ const useStyles = makeStyles({
     },
 });
 
-export default function Dashboard({ start, end, updateStart, updateEnd }) {
+function Dashboard({ start, end, updateStart, updateEnd, setPeriod }) {
     const classes = useStyles();
 
     return (
@@ -34,7 +36,7 @@ export default function Dashboard({ start, end, updateStart, updateEnd }) {
                     value={start}
                     variant="outlined"
                     margin="dense"
-                    onChange={e => updateStart(e.target.value)}
+                    onChange={e => setPeriod({ start: e.target.value, end })}
                 />
             </div>
             <div className={clsx(window.innerWidth > 600 && classes.item)}>
@@ -44,9 +46,18 @@ export default function Dashboard({ start, end, updateStart, updateEnd }) {
                     margin="dense"
                     variant="outlined"
                     value={end}
-                    onChange={e => updateEnd(e.target.value)}
+                    onChange={e => setPeriod({ end: e.target.value, start })}
                 />
             </div>
         </div>
     );
 }
+
+const mapStateToProps = state => {
+    const { date } = state;
+    const { start, end } = date.period;
+    console.log(start, end);
+    return { start, end };
+};
+
+export default connect(mapStateToProps, { setPeriod })(Dashboard);
