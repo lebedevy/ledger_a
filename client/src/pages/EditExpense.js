@@ -48,7 +48,7 @@ export default function EditExpense({ match, history }) {
         const res = await fetch(`/api/users/expenses/edit/${match.params.id}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ amount, store, category, date }),
+            body: JSON.stringify({ expenses: { amount, store, category, date } }),
         });
         const data = await res.json();
         console.log(res, data);

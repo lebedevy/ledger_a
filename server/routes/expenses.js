@@ -2,29 +2,38 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models');
 const checkAuth = require('../middleware/auth');
+const validateExpense = require('../middleware/validateExpense');
 
-router.post('/add', checkAuth, async (req, res, next) => {
-    const { expenses } = req.body;
-    console.log(expenses);
-    const { amount, store, category, date } = expenses;
-    console.log(amount, store, category, date);
+router.post('/add', checkAuth, validateExpense, async (req, res, next) => {
+    console.info('Adding expense...');
+    const { expense } = req;
+    const { amount, date, store, category } = expense;
+    let store_id = null,
+        category_id = null;
 
     // Create store
-    const [storeObj, storeCreated] = await db.stores.findOrCreate({ where: { store_name: store } });
+    if (store) {
+        const [storeObj, storeCreated] = await db.stores.findOrCreate({
+            where: { store_name: store },
+        });
+        store_id = storeObj.id;
+    }
 
-    // Create category
-    const [categoryObj, catCreated] = await db.categories.findOrCreate({
-        where: { category_name: category },
-    });
+    if (category) {
+        // Create category
+        const [categoryObj, catCreated] = await db.categories.findOrCreate({
+            where: { category_name: category },
+        });
+        category_id = categoryObj.id;
+    }
 
-    console.log('\n\n', storeObj.dataValues, storeCreated, categoryObj.dataValues, catCreated);
     // Create expense record
     const record = await db.expenses.create({
         user_id: req.user.id,
-        category_id: categoryObj.id,
+        category_id: category_id,
         date,
         amount,
-        store_id: storeObj.id,
+        store_id: store_id,
     });
 
     console.log(record.dataValues);
@@ -43,8 +52,8 @@ router.get('/edit/:id', checkAuth, async (req, res, next) => {
         if (expense.user_id === req.user.id) {
             console.log(expense);
             const { id, amount, date } = expense;
-            const store = expense.store.store_name;
-            const category = expense.category.category_name;
+            const store = expense.store ? expense.store.store_name : '';
+            const category = expense.category ? expense.category.category_name : '';
             // console.log(id, amount, store, category, date);
             return res.status(200).send({ expense: { id, amount, store, category, date } });
         }
@@ -53,9 +62,9 @@ router.get('/edit/:id', checkAuth, async (req, res, next) => {
     return res.status(400).send({ message: 'Please ensure the correct expense is requested' });
 });
 
-router.post('/edit/:id', checkAuth, async (req, res, next) => {
+router.post('/edit/:id', checkAuth, validateExpense, async (req, res, next) => {
     console.info('Updating expense...');
-    const { amount, store, category, date } = req.body;
+    const { amount, date, store, category } = req.expense;
     const { id } = req.params;
     const expense = await db.expenses.findOne({
         where: { id, user_id: req.user.id },
@@ -67,7 +76,7 @@ router.post('/edit/:id', checkAuth, async (req, res, next) => {
                 store_id = null;
 
             // Create or get store
-            if (store != null || store != '') {
+            if (store) {
                 const [storeObj, storeCreated] = await db.stores.findOrCreate({
                     where: { store_name: store },
                 });
@@ -76,7 +85,7 @@ router.post('/edit/:id', checkAuth, async (req, res, next) => {
             }
 
             // Create or get category
-            if (category != null || category != '') {
+            if (category) {
                 const [categoryObj, catCreated] = await db.categories.findOrCreate({
                     where: {
                         category_name: category,
@@ -216,6 +225,7 @@ router.get('/categories', checkAuth, async (req, res, next) => {
     const where = { user_id: req.user.id };
     const categories = await db.categories.findAll({
         attributes: ['category_name'],
+        order: ['category_name'],
         include: {
             model: db.expenses,
             attributes: [],
@@ -231,6 +241,7 @@ router.get('/stores', checkAuth, async (req, res, next) => {
     const where = { user_id: req.user.id };
     const stores = await db.stores.findAll({
         attributes: ['store_name'],
+        order: ['store_name'],
         include: {
             model: db.expenses,
             attributes: [],
