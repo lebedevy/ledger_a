@@ -2,13 +2,9 @@ import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { IconButton, Button } from '@material-ui/core';
-import SummaryItem from './SummaryItem';
+import { IconButton } from '@material-ui/core';
 
-const cardImage = '/images/icons8-card-payment-80.png';
-const recordImage = '/images/icons8-book-and-pencil-100.png';
-const analyzeImage = '/images/icons8-analyze-80.png';
-// #C9D6EA
+const backgroundImage = '/images/kamil-feczko-GhxWry42_zQ-unsplash.jpg';
 
 const useStyles = makeStyles({
     pageTitle: {
@@ -19,14 +15,14 @@ const useStyles = makeStyles({
         margin: '5px auto',
     },
     presentation: {
+        height: '100vh',
+        zIndex: 1,
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         textAlign: 'center',
-        padding: '10px',
-        background: 'linear-gradient(#96C3CE,#73C1C6)',
         '& label': {
             color: 'white',
             fontSize: '1.2em',
@@ -36,37 +32,36 @@ const useStyles = makeStyles({
         },
     },
     backdrop: {
-        borderRadius: '3px',
+        opacity: 0.8,
         position: 'absolute',
-        background: 'linear-gradient(#FFA552,#BA5624)',
-        // background: '#663F46',
-        zIndex: -1,
-        top: '-8px',
-        left: '-8px',
-    },
-    firstDeskopt: {
-        borderRadius: '2px',
-        boxShadow: '5px 5px 5px #1A444F',
-        margin: '25px',
-    },
-    more: {
-        background: '#BA5624',
-        color: 'black',
+        filter: 'grayscale(100%)',
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        top: 0,
+        bottom: 0,
+        right: 0,
+        left: 0,
     },
     summary: {
+        zIndex: 2,
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
     },
-    button: {
+    moreButton: {
         marginTop: '10px',
         fontWeight: 'bold',
+        background: '#BA5624',
+        color: 'black',
+        marginBottom: '10px',
     },
 });
 
-function FirstCard() {
+export default function Hero() {
     const classes = useStyles();
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
     const [screenHeight, setScreenHeight] = useState(window.innerHeight);
@@ -86,17 +81,9 @@ function FirstCard() {
     });
 
     return (
-        <div
-            className={clsx(classes.presentation, window.innerWidth > 600 && classes.firstDeskopt)}
-            style={{ height: screenHeight - (screenWidth > 600 ? 50 : 0) }}
-        >
+        <div className={classes.presentation}>
+            <div className={classes.backdrop} />
             <div className={classes.summary}>
-                {screenWidth > 600 ? (
-                    <div
-                        className={classes.backdrop}
-                        style={{ height: screenHeight - 50, width: screenWidth - 75 }}
-                    />
-                ) : null}
                 <h1
                     className={clsx(
                         classes.pageTitle,
@@ -105,19 +92,9 @@ function FirstCard() {
                 >
                     Ledger A
                 </h1>
-                <SummaryItem image={cardImage} imageAlt="Credit Card" label="Spend" />
-                <SummaryItem image={recordImage} imageAlt="Notebook" label="Log" />
-                <SummaryItem image={analyzeImage} imageAlt="Analyze" label="Analyze" />
-                <Button
-                    href="/users/register"
-                    color="secondary"
-                    variant="contained"
-                    className={classes.button}
-                >
-                    Register
-                </Button>
+                <label>Your expenses shouldn't be a mystery</label>
             </div>
-            <IconButton className={clsx(classes.more, classes.button)}>
+            <IconButton className={clsx(classes.moreButton)}>
                 <ExpandMoreIcon
                     fontSize={screenWidth > 600 ? 'medium' : 'small'}
                     onClick={() =>
@@ -131,5 +108,3 @@ function FirstCard() {
         </div>
     );
 }
-
-export default FirstCard;
