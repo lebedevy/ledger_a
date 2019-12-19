@@ -1,13 +1,14 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
-import FirstCard from '../components/FirstCard';
-import SecondCard from '../components/SecondCard';
+import Hero from '../components/Hero';
+import Presentation from '../components/Presentation';
 
 const useStyles = makeStyles({
     container: {
         // background: 'gray',
         display: 'flex',
         flexDirection: 'column',
+        background: 'linear-gradient(#1e1e1e 50%, #515151, #0f0f0f)',
     },
     presentation: {
         display: 'flex',
@@ -16,14 +17,13 @@ const useStyles = makeStyles({
         alignItems: 'center',
         textAlign: 'center',
     },
-    text: {},
     footer: {
-        height: '75px',
+        height: '100px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-around',
         alignItems: 'center',
-        background: '#5D576B',
+        // background: '#5D576B',
         color: '#ffffff',
     },
 });
@@ -32,8 +32,8 @@ function LandingPage() {
     const classes = useStyles();
     return (
         <div className={classes.container}>
-            <FirstCard />
-            <SecondCard />
+            <Hero />
+            <Presentation />
             <Footer />
         </div>
     );
@@ -51,6 +51,16 @@ function Footer() {
                     </a>
                 </label>
             </div>
+            <label>
+                Photo by{' '}
+                <a href="https://unsplash.com/@feczys?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">
+                    Kamil Feczko
+                </a>
+                {' on '}
+                <a href="https://unsplash.com/s/photos/mystery?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">
+                    Unsplash
+                </a>
+            </label>
             <label>
                 Website designed and built by{' '}
                 <a href="https://personalwebsite-189620.web.app/">YL</a>
