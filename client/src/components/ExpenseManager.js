@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Autocomplete } from '@material-ui/lab';
-import { TextField, Button } from '@material-ui/core';
+import { TextField, Button, CircularProgress } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/styles';
 import { setCategories, setStores } from '../redux/actions';
 
@@ -26,6 +26,19 @@ const useStyles = makeStyles({
         bottom: 0,
         right: 0,
         left: 0,
+    },
+    loading: {
+        zIndex: 3,
+        borderRadius: '5px',
+        background: '#585B5699',
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        right: 0,
+        left: 0,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
 
@@ -59,6 +72,7 @@ function ExpenseManager({
     setStores,
 }) {
     const classes = useStyles();
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (categories === null) {
@@ -91,12 +105,19 @@ function ExpenseManager({
 
     function submitExpense(e) {
         e.preventDefault();
+        setLoading(true);
         submit();
     }
 
     return (
         <form className={classes.form} onSubmit={e => submitExpense(e)}>
             <div className={classes.backlay} />
+            {loading ? (
+                <div className={classes.loading}>
+                    <div className={classes.backlay} />
+                    <CircularProgress />
+                </div>
+            ) : null}
             <FormatedTextField
                 className={classes.root}
                 placeholder="Amount"
@@ -107,6 +128,7 @@ function ExpenseManager({
             />
             <Autocomplete
                 freeSolo
+                autoCapitalize="words"
                 options={stores || []}
                 disableClearable
                 inputValue={store}
@@ -115,6 +137,7 @@ function ExpenseManager({
             />
             <Autocomplete
                 freeSolo
+                autoCapitalize="words"
                 options={categories || []}
                 disableClearable
                 inputValue={category}
@@ -130,7 +153,7 @@ function ExpenseManager({
                 type="date"
                 onChange={e => setDate(e.target.value)}
             />
-            <Button type="submit" color="primary" variant="contained">
+            <Button type="submit" color="primary" variant="contained" disabled={loading}>
                 {buttonLabel}
             </Button>
         </form>
