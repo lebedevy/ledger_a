@@ -15,12 +15,12 @@ const useStyles = makeStyles({
         display: 'flex',
         flexDirection: 'column',
     },
-    logout: {
-        borderTop: '1px solid #00000050',
-        height: '70px',
-        alignSelf: 'flex-end',
-        background: '#00000010',
-    },
+    // logout: {
+    //     borderTop: '1px solid #00000050',
+    //     height: '70px',
+    //     alignSelf: 'flex-end',
+    //     background: '#00000010',
+    // },
 });
 
 function AppDrawer({ open, closeDrawer, history, setUser, logout }) {
@@ -32,13 +32,13 @@ function AppDrawer({ open, closeDrawer, history, setUser, logout }) {
         closeDrawer();
     }
 
-    async function logoutUser() {
-        logout();
-        const res = await fetch('/api/users/logout', { method: 'POST' });
-        console.log(res);
-        if (res.status === 2000) history.go('/users/login');
-        closeDrawer();
-    }
+    // async function logoutUser() {
+    //     logout();
+    //     const res = await fetch('/api/users/logout', { method: 'POST' });
+    //     console.log(res);
+    //     if (res.status === 200) history.go('/users/login');
+    //     closeDrawer();
+    // }
 
     return (
         <Drawer open={open} onClose={closeDrawer}>
@@ -54,9 +54,9 @@ function AppDrawer({ open, closeDrawer, history, setUser, logout }) {
                     By category
                 </ListItem>
             </List>
-            <ListItem button onClick={logoutUser} className={classes.logout}>
+            {/* <ListItem button onClick={logoutUser} className={classes.logout}>
                 Logout
-            </ListItem>
+            </ListItem> */}
         </Drawer>
     );
 }
