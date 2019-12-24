@@ -63,7 +63,7 @@ class App extends Component {
                                 render={props => <Merge {...props} />}
                             />
                             <Route>
-                                <Redirect to="/users/expenses/summary" />
+                                <Redirect to="/users/expenses/summary/" />
                             </Route>
                         </Switch>
                     </div>

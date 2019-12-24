@@ -27,23 +27,36 @@ const styles = theme => ({
 });
 
 class Expenses extends Component {
-    state = { expenses: [], expand: null };
+    state = { expenses: [], openSort: false, expand: null, sort: null, order: null };
 
     componentDidMount() {
-        this.getExpenses(this.props.start, this.props.end);
+        const [sort, order] = this.getSort();
+        this.setState({ sort, order }, () => this.getExpenses(this.props.start, this.props.end));
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.start !== prevProps.start || this.props.end !== prevProps.end) {
-            this.getExpenses(this.props.start, this.props.end);
+        // if (this.props.start !== prevProps.start || this.props.end !== prevProps.end) {
+        if (this.props !== prevProps) {
+            const [sort, order] = this.getSort();
+            this.setState({ sort, order }, () =>
+                this.getExpenses(this.props.start, this.props.end)
+            );
         }
     }
 
+    getSort() {
+        const search = new URLSearchParams(this.props.location.search);
+        return [search.get('sort'), search.get('order')];
+    }
+
     async getExpenses(start, end) {
-        const res = await fetch(`/api/users/expenses/summary?start=${start}&end=${end}`);
+        console.info('Getting expenses');
+        const { sort, order } = this.state;
+        const res = await fetch(
+            `/api/users/expenses/summary?start=${start}&end=${end}&sort=${sort}&order=${order}`
+        );
         if (res.status === 200) {
             const data = await res.json();
-            console.log(data.expenses);
             this.setState({ expenses: data.expenses });
         } else {
             console.error('Error fetching results');
@@ -76,11 +89,17 @@ class Expenses extends Component {
 
     render() {
         const { classes } = this.props;
-        const { expenses, expand } = this.state;
+        const { expenses, expand, openSort } = this.state;
         let total = 0;
         return (
             <div className={classes.container}>
-                <Header title="Expenses" />
+                <Header
+                    open={openSort}
+                    setOpen={() => this.setState({ openSort: !openSort })}
+                    title="Expenses"
+                    history={this.props.history}
+                    type="summary"
+                />
                 <div className={classes.expenseList}>
                     {expenses.length === 0 ? <label>No recorded expenses</label> : null}
                     {expenses.map((el, ind) => {

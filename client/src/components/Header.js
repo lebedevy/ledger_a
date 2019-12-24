@@ -11,32 +11,23 @@ const useStyles = makeStyles({
     },
     header: {
         display: 'flex',
-        // flexDirection: 'column',
         justifyContent: 'space-between',
         margin: '0 10px',
     },
 });
 
-export default function Header({ title }) {
-    const [dashboard, setDashboard] = useState(false);
-    // const [start, setStart] = useState('');
-    // const [end, setEnd] = useState('');
-
+export default function Header({ setOpen, open, title, history, type }) {
     const classes = useStyles();
+    console.log(open);
     return (
         <div className={classes.headerContainer}>
             <div className={classes.header}>
                 <h2>{title}</h2>
-                <IconButton onClick={() => setDashboard(!dashboard)}>
+                <IconButton onClick={setOpen}>
                     <SortIcon className={classes.icon} />
                 </IconButton>
             </div>
-            {dashboard ? (
-                <Dashboard
-                // updateStart={val => this.updateDate('start', val)}
-                // updateEnd={val => this.updateDate('end', val)}
-                />
-            ) : null}
+            {open ? <Dashboard history={history} type={type} /> : null}
         </div>
     );
 }

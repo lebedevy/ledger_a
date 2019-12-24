@@ -3,9 +3,11 @@ import { connect } from 'react-redux';
 import { Drawer, List, ListItem } from '@material-ui/core';
 import { closeDrawer, logout } from '../redux/actions';
 import { makeStyles } from '@material-ui/styles';
+import DateRange from './DateRange';
 
 const useStyles = makeStyles({
     header: {
+        paddingTop: '20px',
         fontWeight: 'bold',
         fontSize: '1.2em',
         borderBottom: '1px solid #00000020',
@@ -15,28 +17,14 @@ const useStyles = makeStyles({
         display: 'flex',
         flexDirection: 'column',
     },
-    logout: {
-        borderTop: '1px solid #00000050',
-        height: '70px',
-        alignSelf: 'flex-end',
-        background: '#00000010',
-    },
 });
 
-function AppDrawer({ open, closeDrawer, history, setUser, logout }) {
+function AppDrawer({ open, closeDrawer, history }) {
     const classes = useStyles();
 
     function navTo(location) {
         console.log(location);
         history.push(location);
-        closeDrawer();
-    }
-
-    async function logoutUser() {
-        logout();
-        const res = await fetch('/api/users/logout', { method: 'POST' });
-        console.log(res);
-        if (res.status === 2000) history.go('/users/login');
         closeDrawer();
     }
 
@@ -53,10 +41,10 @@ function AppDrawer({ open, closeDrawer, history, setUser, logout }) {
                 <ListItem button onClick={() => navTo('/users/expenses/summary/cat')}>
                     By category
                 </ListItem>
+                <ListItem className={classes.header}>Global Filters</ListItem>
+                <ListItem>Expenses period:</ListItem>
+                <DateRange />
             </List>
-            <ListItem button onClick={logoutUser} className={classes.logout}>
-                Logout
-            </ListItem>
         </Drawer>
     );
 }
@@ -66,6 +54,6 @@ const mapStateToProps = state => {
     return { open: drawer.drawerState };
 };
 
-const mapDispatchToProps = { closeDrawer, logout };
+const mapDispatchToProps = { closeDrawer };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AppDrawer);
