@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { TextField } from '@material-ui/core';
+import { TextField, Select } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import clsx from 'clsx';
 import { setPeriod } from '../redux/actions';
@@ -8,7 +8,7 @@ import { setPeriod } from '../redux/actions';
 const useStyles = makeStyles({
     container: {
         display: 'flex',
-        alignItems: 'center',
+        flexDirection: 'column',
         margin: '10px',
         '& label': {
             margin: '0 10px 0 5px',
@@ -18,36 +18,29 @@ const useStyles = makeStyles({
             // width: '130px',
         },
     },
-    item: {
+    option: {
         display: 'flex',
         alignItems: 'center',
     },
 });
 
-function Dashboard({ start, end, updateStart, updateEnd, setPeriod }) {
+function Dashboard({ start, end, setPeriod }) {
     const classes = useStyles();
 
     return (
         <div className={classes.container}>
-            <div className={clsx(window.innerWidth > 600 && classes.item)}>
-                <label>From</label>
-                <TextField
-                    type="date"
-                    value={start}
-                    variant="outlined"
-                    margin="dense"
-                    onChange={e => setPeriod({ start: e.target.value, end })}
-                />
-            </div>
-            <div className={clsx(window.innerWidth > 600 && classes.item)}>
-                <label>To</label>
-                <TextField
-                    type="date"
-                    margin="dense"
-                    variant="outlined"
-                    value={end}
-                    onChange={e => setPeriod({ end: e.target.value, start })}
-                />
+            <div className={classes.option}>
+                <label>Sort</label>
+                <Select value={0}>
+                    <option value={0}>Date</option>
+                    <option value={1}>Amount</option>
+                    <option value={2}>Store</option>
+                    <option value={3}>Category</option>
+                </Select>
+                <Select value={0}>
+                    <option value={0}>ASC</option>
+                    <option value={1}>DESC</option>
+                </Select>
             </div>
         </div>
     );

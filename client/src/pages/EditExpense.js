@@ -39,8 +39,6 @@ export default function EditExpense({ match, history }) {
         fetchAPI();
     }, []);
 
-    // Add store look up
-    // add category lookup
     // store/category popup if did not exist in db before
 
     async function edit() {
