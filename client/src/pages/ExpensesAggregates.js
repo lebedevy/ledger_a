@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/styles';
 import Summary from '../components/Summary';
@@ -26,36 +27,61 @@ const styles = theme => ({
 });
 
 class ExpensesAggregates extends Component {
-    state = { expenses: [], openSort: false, type: this.props.match.params.type };
+    state = {
+        expenses: [],
+        sortOpen: false,
+        type: this.props.match.params.type,
+        sort: null,
+        order: null,
+    };
 
     componentDidMount() {
-        this.fetchExpenses(this.props.start, this.props.end);
+        const [sort, order] = this.getSort();
+        this.setState({ sort, order }, () => this.fetchExpenses(this.props.start, this.props.end));
     }
 
     componentDidUpdate(props) {
+        if (this.props.location.pathname !== props.location.pathname) {
+            console.log('Closing dashboard');
+            this.setState({ sortOpen: false });
+        }
         if (props !== this.props) {
-            this.setState({ type: this.props.match.params.type }, () =>
+            const { match } = this.props;
+            const [sort, order] = this.getSort();
+            this.setState({ type: match.params.type, sort, order }, () =>
                 this.fetchExpenses(this.props.start, this.props.end)
             );
         }
     }
 
+    getSort() {
+        const search = new URLSearchParams(this.props.location.search);
+        return [search.get('sort'), search.get('order')];
+    }
+
     async fetchExpenses(start, end) {
-        const { type } = this.state;
-        const res = await fetch(`/api/users/expenses/summary/${type}?start=${start}&end=${end}`);
+        console.log('Getting expenses');
+        const { type, sort, order } = this.state;
+        const res = await fetch(
+            `/api/users/expenses/summary/${type}?start=${start}&end=${end}&sort=${sort}&order=${order}`
+        );
         const data = await res.json();
-        console.log(data);
-        // data.expenses.forEach(el => console.log(el));
         this.setState({ expenses: data });
     }
 
     render() {
         const { classes } = this.props;
-        const { expenses, type } = this.state;
+        const { expenses, type, sortOpen } = this.state;
         let total = 0;
         return (
             <div className={classes.container}>
-                <Header title={`Expenses by ${type === 'cat' ? 'Category' : 'Store'}`} />
+                <Header
+                    setOpen={() => this.setState({ sortOpen: !sortOpen })}
+                    open={sortOpen}
+                    title={`Expenses by ${type === 'cat' ? 'Category' : 'Store'}`}
+                    history={this.props.history}
+                    type={'aggregate'}
+                />
                 <div className={classes.expenseList}>
                     {expenses.length === 0 ? (
                         <label>{`No expenses for ${
@@ -64,7 +90,7 @@ class ExpensesAggregates extends Component {
                     ) : null}
                     {expenses.map(el => {
                         total += el.amount;
-                        return <AggregateSummary type={type} el={el} />;
+                        return <AggregateSummary key={el.id} type={type} el={el} />;
                     })}
                 </div>
                 <Summary total={total} history={this.props.history} />
@@ -76,7 +102,6 @@ class ExpensesAggregates extends Component {
 const mapStateToProps = state => {
     const { date } = state;
     const { start, end } = date.period;
-    console.log(start, end);
     return { date, start, end };
 };
 

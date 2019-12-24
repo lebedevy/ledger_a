@@ -3,6 +3,8 @@ const router = express.Router();
 const db = require('../models');
 const checkAuth = require('../middleware/auth');
 const validateExpense = require('../middleware/validateExpense');
+const getSortAggregate = require('../middleware/getSortAggregate');
+const getSortSummary = require('../middleware/getSortSummary');
 
 router.post('/add', checkAuth, validateExpense, async (req, res, next) => {
     console.info('Adding expense...');
@@ -107,69 +109,51 @@ router.post('/edit/:id', checkAuth, validateExpense, async (req, res, next) => {
     });
 });
 
-router.get('/summary', checkAuth, async (req, res, next) => {
+router.get('/summary', checkAuth, getSortSummary, async (req, res, next) => {
     console.info('Serving expense summary');
-    console.log(req.query);
+    console.log(req.sortOption);
     const where = { user_id: req.user.id };
     if (req.query.start && req.query.end) {
         where.date = { [db.Sequelize.Op.between]: [req.query.start, req.query.end] };
     }
     const expenses = await db.expenses.findAll({
         where,
-        order: ['date'],
+        order: db.sequelize.literal(req.sortOption),
         include: [db.categories, db.stores],
     });
-    // console.log(req.user);
-    // console.log(expenses);
     res.status(200).send({ expenses: expenses });
 });
 
-router.get('/summary/:type', checkAuth, async (req, res, next) => {
+router.get('/summary/:type', checkAuth, getSortAggregate, async (req, res, next) => {
     const { type } = req.params;
-    console.info('Serving aggregated summary ', type);
+    console.info('Serving aggregated summary type: ', type);
+    console.info(req.sortOption);
     const where = { user_id: req.user.id };
     if (req.query.start && req.query.end) {
         where.date = { [db.Sequelize.Op.between]: [req.query.start, req.query.end] };
     }
-    // const expenses = await db.expenses.findAll({
-    //     where: { user_id: 1 },
-    //     include: [{ model: db.stores, attributes: [] }],
-    //     group: 'store_id',
-    //     attributes: ['store_id', [db.sequelize.fn('sum', db.sequelize.col('amount')), 'amount']],
-    // });
-    const expenses =
+
+    const resources =
         type === 'cat'
-            ? await db.categories.findAll({
-                  attributes: [
-                      'id',
-                      'category_name',
-                      [db.sequelize.fn('sum', db.sequelize.col('amount')), 'amount'],
-                  ],
-                  include: [
-                      {
-                          model: db.expenses,
-                          attributes: [],
-                          where,
-                      },
-                  ],
-                  group: 'categories.id',
-              })
-            : await db.stores.findAll({
-                  attributes: [
-                      'id',
-                      'store_name',
-                      [db.sequelize.fn('sum', db.sequelize.col('amount')), 'amount'],
-                  ],
-                  include: [
-                      {
-                          model: db.expenses,
-                          attributes: [],
-                          where,
-                      },
-                  ],
-                  group: 'stores.id',
-              });
-    // console.log(expenses);
+            ? { table: 'categories', column: 'category_name', group: 'categories.id' }
+            : { table: 'stores', column: 'store_name', group: 'stores.id' };
+
+    const expenses = await db[resources.table].findAll({
+        attributes: [
+            'id',
+            resources.column,
+            [db.sequelize.fn('sum', db.sequelize.col('amount')), 'amount'],
+        ],
+        include: [
+            {
+                model: db.expenses,
+                attributes: [],
+                where,
+            },
+        ],
+        group: resources.group,
+        order: db.sequelize.literal(req.sortOption),
+    });
     res.status(200).send(expenses);
 });
 
