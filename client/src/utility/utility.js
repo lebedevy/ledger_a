@@ -9,3 +9,8 @@ export function getCurrencyFormat(number) {
         currency: 'USD',
     }).format(Number(number).toFixed(2))}`;
 }
+
+export function getSort(URLSearch) {
+    const search = new URLSearchParams(URLSearch);
+    return [search.get('sort'), search.get('order')];
+}

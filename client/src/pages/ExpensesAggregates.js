@@ -5,6 +5,7 @@ import { withStyles } from '@material-ui/styles';
 import Summary from '../components/Summary';
 import AggregateSummary from '../components/AggregateSummary';
 import Header from '../components/Header';
+import { getSort } from '../utility/utility';
 
 const styles = theme => ({
     container: {
@@ -36,7 +37,7 @@ class ExpensesAggregates extends Component {
     };
 
     componentDidMount() {
-        const [sort, order] = this.getSort();
+        const [sort, order] = getSort(this.props.location.search);
         this.setState({ sort, order }, () => this.fetchExpenses(this.props.start, this.props.end));
     }
 
@@ -47,16 +48,11 @@ class ExpensesAggregates extends Component {
         }
         if (props !== this.props) {
             const { match } = this.props;
-            const [sort, order] = this.getSort();
+            const [sort, order] = getSort(this.props.location.search);
             this.setState({ type: match.params.type, sort, order }, () =>
                 this.fetchExpenses(this.props.start, this.props.end)
             );
         }
-    }
-
-    getSort() {
-        const search = new URLSearchParams(this.props.location.search);
-        return [search.get('sort'), search.get('order')];
     }
 
     async fetchExpenses(start, end) {

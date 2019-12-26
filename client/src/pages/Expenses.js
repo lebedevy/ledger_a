@@ -5,6 +5,7 @@ import Summary from '../components/Summary';
 import ExpenseSummary from '../components/ExpenseSummary';
 import ExpenseFull from '../components/ExpenseFull';
 import Header from '../components/Header';
+import { getSort } from '../utility/utility';
 
 const styles = theme => ({
     container: {
@@ -30,23 +31,18 @@ class Expenses extends Component {
     state = { expenses: [], openSort: false, expand: null, sort: null, order: null };
 
     componentDidMount() {
-        const [sort, order] = this.getSort();
+        const [sort, order] = getSort(this.props.location.search);
         this.setState({ sort, order }, () => this.getExpenses(this.props.start, this.props.end));
     }
 
     componentDidUpdate(prevProps) {
         // if (this.props.start !== prevProps.start || this.props.end !== prevProps.end) {
         if (this.props !== prevProps) {
-            const [sort, order] = this.getSort();
+            const [sort, order] = getSort(this.props.location.search);
             this.setState({ sort, order }, () =>
                 this.getExpenses(this.props.start, this.props.end)
             );
         }
-    }
-
-    getSort() {
-        const search = new URLSearchParams(this.props.location.search);
-        return [search.get('sort'), search.get('order')];
     }
 
     async getExpenses(start, end) {

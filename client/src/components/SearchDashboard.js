@@ -4,6 +4,7 @@ import { TextField, Select, MenuItem, FormControl } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/styles';
 import clsx from 'clsx';
 import { setPeriod } from '../redux/actions';
+import { getSort } from '../utility/utility';
 
 const styles = {
     container: {
@@ -47,7 +48,6 @@ class Dashboard extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        console.log(this.props);
         // Reset params on page change
         if (prevProps.history.location.pathname !== this.props.history.location.pathname) {
             this.setUpComponent();
@@ -55,7 +55,7 @@ class Dashboard extends Component {
     }
 
     setUpComponent() {
-        const [sortName, orderName] = this.getSort();
+        const [sortName, orderName] = getSort(this.props.history.location.search);
         const { type } = this.state;
         let sort = 0,
             order = type === 'aggregate' ? 1 : 0;
@@ -64,14 +64,10 @@ class Dashboard extends Component {
             if (options[type].includes(capitalSort)) sort = options[type].indexOf(capitalSort);
         }
         if (orderName) order = orderName === 'asc' ? 0 : 1;
-        console.log(sortName, orderName, sort, order, type);
         this.setState({ order, sort });
     }
 
     updateSort() {
-        // console.log(sort, order, type);
-        // console.log(history.location);
-        console.log(this.getSort());
         const { sort, order, type } = this.state;
         const search = new URLSearchParams();
         search.set('sort', options[type][sort].toLowerCase());
@@ -79,11 +75,6 @@ class Dashboard extends Component {
         let path = this.props.history.location.pathname;
         if (path.slice(-1) === '/') path = this.props.history.location.pathname.slice(0, -1);
         this.props.history.push(path + '?' + search.toString());
-    }
-
-    getSort() {
-        const search = new URLSearchParams(this.props.history.location.search);
-        return [search.get('sort'), search.get('order')];
     }
 
     render() {
