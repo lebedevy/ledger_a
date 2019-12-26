@@ -32,7 +32,6 @@ const styles = theme => ({
 class App extends Component {
     render() {
         const { classes, user } = this.props;
-        console.log(this.props);
         return (
             <Router className={classes.container}>
                 {user == null ? (

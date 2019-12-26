@@ -64,9 +64,6 @@ class Expenses extends Component {
         console.info('Getting expenses');
         const { start, end } = this.props;
         const { sort, order } = this.state;
-        console.log(
-            `/api/users/expenses/summary?start=${start}&end=${end}&sort=${optionsLower[sort]}&order=${orderDir[order]}`
-        );
         const res = await fetch(
             `/api/users/expenses/summary?start=${start}&end=${end}&sort=${optionsLower[sort]}&order=${orderDir[order]}`
         );
@@ -151,7 +148,6 @@ class Expenses extends Component {
 const mapStateToProps = state => {
     const { date } = state;
     const { start, end } = date.period;
-    console.log(start, end);
     return { date, start, end };
 };
 

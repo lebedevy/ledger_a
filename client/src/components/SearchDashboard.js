@@ -67,7 +67,6 @@ function Dashboard({ setSort, setOrder, sort, order, options }) {
 const mapStateToProps = state => {
     const { date } = state;
     const { start, end } = date.period;
-    console.log(start, end);
     return { start, end };
 };
 

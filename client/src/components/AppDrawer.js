@@ -23,7 +23,6 @@ function AppDrawer({ open, closeDrawer, history }) {
     const classes = useStyles();
 
     function navTo(location) {
-        console.log(location);
         history.push(location);
         closeDrawer();
     }

@@ -65,7 +65,6 @@ class AddExpense extends Component {
 
     async addExpense() {
         const { amount, store, category, date } = this.state;
-        console.log(amount, store, category, date);
         const res = await fetch('/api/users/expenses/add', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -74,7 +73,7 @@ class AddExpense extends Component {
             }),
         });
         const data = await res.json();
-        console.log(res, data);
+        // console.log(res, data);
         if (res.status === 200) this.props.history.push('/users/expenses/summary');
     }
 
@@ -106,7 +105,6 @@ class AddExpense extends Component {
     }
 
     updateField(field, value) {
-        console.log(field, value);
         this.setState({ [field]: value });
     }
 
