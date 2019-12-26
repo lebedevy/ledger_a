@@ -16,9 +16,8 @@ const useStyles = makeStyles({
     },
 });
 
-export default function Header({ setOpen, open, title, history, type }) {
+export default function Header({ setOpen, open, title, dashboard }) {
     const classes = useStyles();
-    console.log(open);
     return (
         <div className={classes.headerContainer}>
             <div className={classes.header}>
@@ -27,7 +26,7 @@ export default function Header({ setOpen, open, title, history, type }) {
                     <SortIcon className={classes.icon} />
                 </IconButton>
             </div>
-            {open ? <Dashboard history={history} type={type} /> : null}
+            {open ? <Dashboard {...dashboard} /> : null}
         </div>
     );
 }

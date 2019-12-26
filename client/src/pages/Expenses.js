@@ -5,7 +5,7 @@ import Summary from '../components/Summary';
 import ExpenseSummary from '../components/ExpenseSummary';
 import ExpenseFull from '../components/ExpenseFull';
 import Header from '../components/Header';
-import { getSort } from '../utility/utility';
+import { getSort, getSortIndexes } from '../utility/utility';
 
 const styles = theme => ({
     container: {
@@ -27,29 +27,48 @@ const styles = theme => ({
     },
 });
 
+const options = ['Date', 'Amount', 'Store', 'Category'];
+const optionsLower = options.map(el => el.toLowerCase());
+const orderDir = ['asc', 'desc'];
+
 class Expenses extends Component {
-    state = { expenses: [], openSort: false, expand: null, sort: null, order: null };
+    state = { expenses: [], openSort: false, expand: null, sort: 0, order: 0 };
 
     componentDidMount() {
-        const [sort, order] = getSort(this.props.location.search);
-        this.setState({ sort, order }, () => this.getExpenses(this.props.start, this.props.end));
-    }
-
-    componentDidUpdate(prevProps) {
-        // if (this.props.start !== prevProps.start || this.props.end !== prevProps.end) {
-        if (this.props !== prevProps) {
-            const [sort, order] = getSort(this.props.location.search);
-            this.setState({ sort, order }, () =>
-                this.getExpenses(this.props.start, this.props.end)
+        const [sort, order] = getSortIndexes(optionsLower, ...getSort(this.props.location.search));
+        if (sort || order) {
+            this.setState({ sort: sort == null ? 0 : sort, order: order == null ? 0 : order }, () =>
+                this.fetchExpenses()
             );
+        } else {
+            this.fetchExpenses();
         }
     }
 
-    async getExpenses(start, end) {
-        console.info('Getting expenses');
+    updateFilters() {
+        this.fetchExpenses();
+        this.updateURL();
+    }
+
+    updateURL() {
         const { sort, order } = this.state;
+        const search = new URLSearchParams();
+        search.set('sort', optionsLower[sort].toLowerCase());
+        search.set('order', order === 1 ? 'desc' : 'asc');
+        let path = this.props.location.pathname;
+        if (path.slice(-1) === '/') path = this.props.history.location.pathname.slice(0, -1);
+        this.props.history.push(path + '?' + search.toString());
+    }
+
+    async fetchExpenses() {
+        console.info('Getting expenses');
+        const { start, end } = this.props;
+        const { sort, order } = this.state;
+        console.log(
+            `/api/users/expenses/summary?start=${start}&end=${end}&sort=${optionsLower[sort]}&order=${orderDir[order]}`
+        );
         const res = await fetch(
-            `/api/users/expenses/summary?start=${start}&end=${end}&sort=${sort}&order=${order}`
+            `/api/users/expenses/summary?start=${start}&end=${end}&sort=${optionsLower[sort]}&order=${orderDir[order]}`
         );
         if (res.status === 200) {
             const data = await res.json();
@@ -85,7 +104,7 @@ class Expenses extends Component {
 
     render() {
         const { classes } = this.props;
-        const { expenses, expand, openSort } = this.state;
+        const { expenses, expand, openSort, sort, order } = this.state;
         let total = 0;
         return (
             <div className={classes.container}>
@@ -93,8 +112,13 @@ class Expenses extends Component {
                     open={openSort}
                     setOpen={() => this.setState({ openSort: !openSort })}
                     title="Expenses"
-                    history={this.props.history}
-                    type="summary"
+                    dashboard={{
+                        setSort: val => this.setState({ sort: val }, this.updateFilters),
+                        setOrder: val => this.setState({ order: val }, this.updateFilters),
+                        sort,
+                        order,
+                        options,
+                    }}
                 />
                 <div className={classes.expenseList}>
                     {expenses.length === 0 ? <label>No recorded expenses</label> : null}
