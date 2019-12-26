@@ -61,6 +61,7 @@ class ExpensesAggregates extends Component {
             );
             this.setState(
                 {
+                    sortOpen: false,
                     type: match.params.type,
                     sort: sort == null ? 0 : sort,
                     order: order == null ? 1 : order,
