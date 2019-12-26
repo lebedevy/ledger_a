@@ -38,17 +38,17 @@ function Navbar({ openDrawer, history }) {
     return (
         <AppBar>
             <Toolbar className={classes.appbar}>
-                <IconButton>
-                    <MenuIcon className={classes.icon} onClick={openDrawer} />
+                <IconButton onClick={openDrawer}>
+                    <MenuIcon className={classes.icon} />
                 </IconButton>
-                <IconButton>
-                    <AccountCircleIcon className={classes.icon} onClick={openProfile} />
-                    <Menu anchorEl={targetEl} open={Boolean(targetEl)} onClose={closeProfile}>
-                        <MenuItem button onClick={logoutUser}>
-                            Logout
-                        </MenuItem>
-                    </Menu>
+                <IconButton onClick={openProfile}>
+                    <AccountCircleIcon className={classes.icon} />
                 </IconButton>
+                <Menu anchorEl={targetEl} open={Boolean(targetEl)} onClose={closeProfile}>
+                    <MenuItem button onClick={logoutUser}>
+                        Logout
+                    </MenuItem>
+                </Menu>
             </Toolbar>
         </AppBar>
     );
