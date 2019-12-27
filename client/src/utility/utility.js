@@ -4,10 +4,16 @@ export function getFormatedDate(date) {
 }
 
 export function getCurrencyFormat(number) {
-    return `${new Intl.NumberFormat({
-        style: 'currency',
-        currency: 'USD',
-    }).format(Number(number).toFixed(2))}`;
+    let num = Math.round(number * 100) / 100; // Round to 2
+    let formatted = Number(num).toLocaleString(); // Add ',' seperators
+    //   Ensure exactly two decimal places in number & return
+    let temp = formatted.split('.');
+    if (temp.length > 1) {
+        let decimal = temp[1].slice(0, 2);
+        if (decimal.length < 2) decimal += '0';
+        return `${temp[0]}.${decimal}`;
+    }
+    return formatted + '.00';
 }
 
 export function getSort(URLSearch) {
