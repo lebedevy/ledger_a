@@ -170,9 +170,12 @@ function DailySummary({ start, end, history }) {
         result.unshift(...offset);
 
         // Add padding to the back
-        let backPadding = [];
-        for (let i = 0; i < 7 - (result.length % 7); i++) backPadding.push(new PaddingCell());
-        result.push(...backPadding);
+        const padding = 7 - (result.length % 7);
+        if (padding < 7) {
+            let backPadding = [];
+            for (let i = 0; i < padding; i++) backPadding.push(new PaddingCell());
+            result.push(...backPadding);
+        }
 
         setAverage({ average: total / range, length: range, total });
         setStep(Math.ceil(max.amount / 4));
