@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 import { getCurrencyFormat } from '../utility/utility';
+import AddExpenseButton from '../components/AddExpenseButton';
 
 class EmptyCell {
     constructor(date) {
@@ -14,6 +15,7 @@ class EmptyCell {
 class PaddingCell {
     constructor(date) {
         this.date = date;
+        this.type = 'padding';
     }
 }
 
@@ -52,13 +54,23 @@ const useStyles = makeStyles({
         gridAutoFlow: 'column',
         gridTemplateRows: `repeat(7, ${cellSize}px)`,
         gridTemplateColumns: `repeat( auto-fit, minmax(${cellSize}px, ${cellSize}px) )`,
-        gridGap: '1px',
+        gridGap: '2px',
         overflowX: 'auto',
+    },
+    error: {
+        color: 'red',
+        fontWeight: 'bold',
+        fontSize: '1.5em',
+        display: 'block',
+        padding: '10px 0',
     },
     day: {
         height: `${cellSize}px`,
         width: `${cellSize}px`,
         background: 'gray',
+    },
+    paddingDay: {
+        background: '#ADBABD',
     },
     summaryItem: {
         display: 'flex',
@@ -80,7 +92,7 @@ const useStyles = makeStyles({
         // gridAutoFlow: 'column',
         // gridTemplateRows: 'repeat(7, 10px)',
         gridTemplateColumns: `repeat( auto-fit, minmax(${cellSize}px, ${cellSize}px) )`,
-        gridGap: '1px',
+        gridGap: '2px',
     },
     empty: {
         background: 'gray',
@@ -96,37 +108,32 @@ const useStyles = makeStyles({
     },
 });
 
-function DailySummary({ start, end }) {
+function DailySummary({ start, end, history }) {
     const classes = useStyles();
     const [data, setData] = useState([]);
     const [step, setStep] = useState(0);
-    const [max, setMax] = useState({ length: 0, average: 0 });
-    const [average, setAverage] = useState(0);
+    const [max, setMax] = useState({ amount: 0, date: start });
+    const [average, setAverage] = useState({ length: 0, average: 0, total: 0 });
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         fetchDailySummary();
     }, [start, end]);
 
     async function fetchDailySummary() {
-        const res = await fetch(`/api/users/expenses/summary/daily?start=${start}&end=${end}`);
-        console.log(res);
+        const res = await fetch(`/api/users/expenses/overview?start=${start}&end=${end}`);
         if (res.ok) {
             const data = await res.json();
-            // console.log(data);
-            formatData(data.expenses);
-        } else {
-            console.error('Error fetching data');
+            if (data.expenses) {
+                formatData(data.expenses);
+                return;
+            }
         }
+        console.error('Error fetching data');
+        setError('There was an error fetching your expense data');
     }
 
     function formatData(data) {
-        // append empty days to bedining
-        // CHECK FOR LENGTH OF DATA
-        // const offset = [];
-        // for (let i = 0; i < offsetCount; i++) {
-        //     offset.push(new PaddingCell());
-        // }
-
         // Insert zero days in between
         const [yearS, monthS, dayS] = start.split('-');
         const startDate = new Date(Date.UTC(yearS, monthS - 1, dayS));
@@ -135,7 +142,7 @@ function DailySummary({ start, end }) {
 
         let result = [];
         let total = 0;
-        let max = { amount: 0, date: null };
+        let max = { amount: 0, date: start };
         for (let i = 0, j = 0; i < range; i++) {
             const date = new Date(
                 startDate.getUTCFullYear(),
@@ -145,7 +152,7 @@ function DailySummary({ start, end }) {
             let dateStr = `${date.getUTCFullYear()}-${(date.getUTCMonth() < 9 ? '0' : '') +
                 (date.getUTCMonth() + 1)}-${(date.getUTCDate() < 10 ? '0' : '') +
                 date.getUTCDate()}`;
-            if (data[j]['date'] === dateStr) {
+            if (data[j] && data[j]['date'] === dateStr) {
                 result.push(data[j]);
                 max = data[j]['amount'] > max.amount ? data[j] : max;
                 total += data[j]['amount'];
@@ -154,6 +161,18 @@ function DailySummary({ start, end }) {
                 result.push(new EmptyCell(dateStr));
             }
         }
+
+        // Add padding to the front
+        let offset = [];
+        for (let i = 0; i < offsetCount; i++) {
+            offset.push(new PaddingCell());
+        }
+        result.unshift(...offset);
+
+        // Add padding to the back
+        let backPadding = [];
+        for (let i = 0; i < 7 - (result.length % 7); i++) backPadding.push(new PaddingCell());
+        result.push(...backPadding);
 
         setAverage({ average: total / range, length: range, total });
         setStep(Math.ceil(max.amount / 4));
@@ -166,43 +185,8 @@ function DailySummary({ start, end }) {
             <div className={classes.page}>
                 <h1>Period Summary</h1>
                 <label>{`From ${start} to  ${end}`}</label>
-                <div className={classes.spendingMap}>
-                    <div className={classes.period}>
-                        {data.map(el => (
-                            <div
-                                key={el.date}
-                                className={clsx(
-                                    classes.day,
-                                    classes[
-                                        dayGrade[
-                                            Math.ceil(el.amount / step) > 3
-                                                ? 3
-                                                : Math.ceil(el.amount / step)
-                                        ]
-                                    ]
-                                )}
-                                title={`${el.date}\n$${el.amount}`}
-                            />
-                        ))}
-                    </div>
-                    <div className={classes.legend}>
-                        {/* <label>less</label> */}
-                        <div className={clsx(classes.day, classes.empty)} title={0} />
-                        <div
-                            className={clsx(classes.day, classes.first)}
-                            title={`upto $${getCurrencyFormat(step)}`}
-                        />
-                        <div
-                            className={clsx(classes.day, classes.second)}
-                            title={`upto $${getCurrencyFormat(step * 2)}`}
-                        />
-                        <div
-                            className={clsx(classes.day, classes.third)}
-                            title={`over $${getCurrencyFormat(step * 3)}`}
-                        />
-                        {/* <label>more</label> */}
-                    </div>
-                </div>
+                {error ? <label className={classes.error}>{error}</label> : null}
+                <SpendingMap data={data} step={step} />
                 <div>
                     <div className={classes.summaryItem}>
                         <h2>Max Daily Expense</h2>
@@ -217,6 +201,7 @@ function DailySummary({ start, end }) {
                     </div>
                 </div>
             </div>
+            <AddExpenseButton history={history} />
         </div>
     );
 }
@@ -228,3 +213,50 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps)(DailySummary);
+
+function SpendingMap({ data, step }) {
+    const classes = useStyles();
+    return (
+        <div className={classes.spendingMap}>
+            <div className={classes.period}>
+                {data.map((el, ind) =>
+                    el.type === 'padding' ? (
+                        <div key={ind} className={clsx(classes.day, classes.paddingDay)} />
+                    ) : (
+                        <div
+                            key={el.date}
+                            className={clsx(
+                                classes.day,
+                                classes[
+                                    dayGrade[
+                                        Math.ceil(el.amount / step) > 3
+                                            ? 3
+                                            : Math.ceil(el.amount / step)
+                                    ]
+                                ]
+                            )}
+                            title={`${el.date}\n$${el.amount}`}
+                        />
+                    )
+                )}
+            </div>
+            <div className={classes.legend}>
+                {/* <label>less</label> */}
+                <div className={clsx(classes.day, classes.empty)} title={0} />
+                <div
+                    className={clsx(classes.day, classes.first)}
+                    title={`upto $${getCurrencyFormat(step)}`}
+                />
+                <div
+                    className={clsx(classes.day, classes.second)}
+                    title={`upto $${getCurrencyFormat(step * 2)}`}
+                />
+                <div
+                    className={clsx(classes.day, classes.third)}
+                    title={`over $${getCurrencyFormat(step * 3)}`}
+                />
+                {/* <label>more</label> */}
+            </div>
+        </div>
+    );
+}

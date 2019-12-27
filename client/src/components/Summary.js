@@ -4,6 +4,7 @@ import { Fab } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import { getCurrencyFormat } from '../utility/utility';
 import { makeStyles } from '@material-ui/styles';
+import AddExpenseButton from './AddExpenseButton';
 
 const useStyles = makeStyles({
     summary: {
@@ -13,11 +14,6 @@ const useStyles = makeStyles({
     },
     total: {
         fontWeight: 'bold',
-    },
-    addExpense: {
-        position: 'absolute',
-        right: '10px',
-        bottom: '10px',
     },
     dates: {
         display: 'block',
@@ -35,14 +31,7 @@ function Summary({ total, start, end, history }) {
             <label className={classes.total}>${getCurrencyFormat(total)}</label>
             <br />
             <label className={classes.dates}>{`${start} to ${end}`}</label>
-            <Fab
-                className={classes.addExpense}
-                size="medium"
-                color="secondary"
-                onClick={() => history.push('/users/expenses/add')}
-            >
-                <AddIcon />
-            </Fab>
+            <AddExpenseButton history={history} />
         </div>
     );
 }

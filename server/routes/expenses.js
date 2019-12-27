@@ -124,7 +124,7 @@ router.get('/summary', checkAuth, getSortSummary, async (req, res, next) => {
     res.status(200).send({ expenses: expenses });
 });
 
-router.get('/summary/daily', checkAuth, async (req, res, next) => {
+router.get('/overview', checkAuth, async (req, res, next) => {
     console.log('Serving daily summary');
     const where = { user_id: req.user.id };
     if (req.query.start && req.query.end) {
