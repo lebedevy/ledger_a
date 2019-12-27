@@ -124,6 +124,22 @@ router.get('/summary', checkAuth, getSortSummary, async (req, res, next) => {
     res.status(200).send({ expenses: expenses });
 });
 
+router.get('/summary/daily', checkAuth, async (req, res, next) => {
+    console.log('Serving daily summary');
+    const where = { user_id: req.user.id };
+    if (req.query.start && req.query.end) {
+        where.date = { [db.Sequelize.Op.between]: [req.query.start, req.query.end] };
+    }
+    const expenses = await db.expenses.findAll({
+        where,
+        attributes: ['date', [db.sequelize.fn('sum', db.sequelize.col('amount')), 'amount']],
+        group: 'date',
+        order: ['date'],
+    });
+    console.log(Object.keys(expenses));
+    return res.status(200).send({ expenses });
+});
+
 router.get('/summary/:type', checkAuth, getSortAggregate, async (req, res, next) => {
     const { type } = req.params;
     console.info('Serving aggregated summary type: ', type);

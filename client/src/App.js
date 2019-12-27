@@ -13,6 +13,7 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import LandingPage from './pages/LandingPage';
 import EditExpense from './pages/EditExpense';
+import DailySummary from './pages/DailySummary';
 
 const styles = theme => ({
     container: {
@@ -48,6 +49,11 @@ class App extends Component {
                         <Route component={Navbar} />
                         <Route component={AppDrawer} />
                         <Switch>
+                            <Route
+                                exact
+                                path="/users/expenses/summary/daily"
+                                component={DailySummary}
+                            />
                             <Route exact path="/users/expenses/summary" component={Expenses} />
                             <Route exact path="/users/expenses/add" component={AddExpense} />
                             <Route exact path="/users/expenses/edit/:id" component={EditExpense} />
