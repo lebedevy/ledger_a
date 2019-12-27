@@ -31,6 +31,9 @@ function AppDrawer({ open, closeDrawer, history }) {
         <Drawer open={open} onClose={closeDrawer}>
             <List className={classes.drawer}>
                 <ListItem className={classes.header}>Expenses Summary</ListItem>
+                <ListItem button onClick={() => navTo('/users/expenses/overview/')}>
+                    Overview
+                </ListItem>
                 <ListItem button onClick={() => navTo('/users/expenses/summary/')}>
                     By period
                 </ListItem>

@@ -13,6 +13,7 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import LandingPage from './pages/LandingPage';
 import EditExpense from './pages/EditExpense';
+import Overview from './pages/Overview';
 
 const styles = theme => ({
     container: {
@@ -48,6 +49,7 @@ class App extends Component {
                         <Route component={Navbar} />
                         <Route component={AppDrawer} />
                         <Switch>
+                            <Route exact path="/users/expenses/overview" component={Overview} />
                             <Route exact path="/users/expenses/summary" component={Expenses} />
                             <Route exact path="/users/expenses/add" component={AddExpense} />
                             <Route exact path="/users/expenses/edit/:id" component={EditExpense} />
@@ -62,7 +64,7 @@ class App extends Component {
                                 render={props => <Merge {...props} />}
                             />
                             <Route>
-                                <Redirect to="/users/expenses/summary/" />
+                                <Redirect to="/users/expenses/overview/" />
                             </Route>
                         </Switch>
                     </div>
