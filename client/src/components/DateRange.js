@@ -1,5 +1,4 @@
 import React from 'react';
-import clsx from 'clsx';
 import { connect } from 'react-redux';
 import { TextField } from '@material-ui/core';
 import { closeDrawer, logout } from '../redux/actions';

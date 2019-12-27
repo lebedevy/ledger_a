@@ -1,7 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Fab } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
 import { getCurrencyFormat } from '../utility/utility';
 import { makeStyles } from '@material-ui/styles';
 import AddExpenseButton from './AddExpenseButton';

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/styles';
 import Summary from '../components/Summary';

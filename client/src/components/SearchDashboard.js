@@ -1,8 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { TextField, Select, MenuItem, FormControl } from '@material-ui/core';
+import { Select, MenuItem } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import clsx from 'clsx';
 import { setPeriod } from '../redux/actions';
 
 const useStyles = makeStyles({

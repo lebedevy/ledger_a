@@ -44,7 +44,7 @@ export default function Login({ history }) {
     const [loginError, setLoginError] = useState(null);
     const classes = useStyles();
 
-    useEffect(() => setLoaded(true));
+    useEffect(() => setLoaded(true), []);
 
     async function submit(e) {
         e.preventDefault();

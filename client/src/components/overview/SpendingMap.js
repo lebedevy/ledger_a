@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
 import { getCurrencyFormat } from '../../utility/utility';

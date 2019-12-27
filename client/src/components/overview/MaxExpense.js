@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import clsx from 'clsx';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { getCurrencyFormat } from '../../utility/utility';
 import ExpenseSummary from '../ExpenseSummary';
