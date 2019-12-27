@@ -34,18 +34,17 @@ export default function MaxExpense({ max }) {
     const [expenses, setExpenses] = useState(null);
 
     async function fetchExpenseSummary() {
-        console.log(max);
         const res = await fetch(
             `/api/users/expenses/summary?start=${max.date}&end=${max.date}&sort=amount&order=desc`
         );
         if (res.status === 200) {
             const data = await res.json();
-            console.log(data);
-            setExpenses(data.expenses);
-            // this.setState({ expenses: data.expenses });
-        } else {
-            console.error('Error fetching results');
+            if (data.expenses) {
+                setExpenses(data.expenses);
+                return;
+            }
         }
+        console.error('Error fetching results');
     }
 
     return (
@@ -80,7 +79,7 @@ const useStylesDetails = makeStyles({
 function Details({ expenses }) {
     const classes = useStylesDetails();
     return expenses ? (
-        expenses.map(el => <ExpenseSummary el={el} />)
+        expenses.map(el => <ExpenseSummary key={el.id} el={el} />)
     ) : (
         <div className={classes.container}>
             <CircularProgress />
