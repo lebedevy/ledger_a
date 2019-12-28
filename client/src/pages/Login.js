@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Link } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { EmailInput, PasswordInput } from '../components/ContainedInput';
+import LoadingBackdrop from './LoadingBackdrop';
 
 // const backgroundImage = '/images/fabian-blank-pElSkGRA2NU-unsplash.jpg';
 const backgroundImage = '/images/fabian-blank-pElSkGRA2NU-unsplash-min.jpg';
@@ -38,6 +39,7 @@ const useStyles = makeStyles({
 });
 
 export default function Login({ history }) {
+    const [waitingRes, setWaitingRes] = useState(false);
     const [loaded, setLoaded] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -48,20 +50,24 @@ export default function Login({ history }) {
 
     async function submit(e) {
         e.preventDefault();
-        console.log(email, password);
+        setWaitingRes(true);
         const res = await fetch('/api/users/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password }),
         });
-        console.log(res, history);
         if (res.status === 200) history.go('/users/login');
-        if (res.status === 400) setLoginError('Please ensure your password and email are correct');
-        if (res.status === 500) setLoginError('Server error. Please try again later.');
+        else {
+            if (res.status === 400)
+                setLoginError('Please ensure your password and email are correct');
+            if (res.status === 500) setLoginError('Server error. Please try again later.');
+            setWaitingRes(false);
+        }
     }
 
     return (
         <form className={classes.container} onSubmit={e => submit(e)}>
+            <LoadingBackdrop waitingRes={waitingRes} />
             {loaded ? (
                 <div className={classes.background}>
                     <img
@@ -75,7 +81,13 @@ export default function Login({ history }) {
             <EmailInput value={email} update={value => setEmail(value)} />
             <PasswordInput value={password} update={value => setPassword(value)} />
             {loginError ? <label className={classes.error}>{loginError}</label> : null}
-            <Button className={classes.button} type="submit" variant="contained" color="primary">
+            <Button
+                disabled={waitingRes}
+                className={classes.button}
+                type="submit"
+                variant="contained"
+                color="primary"
+            >
                 Login
             </Button>
             <Link href="/users/register">New? Register here</Link>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TextField, Button, Link } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { EmailInput, PasswordInput } from '../components/ContainedInput';
+import LoadingBackdrop from './LoadingBackdrop';
 
 const backgroundImage = '/images/kim-gorga-bodXa3yTF0w-unsplash-min.jpg';
 // const backgroundImage = '/images/kim-gorga-bodXa3yTF0w-unsplash.jpg';
@@ -42,9 +43,16 @@ const useStyles = makeStyles({
     header: {
         color: '#ffffff',
     },
+    error: {
+        padding: '10px 0',
+        color: 'red',
+        fontWeight: '500',
+        fontSize: '1.1em',
+    },
 });
 
 export default function Register({ history }) {
+    const [waitingRes, setWaitingRes] = useState(false);
     const [loaded, setLoaded] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -58,22 +66,33 @@ export default function Register({ history }) {
 
     async function submit(e) {
         e.preventDefault();
-        console.log(email, password, confirm, firstName, lastName);
-        if (confirm !== password) setConfirmError('Please ensure passwords match!');
+        if (confirm !== password) setConfirmError('Please ensure passwords match');
         else {
             setConfirmError(null);
+            setWaitingRes(true);
             const res = await fetch('/api/users/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ firstName, lastName, email, password, confirm }),
             });
-            console.log(res, history);
-            if (res.status === 200) history.push('/users/login');
+            // Redirect to login on success, otherwise display fail message
+            if (res.status === 200) {
+                history.push('/users/login');
+            } else {
+                let message = await res.json();
+                if (message) setConfirmError(message.message);
+                else
+                    setConfirmError(
+                        'There was an error processing your request. Please try again later'
+                    );
+            }
+            setWaitingRes(false);
         }
     }
 
     return (
         <form className={classes.container} onSubmit={e => submit(e)}>
+            <LoadingBackdrop waitingRes={waitingRes} />
             {loaded ? (
                 <div className={classes.background}>
                     <img
@@ -108,15 +127,20 @@ export default function Register({ history }) {
                 className={classes.input}
                 value={confirm}
                 onChange={e => setConfirm(e.target.value)}
-                error={Boolean(confirmError)}
-                helperText={confirmError}
                 placeholder="Confirm password"
                 type="password"
                 required
                 margin="dense"
                 variant="outlined"
             />
-            <Button className={classes.button} type="submit" variant="contained" color="primary">
+            {confirmError ? <label className={classes.error}>{confirmError}</label> : null}
+            <Button
+                disabled={waitingRes}
+                className={classes.button}
+                type="submit"
+                variant="contained"
+                color="primary"
+            >
                 Register
             </Button>
             <Link className={classes.header} href="/users/login">
