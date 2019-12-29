@@ -57,6 +57,9 @@ const useStyles = makeStyles({
     selected: {
         border: '1px solid black',
     },
+    muted: {
+        opacity: 0.55,
+    },
 });
 
 export default function SpendingMap({ data, step, setDay, day }) {
@@ -76,7 +79,8 @@ export default function SpendingMap({ data, step, setDay, day }) {
                             key={el.date}
                             className={clsx(
                                 classes.day,
-                                el.date == day && classes.selected,
+                                day && el.date == day.date && classes.selected,
+                                day && el.date != day.date && classes.muted,
                                 classes[
                                     dayGrade[
                                         Math.ceil(el.amount / step) > 3
