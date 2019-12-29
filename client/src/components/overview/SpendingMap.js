@@ -54,21 +54,29 @@ const useStyles = makeStyles({
     third: {
         background: '#196127',
     },
+    selected: {
+        border: '1px solid black',
+    },
 });
 
-export default function SpendingMap({ data, step }) {
+export default function SpendingMap({ data, step, setDay, day }) {
     const classes = useStyles();
     return (
-        <div className={classes.spendingMap}>
+        <div className={classes.spendingMap} onClick={() => setDay(null)}>
             <div className={classes.period}>
                 {data.map((el, ind) =>
                     el.type === 'padding' ? (
                         <div key={ind} className={clsx(classes.day, classes.paddingDay)} />
                     ) : (
                         <div
+                            onClick={e => {
+                                e.stopPropagation();
+                                setDay(el);
+                            }}
                             key={el.date}
                             className={clsx(
                                 classes.day,
+                                el.date == day && classes.selected,
                                 classes[
                                     dayGrade[
                                         Math.ceil(el.amount / step) > 3

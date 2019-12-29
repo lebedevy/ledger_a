@@ -5,6 +5,7 @@ import { getCurrencyFormat } from '../utility/utility';
 import SpendingMap from '../components/overview/SpendingMap';
 import MaxExpense from '../components/overview/MaxExpense';
 import AddExpenseButton from '../components/AddExpenseButton';
+import DaySummary from '../components/overview/DaySummary';
 
 class EmptyCell {
     constructor(date) {
@@ -68,8 +69,14 @@ function DailySummary({ start, end, history }) {
     const [max, setMax] = useState(null);
     const [average, setAverage] = useState({ length: 0, average: 0, total: 0 });
     const [error, setError] = useState(null);
+    const [day, setDay] = useState(null);
 
     useEffect(() => {
+        // if selected day out of range, reset the daily summary
+        if (day) {
+            const date = new Date(day.date);
+            if (date < new Date(start) || date > new Date(end)) setDay(null);
+        }
         fetchDailySummary();
     }, [start, end]);
 
@@ -142,8 +149,9 @@ function DailySummary({ start, end, history }) {
                 <h1>Period Summary</h1>
                 <label>{`From ${start} to  ${end}`}</label>
                 {error ? <label className={classes.error}>{error}</label> : null}
-                <SpendingMap data={data} step={step} />
+                <SpendingMap data={data} step={step} setDay={setDay} day={day} />
                 <div>
+                    <DaySummary day={day} />
                     <MaxExpense max={max} />
                     <div className={classes.summaryItem}>
                         <h2>Daily Average</h2>

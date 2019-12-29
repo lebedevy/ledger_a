@@ -46,13 +46,8 @@ router.post('/login', async (req, res, next) => {
     const user = await db.user.findOne({
         where: { email },
     });
-    // No such user
-    if (!user)
-        return res.status(400).send({
-            message: 'Please ensure email and password are correct',
-        });
-    // Verify password
-    if (await bcrypt.compare(password, user.dataValues.password)) {
+    // Verify user exists && provided correct password
+    if (user && (await bcrypt.compare(password, user.dataValues.password))) {
         // create JWT
         const token = jwt.sign({ email: user.dataValues.email }, secret);
         // Set cookie

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { getCurrencyFormat } from '../../utility/utility';
 import SummaryDetailsButton from './SummaryDetailsButton';
 import Details from './SummaryDetails';
+import { getCurrencyFormat } from '../../utility/utility';
 
 const useStyles = makeStyles({
     summaryItem: {
@@ -21,19 +21,19 @@ const useStyles = makeStyles({
     },
 });
 
-export default function MaxExpense({ max }) {
+export default function DaySummary({ day }) {
     const classes = useStyles();
     const [expanded, setExpanded] = useState(false);
     const [expenses, setExpenses] = useState(null);
 
     useEffect(() => {
-        if (max) fetchExpenseSummary();
-    }, [max]);
+        if (day) fetchExpenseSummary();
+    }, [day]);
 
     async function fetchExpenseSummary() {
-        console.log('Fetching max expense data');
+        console.log('Fetching day summary');
         const res = await fetch(
-            `/api/users/expenses/summary?start=${max.date}&end=${max.date}&sort=amount&order=desc`
+            `/api/users/expenses/summary?start=${day.date}&end=${day.date}&sort=amount&order=desc`
         );
         if (res.status === 200) {
             const data = await res.json();
@@ -47,18 +47,23 @@ export default function MaxExpense({ max }) {
 
     return (
         <div className={classes.summaryItem}>
-            <h2>Max Daily Expense</h2>
-            <label>{max ? max.date : 'loading...'}</label>
-            <label>{max ? `$${getCurrencyFormat(max.amount)}` : ''}</label>
-            <SummaryDetailsButton setExpanded={setExpanded} expanded={expanded} />
-            {(() => {
-                if (expanded) {
-                    if (expenses == null) fetchExpenseSummary();
-                    return <Details expenses={expenses} />;
-                } else {
-                    return null;
-                }
-            })()}
+            {day == null ? (
+                <h2>Select day to see summary</h2>
+            ) : (
+                <React.Fragment>
+                    <h2>{`Summary for ${day.date}`}</h2>
+                    <label>{`Expenses: $${getCurrencyFormat(day.amount)}`}</label>
+                    <SummaryDetailsButton setExpanded={setExpanded} expanded={expanded} />
+                    {(() => {
+                        if (expanded) {
+                            if (expenses == null) fetchExpenseSummary();
+                            return <Details expenses={expenses} />;
+                        } else {
+                            return null;
+                        }
+                    })()}
+                </React.Fragment>
+            )}
         </div>
     );
 }

@@ -136,7 +136,6 @@ router.get('/overview', checkAuth, async (req, res, next) => {
         group: 'date',
         order: ['date'],
     });
-    console.log(Object.keys(expenses));
     return res.status(200).send({ expenses });
 });
 
