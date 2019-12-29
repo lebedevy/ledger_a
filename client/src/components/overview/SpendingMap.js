@@ -55,7 +55,7 @@ const useStyles = makeStyles({
         background: '#196127',
     },
     selected: {
-        border: '1px solid black',
+        border: '1px solid #00000060',
     },
     muted: {
         opacity: 0.55,

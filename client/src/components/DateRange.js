@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { TextField } from '@material-ui/core';
 import { closeDrawer, logout } from '../redux/actions';
@@ -10,13 +10,6 @@ const useStyles = makeStyles({
         display: 'flex',
         flexDirection: 'column',
         margin: '10px',
-        '& label': {
-            margin: '0 10px 0 5px',
-            fontWeight: 'bold',
-        },
-        '& input': {
-            // width: '130px',
-        },
     },
     option: {
         display: 'flex',
@@ -26,11 +19,44 @@ const useStyles = makeStyles({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
+        '& label': {
+            margin: '0 10px 0 5px',
+            fontWeight: 'bold',
+        },
+    },
+    error: {
+        textAlign: 'center',
+        fontWeight: 'normal',
+        color: '#f44336',
+        fontSize: '0.75em',
     },
 });
 
 function DateRange({ start, end, setPeriod }) {
     const classes = useStyles();
+    const [endError, setEndError] = useState(null);
+    const [startError, setStartError] = useState(null);
+
+    const setEnd = e => {
+        let endDate = e.target.value;
+        if (new Date(endDate) >= new Date(start)) {
+            clearErrors();
+            setPeriod({ end: endDate, start });
+        } else setEndError('Must be before or after start date');
+    };
+
+    const setStart = e => {
+        let startDate = e.target.value;
+        if (new Date(startDate) <= new Date(end)) {
+            clearErrors();
+            setPeriod({ start: startDate, end });
+        } else setStartError('Must be less than or equal to end date');
+    };
+
+    function clearErrors() {
+        setStartError(null);
+        setEndError(null);
+    }
 
     return (
         <div className={classes.container}>
@@ -38,12 +64,13 @@ function DateRange({ start, end, setPeriod }) {
                 <label>From</label>
                 <TextField
                     type="date"
-                    value={start}
-                    variant="outlined"
                     margin="dense"
-                    onChange={e => setPeriod({ start: e.target.value, end })}
+                    variant="outlined"
+                    value={start}
+                    onChange={setStart}
                 />
             </div>
+            {startError ? <label className={classes.error}>{startError}</label> : null}
             <div className={classes.item}>
                 <label>To</label>
                 <TextField
@@ -51,9 +78,10 @@ function DateRange({ start, end, setPeriod }) {
                     margin="dense"
                     variant="outlined"
                     value={end}
-                    onChange={e => setPeriod({ end: e.target.value, start })}
+                    onChange={setEnd}
                 />
             </div>
+            {endError ? <label className={classes.error}>{endError}</label> : null}
         </div>
     );
 }
