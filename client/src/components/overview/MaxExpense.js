@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { getCurrencyFormat } from '../../utility/utility';
 import ExpenseSummary from '../ExpenseSummary';
@@ -32,7 +32,12 @@ export default function MaxExpense({ max }) {
     const [expanded, setExpanded] = useState(false);
     const [expenses, setExpenses] = useState(null);
 
+    useEffect(() => {
+        if (max) fetchExpenseSummary();
+    }, [max]);
+
     async function fetchExpenseSummary() {
+        console.log('Fetching max expense data');
         const res = await fetch(
             `/api/users/expenses/summary?start=${max.date}&end=${max.date}&sort=amount&order=desc`
         );
@@ -49,8 +54,8 @@ export default function MaxExpense({ max }) {
     return (
         <div className={classes.summaryItem}>
             <h2>Max Daily Expense</h2>
-            <label>{max.date}</label>
-            <label>{`$${getCurrencyFormat(max.amount)}`}</label>
+            <label>{max ? max.date : 'loading...'}</label>
+            <label>{max ? `$${getCurrencyFormat(max.amount)}` : ''}</label>
             <div className={classes.showMore}>
                 <IconButton onClick={() => setExpanded(!expanded)}>
                     {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}

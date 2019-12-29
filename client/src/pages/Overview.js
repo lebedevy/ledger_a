@@ -25,14 +25,11 @@ const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Frida
 const useStyles = makeStyles({
     container: {
         display: 'flex',
-        // flexDirection: 'column',
-        // alignItems: 'center',
         justifyContent: 'center',
     },
     page: {
         boxSizing: 'border-box',
         flex: 1,
-        // background: 'yellow',
         padding: '2vh 10px 0 10px',
         height: '100vh - 50px',
         maxWidth: '1200px',
@@ -68,7 +65,7 @@ function DailySummary({ start, end, history }) {
     const classes = useStyles();
     const [data, setData] = useState([]);
     const [step, setStep] = useState(0);
-    const [max, setMax] = useState({ amount: 0, date: start });
+    const [max, setMax] = useState(null);
     const [average, setAverage] = useState({ length: 0, average: 0, total: 0 });
     const [error, setError] = useState(null);
 
