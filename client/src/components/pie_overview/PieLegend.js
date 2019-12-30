@@ -7,18 +7,6 @@ import { IconButton } from '@material-ui/core';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 
-const colors = [
-    '7DBBC3',
-    'DE6B48',
-    'F4B9B2',
-    '247BA0',
-    'E5B181',
-    '2E9B56',
-    'FFE066',
-    'F25F5C',
-    'B57BA6',
-];
-
 const useStyles = makeStyles({
     legend: {
         background: '#E7E5E8',
@@ -74,7 +62,7 @@ const useStyles = makeStyles({
     },
 });
 
-function CategoryOverview({ open, setLegendOpen, width, data }) {
+function CategoryOverview({ open, setLegendOpen, width, data, colors }) {
     const classes = useStyles();
 
     return (
@@ -136,37 +124,3 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps)(CategoryOverview);
-
-function getCooridnatesForPercent(percent) {
-    const x = Math.cos(2 * Math.PI * percent);
-    const y = Math.sin(2 * Math.PI * percent);
-
-    return [x, y];
-}
-
-function drawCircle(data, total) {
-    let cumulativePercent = 0;
-    let lines = [];
-    let slices = [];
-    data.forEach((slice, ind) => {
-        const [startX, startY] = getCooridnatesForPercent(cumulativePercent);
-        slice.percent = slice.amount / total;
-        cumulativePercent += slice.percent;
-        const [endX, endY] = getCooridnatesForPercent(cumulativePercent);
-        const largeArc = slice.percent > 0.5 ? 1 : 0;
-        const path = `M ${startX} ${startY} A 1 1 0 ${largeArc} 1 ${endX} ${endY} L 0 0`;
-        lines.push(
-            <line
-                x1={endX}
-                y1={endY}
-                x2={0}
-                y2={0}
-                stroke="#FEFCFB"
-                strokeWidth="0.005"
-                style={{ zIndex: 1 }}
-            />
-        );
-        slices.push(<path key={slice.id} d={path} fill={`#${colors[ind]}`} />);
-    });
-    return [...slices, ...lines];
-}

@@ -2,12 +2,10 @@ import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
-import { IconButton } from '@material-ui/core';
 
-import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
-import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import PieLegend from '../components/pie_overview/PieLegend';
 
+// ADD SUPPORT FOR RANDOM COLORS
 const colors = [
     '7DBBC3',
     'DE6B48',
@@ -15,17 +13,25 @@ const colors = [
     '247BA0',
     'E5B181',
     '2E9B56',
-    'FFE066',
+    '8EB19D',
+    'E4572E',
+    'C2095A',
     'F25F5C',
     'B57BA6',
+    'CECCCE',
+    'FEB95F',
+    '42CAFD',
+    'F71735',
+    'F0D2D1',
+    '29335C',
+    'F3A712',
+    'A8C686',
+    'FFE066',
 ];
 
 const useStyles = makeStyles({
     container: {
-        // background: 'lightgray',
-        // height: '100vh',
         display: 'flex',
-        // flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -47,7 +53,6 @@ const useStyles = makeStyles({
         justifyContent: 'center',
     },
     svg: {
-        // height: '50vh',
         width: '80vw',
         maxWidth: '500px',
         transform: 'rotate(-0.25turn)',
@@ -107,6 +112,7 @@ function CategoryOverview({ start, end }) {
                         open={legendOpen}
                         setLegendOpen={setLegendOpen}
                         width={width}
+                        colors={colors}
                         data={data}
                     />
                 </div>
