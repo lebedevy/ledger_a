@@ -14,6 +14,7 @@ import Login from './pages/Login';
 import LandingPage from './pages/LandingPage';
 import EditExpense from './pages/EditExpense';
 import Overview from './pages/Overview';
+import CategoryOverview from './pages/CategoryOverview';
 
 const styles = theme => ({
     container: {
@@ -50,6 +51,11 @@ class App extends Component {
                         <Route component={AppDrawer} />
                         <Switch>
                             <Route exact path="/users/expenses/overview" component={Overview} />
+                            <Route
+                                exact
+                                path="/users/expenses/overview/category"
+                                component={CategoryOverview}
+                            />
                             <Route exact path="/users/expenses/summary" component={Expenses} />
                             <Route exact path="/users/expenses/add" component={AddExpense} />
                             <Route exact path="/users/expenses/edit/:id" component={EditExpense} />

@@ -153,22 +153,29 @@ router.get('/summary/:type', checkAuth, getSortAggregate, async (req, res, next)
             ? { table: 'categories', column: 'category_name', group: 'categories.id' }
             : { table: 'stores', column: 'store_name', group: 'stores.id' };
 
-    const expenses = await db[resources.table].findAll({
-        attributes: [
-            'id',
-            resources.column,
-            [db.sequelize.fn('sum', db.sequelize.col('amount')), 'amount'],
-        ],
-        include: [
-            {
-                model: db.expenses,
-                attributes: [],
-                where,
-            },
-        ],
-        group: resources.group,
-        order: db.sequelize.literal(req.sortOption),
-    });
+    const expenses = await db[resources.table]
+        .findAll({
+            attributes: [
+                'id',
+                resources.column,
+                [db.sequelize.fn('sum', db.sequelize.col('amount')), 'amount'],
+            ],
+            include: [
+                {
+                    model: db.expenses,
+                    attributes: [],
+                    where,
+                },
+            ],
+            group: resources.group,
+            order: db.sequelize.literal(req.sortOption),
+        })
+        .catch(e => {
+            console.log(e);
+            return res
+                .status(500)
+                .send({ message: 'There was a server error processing your request' });
+        });
     res.status(200).send(expenses);
 });
 
