@@ -60,10 +60,16 @@ const useStyles = makeStyles({
         flex: 1,
         textAlign: 'center',
     },
+    label: {
+        paddingRight: '5px',
+        wordBreak: 'break-all',
+    },
 });
 
-function CategoryOverview({ open, setLegendOpen, width, data, colors }) {
+function CategoryOverview({ open, setLegendOpen, width, data }) {
     const classes = useStyles();
+
+    console.log(data);
 
     return (
         <React.Fragment>
@@ -88,9 +94,13 @@ function CategoryOverview({ open, setLegendOpen, width, data, colors }) {
                                 <div
                                     key={el.id}
                                     className={classes.legendItem}
-                                    style={{ background: `#${colors[ind]}` }}
+                                    style={{ background: `#${el.color}` }}
                                 >
-                                    <label>{el['category_name']}</label>
+                                    <label className={classes.label}>
+                                        {el['category_name']
+                                            ? el['category_name']
+                                            : el['store_name']}
+                                    </label>
                                     <label>{` ${Math.round(el.percent * 100)}%`}</label>
                                 </div>
                             ))}
@@ -105,9 +115,11 @@ function CategoryOverview({ open, setLegendOpen, width, data, colors }) {
                         <div
                             key={el.id}
                             className={classes.legendItem}
-                            style={{ background: `#${colors[ind]}` }}
+                            style={{ background: `#${el.color}` }}
                         >
-                            <label style={{ paddingRight: '5px' }}>{el['category_name']}</label>
+                            <label className={classes.label}>
+                                {el['category_name'] ? el['category_name'] : el['store_name']}
+                            </label>
                             <label>{` ${Math.round(el.percent * 100)}%`}</label>
                         </div>
                     ))}

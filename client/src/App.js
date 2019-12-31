@@ -14,7 +14,8 @@ import Login from './pages/Login';
 import LandingPage from './pages/LandingPage';
 import EditExpense from './pages/EditExpense';
 import Overview from './pages/Overview';
-import CategoryOverview from './pages/CategoryOverview';
+import CategoryOverview from './pages/AggregateOverview';
+import StoreOverview from './pages/StoreOverview';
 
 const styles = theme => ({
     container: {
@@ -53,8 +54,13 @@ class App extends Component {
                             <Route exact path="/users/expenses/overview" component={Overview} />
                             <Route
                                 exact
-                                path="/users/expenses/overview/category"
+                                path="/users/expenses/overview/:type"
                                 component={CategoryOverview}
+                            />
+                            <Route
+                                exact
+                                path="/users/expenses/overview/store"
+                                component={StoreOverview}
                             />
                             <Route exact path="/users/expenses/summary" component={Expenses} />
                             <Route exact path="/users/expenses/add" component={AddExpense} />
@@ -62,7 +68,7 @@ class App extends Component {
                             <Route
                                 exact
                                 path="/users/expenses/summary/:type"
-                                render={props => <ExpensesAggregates {...props} />}
+                                component={ExpensesAggregates}
                             />
                             <Route
                                 exact

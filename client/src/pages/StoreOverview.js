@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/styles';
 
 import PieLegend from '../components/pie_overview/PieLegend';
 
-// ADD SUPPORT FOR RANDOM COLORS
+// ADD SUPPORT FOR RANDOM COLOR GENERATION
 const colors = [
     '7DBBC3',
     'DE6B48',
@@ -51,6 +51,12 @@ const useStyles = makeStyles({
         flex: 1,
         display: 'flex',
         justifyContent: 'center',
+        // '& path': {
+        //     '&:hover': {
+        //         stroke: 'black',
+        //         strokeWidth: '0.005',
+        //     },
+        // },
     },
     svg: {
         width: '80vw',
@@ -79,7 +85,7 @@ function CategoryOverview({ start, end }) {
 
     async function fetchExpenses() {
         console.log('Getting category expenses overview');
-        const res = await fetch(`/api/users/expenses/summary/cat?start=${start}&end=${end}`);
+        const res = await fetch(`/api/users/expenses/summary/store?start=${start}&end=${end}`);
         if (res.ok) {
             const data = await res.json();
             setTotal(getTotal(data));
@@ -103,9 +109,9 @@ function CategoryOverview({ start, end }) {
                 <h1>Category Overview</h1>
                 <div className={classes.graph}>
                     <div className={classes.svgContainer}>
-                        <svg viewBox="-1 -1 2 2" className={classes.svg}>
+                        <svg viewBox="-1.1 -1.1 2.2 2.2" className={classes.svg}>
                             {drawCircle(data, total)}
-                            <circle r=".5" fill="#FEFCFB" />
+                            <circle r=".75" fill="#FEFCFB" />
                         </svg>
                     </div>
                     <PieLegend
