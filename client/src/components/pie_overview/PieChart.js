@@ -22,26 +22,18 @@ const useStyles = makeStyles({
     },
 });
 
-function CategoryOverview({ data, total }) {
+export default function PieChart({ data, total, setSelected }) {
     const classes = useStyles();
 
     return (
         <div className={classes.svgContainer}>
             <svg viewBox="-1.1 -1.1 2.2 2.2" className={classes.svg}>
-                {drawCircle(data, total)}
-                <circle r=".75" fill="#FEFCFB" />
+                {drawCircle(data, total, setSelected)}
+                <circle r=".75" fill="#FEFCFB" onClick={() => setSelected(null)} />
             </svg>
         </div>
     );
 }
-
-const mapStateToProps = state => {
-    const { date } = state;
-    const { start, end } = date.period;
-    return { start, end };
-};
-
-export default connect(mapStateToProps)(CategoryOverview);
 
 function getCooridnatesForPercent(percent) {
     const x = Math.cos(2 * Math.PI * percent);
@@ -50,7 +42,7 @@ function getCooridnatesForPercent(percent) {
     return [x, y];
 }
 
-function drawCircle(data, total) {
+function drawCircle(data, total, setSelected) {
     let cumulativePercent = 0;
     let lines = [];
     let slices = [];
@@ -72,7 +64,14 @@ function drawCircle(data, total) {
                 style={{ zIndex: 1 }}
             />
         );
-        slices.push(<path key={slice.id} d={path} fill={`#${slice.color}`} />);
+        slices.push(
+            <path
+                key={slice.id}
+                d={path}
+                fill={`#${slice.color}`}
+                onClick={() => setSelected(slice)}
+            />
+        );
     });
     return [...slices, ...lines];
 }

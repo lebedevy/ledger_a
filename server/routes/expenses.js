@@ -139,6 +139,30 @@ router.get('/overview', checkAuth, async (req, res, next) => {
     return res.status(200).send({ expenses });
 });
 
+router.get('/overview/:type/details', checkAuth, async (req, res, next) => {
+    const { type } = req.params;
+    console.info('Serving details for ' + type);
+    const include = [];
+    include.push(type === 'cat' ? db.stores : db.categories);
+    const where = { user_id: req.user.id };
+
+    if (req.query.id == null)
+        return res
+            .status(400)
+            .send({ message: 'Please ensure the request specifies the source for details' });
+    where[type === 'cat' ? 'category_id' : 'store_id'] = req.query.id;
+    if (req.query.start && req.query.end) {
+        where.date = { [db.Sequelize.Op.between]: [req.query.start, req.query.end] };
+    }
+
+    const expenses = await db.expenses.findAll({
+        where,
+        order: ['date'],
+        include,
+    });
+    return res.status(200).send({ expenses: expenses });
+});
+
 router.get('/summary/:type', checkAuth, getSortAggregate, async (req, res, next) => {
     const { type } = req.params;
     console.info('Serving aggregated summary type: ', type);

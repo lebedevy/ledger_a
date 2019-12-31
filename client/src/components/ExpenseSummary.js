@@ -12,6 +12,7 @@ const useStyles = makeStyles({
             flex: '1 1 0',
             border: '1px solid #00000020',
             minWidth: '0',
+            wordBreak: 'break-all',
             'overflow-x': 'auto',
         },
         '& button': {
@@ -22,13 +23,15 @@ const useStyles = makeStyles({
     },
 });
 
-function ExpenseSummary({ el, ind, expand }) {
+function ExpenseSummary({ el, ind, expand, exclude }) {
     const classes = useStyles();
     return (
         <div className={classes.expenseEntry} onClick={expand}>
             <label>{`$${getCurrencyFormat(el.amount)}`}</label>
-            <label>{el.store ? el.store.store_name : ''}</label>
-            <label>{el.category ? el.category.category_name : ''}</label>
+            {!exclude['store'] ? <label>{el.store ? el.store.store_name : ''}</label> : null}
+            {!exclude['category'] ? (
+                <label>{el.category ? el.category.category_name : ''}</label>
+            ) : null}
             <label>{el.date}</label>
         </div>
     );
