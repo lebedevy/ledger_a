@@ -6,19 +6,30 @@ import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 
 const useStyles = makeStyles({
+    container: {
+        position: 'absolute',
+        display: 'flex',
+        top: 0,
+        right: 0,
+    },
     legendMobile: {
         padding: '10px',
         display: 'flex',
         flexDirection: 'column',
-        position: 'absolute',
         maxWidth: '200px',
-        top: 0,
-        right: 0,
+    },
+    legendOpen: {
+        background: '#00000070',
+        overflow: 'auto',
+    },
+    backdrop: {
+        background: '#00000020',
+        flex: 1,
     },
     open: {
         bottom: 0,
-        overflow: 'auto',
-        background: '#00000070',
+        left: 0,
+        right: 0,
     },
     legendOpenButton: {
         display: 'flex',
@@ -39,8 +50,11 @@ const useStyles = makeStyles({
 export default function MobileLegend({ open, setLegendOpen, data, common, setSelected }) {
     const classes = useStyles();
     return (
-        <div className={clsx(classes.legendMobile, open && classes.open)}>
-            <div>
+        <div className={clsx(classes.container, open && classes.open)}>
+            {open ? (
+                <div className={classes.backdrop} onClick={() => setLegendOpen(false)} />
+            ) : null}
+            <div className={clsx(classes.legendMobile, open && classes.legendOpen)}>
                 <div
                     className={clsx(classes.legendOpenButton, open && classes.legendOpenTitle)}
                     onClick={() => setLegendOpen(!open)}
@@ -49,24 +63,24 @@ export default function MobileLegend({ open, setLegendOpen, data, common, setSel
                     {open ? <KeyboardArrowRightIcon /> : <KeyboardArrowLeftIcon />}
                     <label className={classes.legendTitleMobile}>Legend</label>
                 </div>
+                {open ? (
+                    <div>
+                        {data.map((el, ind) => (
+                            <div
+                                key={el.id}
+                                className={common.legendItem}
+                                style={{ background: `#${el.color}` }}
+                                onClick={() => setSelected(el)}
+                            >
+                                <label className={common.label}>
+                                    {el['category_name'] ? el['category_name'] : el['store_name']}
+                                </label>
+                                <label>{` ${Math.round(el.percent * 100)}%`}</label>
+                            </div>
+                        ))}
+                    </div>
+                ) : null}
             </div>
-            {open ? (
-                <div>
-                    {data.map((el, ind) => (
-                        <div
-                            key={el.id}
-                            className={common.legendItem}
-                            style={{ background: `#${el.color}` }}
-                            onClick={() => setSelected(el)}
-                        >
-                            <label className={common.label}>
-                                {el['category_name'] ? el['category_name'] : el['store_name']}
-                            </label>
-                            <label>{` ${Math.round(el.percent * 100)}%`}</label>
-                        </div>
-                    ))}
-                </div>
-            ) : null}
         </div>
     );
 }
