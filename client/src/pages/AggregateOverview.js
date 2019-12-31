@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import clsx from 'clsx';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 
 import PieLegend from '../components/pie_overview/PieLegend';
 import PieChart from '../components/pie_overview/PieChart';
-import ExpenseSummary from '../components/ExpenseSummary';
-import { getCurrencyFormat } from '../utility/utility';
+import AggregateDetails from '../components/pie_overview/AggregateDetails';
 
 // ADD SUPPORT FOR RANDOM COLOR GENERATION
 const colors = [
@@ -177,58 +175,3 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps)(AggregateOverview);
-
-const detailsUseStyles = makeStyles({
-    selectedTitle: {
-        display: 'flex',
-        alignItems: 'center',
-        // justifyContent: 'space-between',
-        paddingBottom: '10px',
-        '& h2': {
-            wordBreak: 'break-all',
-            '& label': {
-                fontSize: '0.9em',
-                fontStyle: 'italic',
-                verticalAlign: 'center',
-            },
-        },
-        '& div': {
-            minHeight: '32px',
-            minWidth: '32px',
-            borderRadius: '50%',
-        },
-    },
-});
-
-function AggregateDetails({ selected, type }) {
-    const classes = detailsUseStyles();
-    const [total, setTotal] = useState(0);
-
-    console.log(selected);
-
-    useEffect(() => {
-        let total = 0;
-        selected.data.forEach(el => (total += el.amount));
-        setTotal(total);
-    }, [selected]);
-
-    return (
-        <React.Fragment>
-            <div className={classes.selectedTitle}>
-                <div style={{ background: `#${selected.el.color}` }} />
-                <h2>
-                    Details:
-                    <label>{`${
-                        selected.el[type === 'cat' ? 'category_name' : 'store_name']
-                    }`}</label>
-                </h2>
-            </div>
-            <label>{`Total ${type == 'cat' ? 'category' : 'store'} expense: $${getCurrencyFormat(
-                total
-            )}`}</label>
-            {selected.data.map(el => (
-                <ExpenseSummary el={el} exclude={{ [type == 'cat' ? 'category' : 'store']: 1 }} />
-            ))}
-        </React.Fragment>
-    );
-}

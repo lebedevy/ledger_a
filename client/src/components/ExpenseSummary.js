@@ -28,11 +28,13 @@ function ExpenseSummary({ el, ind, expand, exclude }) {
     return (
         <div className={classes.expenseEntry} onClick={expand}>
             <label>{`$${getCurrencyFormat(el.amount)}`}</label>
-            {!exclude['store'] ? <label>{el.store ? el.store.store_name : ''}</label> : null}
-            {!exclude['category'] ? (
+            {!exclude || !exclude['store'] ? (
+                <label>{el.store ? el.store.store_name : ''}</label>
+            ) : null}
+            {!exclude || !exclude['category'] ? (
                 <label>{el.category ? el.category.category_name : ''}</label>
             ) : null}
-            <label>{el.date}</label>
+            {!exclude || !exclude['date'] ? <label>{el.date}</label> : null}
         </div>
     );
 }
