@@ -7,6 +7,7 @@ import {
     SET_PERIOD,
     SET_CATEGORIES,
     SET_STORES,
+    SET_SCREEN_SIZE,
 } from './actionTypes';
 
 export const setDate = content => ({
@@ -60,6 +61,13 @@ export const setCategories = content => ({
 
 export const setStores = content => ({
     type: SET_STORES,
+    payload: {
+        content,
+    },
+});
+
+export const setScreenDimensions = content => ({
+    type: SET_SCREEN_SIZE,
     payload: {
         content,
     },

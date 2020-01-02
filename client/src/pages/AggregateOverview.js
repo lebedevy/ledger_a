@@ -64,20 +64,13 @@ const useStyles = makeStyles({
     },
 });
 
-function AggregateOverview({ start, end, match }) {
+function AggregateOverview({ start, end, match, width }) {
     const classes = useStyles();
     const [type, setType] = useState(match.params.type);
     const [total, setTotal] = useState(0);
     const [data, setData] = useState([]);
-    const [width, setWidth] = useState(window.innerWidth);
     const [selected, setSelected] = useState(null);
     const [legendOpen, setLegendOpen] = useState(false);
-
-    // Set window resizing listener
-    useEffect(() => {
-        window.addEventListener('resize', updateWidth);
-        return () => window.removeEventListener('resize', updateWidth);
-    }, []);
 
     // update type param
     useEffect(() => {
@@ -89,11 +82,6 @@ function AggregateOverview({ start, end, match }) {
     useEffect(() => {
         fetchExpenses();
     }, [type]);
-
-    function updateWidth() {
-        console.log(window.innerWidth);
-        setWidth(window.innerWidth);
-    }
 
     async function fetchExpenses() {
         console.log(`Getting ${type == 'cat' ? 'category' : 'store'} expenses overview`);
@@ -169,9 +157,10 @@ function AggregateOverview({ start, end, match }) {
 }
 
 const mapStateToProps = state => {
-    const { date } = state;
-    const { start, end } = date.period;
-    return { start, end };
+    // const { date } = state;
+    const { start, end } = state.date.period;
+    const { width } = state.screen;
+    return { start, end, width };
 };
 
 export default connect(mapStateToProps)(AggregateOverview);

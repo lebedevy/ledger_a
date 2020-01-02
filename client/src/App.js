@@ -15,7 +15,7 @@ import LandingPage from './pages/LandingPage';
 import EditExpense from './pages/EditExpense';
 import Overview from './pages/Overview';
 import CategoryOverview from './pages/AggregateOverview';
-import StoreOverview from './pages/StoreOverview';
+import { setScreenDimensions } from './redux/actions';
 
 const styles = theme => ({
     container: {
@@ -33,6 +33,22 @@ const styles = theme => ({
 });
 
 class App extends Component {
+    constructor(props) {
+        super(props);
+        this.handleResize = this.handleResize.bind(this);
+    }
+    handleResize() {
+        this.props.setScreenDimensions({ height: window.innerHeight, width: window.innerWidth });
+    }
+
+    componentDidMount() {
+        window.addEventListener('resize', this.handleResize);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.handleResize);
+    }
+
     render() {
         const { classes, user } = this.props;
         return (
@@ -56,11 +72,6 @@ class App extends Component {
                                 exact
                                 path="/users/expenses/overview/:type"
                                 component={CategoryOverview}
-                            />
-                            <Route
-                                exact
-                                path="/users/expenses/overview/store"
-                                component={StoreOverview}
                             />
                             <Route exact path="/users/expenses/summary" component={Expenses} />
                             <Route exact path="/users/expenses/add" component={AddExpense} />
@@ -91,4 +102,4 @@ const mapStateToProps = state => {
     return { user };
 };
 
-export default connect(mapStateToProps)(withStyles(styles)(App));
+export default connect(mapStateToProps, { setScreenDimensions })(withStyles(styles)(App));

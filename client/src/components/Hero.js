@@ -69,7 +69,7 @@ export default function Hero() {
     useEffect(() => {
         function handleResize() {
             setScreenWidth(window.innerWidth);
-            if (Math.abs(screenHeight - window.innerHeight) > 50)
+            if (Math.abs(screenHeight - window.innerHeight) > 80)
                 setScreenHeight(window.innerHeight);
         }
         window.addEventListener('resize', handleResize);
