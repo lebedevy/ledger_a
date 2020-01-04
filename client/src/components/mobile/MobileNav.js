@@ -1,10 +1,11 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
+import { IconButton } from '@material-ui/core';
 
 import CategoryIcon from '@material-ui/icons/Category';
 import StoreIcon from '@material-ui/icons/Store';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
-import { IconButton } from '@material-ui/core';
+import SettingsApplicationsIcon from '@material-ui/icons/SettingsApplications';
 
 const useStyles = makeStyles({
     container: {
@@ -22,18 +23,26 @@ const useStyles = makeStyles({
     },
 });
 
-export default function MobileNav() {
+export default function MobileNav({ history }) {
     const classes = useStyles();
+
+    function navTo(path) {
+        history.push(path);
+    }
+
     return (
         <div className={classes.container}>
-            <IconButton href="/users/expenses/overview">
+            <IconButton onClick={() => navTo('/users/expenses/overview')}>
                 <MonetizationOnIcon fontSize="large" />
             </IconButton>
-            <IconButton href="/users/expenses/overview/cat">
+            <IconButton onClick={() => navTo('/users/expenses/overview/cat')}>
                 <CategoryIcon fontSize="large" />
             </IconButton>
-            <IconButton href="/users/expenses/overview/store">
+            <IconButton onClick={() => navTo('/users/expenses/overview/store')}>
                 <StoreIcon fontSize="large" />
+            </IconButton>
+            <IconButton onClick={() => navTo('/users/app/settings')}>
+                <SettingsApplicationsIcon fontSize="large" />
             </IconButton>
         </div>
     );

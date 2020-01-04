@@ -8,7 +8,7 @@ import { getSort, getSortIndexes } from '../utility/utility';
 
 const styles = theme => ({
     container: {
-        height: '100%',
+        height: '84vh',
         width: '100%',
         display: 'flex',
         flexDirection: 'column',

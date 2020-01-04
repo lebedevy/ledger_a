@@ -9,15 +9,15 @@ import { getSort, getSortIndexes } from '../utility/utility';
 
 const styles = theme => ({
     container: {
-        height: '100%',
-        width: '100%',
+        height: '84vh',
+        width: '100vw',
         display: 'flex',
         flexDirection: 'column',
         background: '#00000020',
         overflow: 'hidden',
     },
     expenseList: {
-        'overflow-y': 'auto',
+        'overflow-y': 'scroll',
         'overflow-x': 'hidden',
         flex: 1,
         display: 'flex',

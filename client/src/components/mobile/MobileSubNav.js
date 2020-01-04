@@ -4,7 +4,6 @@ import { IconButton } from '@material-ui/core';
 
 import ListIcon from '@material-ui/icons/List';
 import DonutLargeIcon from '@material-ui/icons/DonutLarge';
-import SettingsApplicationsIcon from '@material-ui/icons/SettingsApplications';
 import clsx from 'clsx';
 
 const useStyles = makeStyles({
@@ -16,13 +15,25 @@ const useStyles = makeStyles({
         right: 0,
         left: 0,
         display: 'flex',
-        justifyContent: 'space-around',
+        // justifyContent: 'space-around',
         '& svg': {
             // color: 'white',
         },
     },
+    option: {
+        flex: 1,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        background: '#00000005',
+        paddingBottom: '2px',
+        // borderBottom: '2px solid #00000020',
+    },
     selected: {
         background: '#00000020',
+        borderBottom: '2px solid #000000',
+        margin: 0,
+        padding: 0,
     },
 });
 
@@ -33,31 +44,33 @@ export default function MobileSubNav({ match, history, location }) {
     const classes = useStyles();
     const [type, setType] = useState(0);
     const [page, setPage] = useState(0);
-    console.log(match);
-    console.log(history);
-    console.log(location.pathname.split('/'));
 
     useEffect(() => {
         const loc = location.pathname.split('/');
+        console.log(location);
+        console.log(loc[3], loc[4]);
         setType(loc[3] === 'overview' ? 0 : 1);
         setPage(loc[4] != null ? (loc[4] === 'cat' ? 1 : 2) : 0);
     }, [location]);
 
+    function navTo(path) {
+        history.push(path);
+    }
+
     return (
         <div className={classes.container}>
-            <div className={clsx(type === 0 && classes.selected)}>
-                <IconButton href={`/users/expenses/overview${overviewLinks[page]}`}>
-                    <DonutLargeIcon fontSize="large" />
-                </IconButton>
+            <div
+                className={clsx(classes.option, type === 0 && classes.selected)}
+                onClick={() => navTo(`/users/expenses/overview${overviewLinks[page]}`)}
+            >
+                <DonutLargeIcon fontSize="large" />
             </div>
-            <div className={clsx(type === 1 && classes.selected)}>
-                <IconButton href={`/users/expenses/summary/${overviewLinks[page]}`}>
-                    <ListIcon fontSize="large" />
-                </IconButton>
+            <div
+                className={clsx(classes.option, type === 1 && classes.selected)}
+                onClick={() => navTo(`/users/expenses/summary${overviewLinks[page]}`)}
+            >
+                <ListIcon fontSize="large" />
             </div>
-            <IconButton>
-                <SettingsApplicationsIcon fontSize="large" />
-            </IconButton>
         </div>
     );
 }

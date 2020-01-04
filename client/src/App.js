@@ -18,6 +18,7 @@ import CategoryOverview from './pages/AggregateOverview';
 import { setScreenDimensions } from './redux/actions';
 import MobileNav from './components/mobile/MobileNav';
 import MobileSubNav from './components/mobile/MobileSubNav';
+import MobileSettings from './components/mobile/MobileSettings';
 
 const styles = theme => ({
     container: {
@@ -29,8 +30,8 @@ const styles = theme => ({
     app: {
         paddingTop: '50px',
         boxSizing: 'border-box',
-        height: '100%',
-        width: '100%',
+        maxHeight: '100%',
+        maxWidth: '100%',
         position: 'relative',
     },
 });
@@ -104,6 +105,7 @@ class App extends Component {
                                     path="/users/expenses/manage/merge/:type"
                                     render={props => <Merge {...props} />}
                                 />
+                                <Route path="/users/app/settings" component={MobileSettings} />
                                 <Route>
                                     <Redirect to="/users/expenses/overview/" />
                                 </Route>

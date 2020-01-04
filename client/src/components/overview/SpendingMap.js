@@ -9,10 +9,11 @@ const cellSize = 12;
 
 const useStyles = makeStyles({
     spendingMap: {
+        maxWidth: '98vw',
         background: '#E8EBE4',
         border: '1px solid #00000020',
         borderRadius: '2px',
-        padding: '10px',
+        padding: '10px 0',
         margin: '10px 0',
     },
     period: {
