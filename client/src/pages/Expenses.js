@@ -17,7 +17,7 @@ const styles = theme => ({
         overflow: 'hidden',
     },
     expenseList: {
-        'overflow-y': 'scroll',
+        'overflow-y': 'auto',
         'overflow-x': 'hidden',
         flex: 1,
         display: 'flex',

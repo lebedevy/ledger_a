@@ -34,6 +34,8 @@ const useStyles = makeStyles({
         padding: '2vh 10px 0 10px',
         height: '100vh - 50px',
         maxWidth: '1200px',
+        // maxWidth: '100vw',
+        overflow: 'hidden',
         '& h1': {
             margin: '10px 0',
             padding: '10px 0',

@@ -9,8 +9,8 @@ const backgroundImage = '/images/kim-gorga-bodXa3yTF0w-unsplash-min.jpg';
 
 const useStyles = makeStyles({
     container: {
-        height: '100%',
-        width: '100%',
+        height: '100vh',
+        width: '100vw',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',

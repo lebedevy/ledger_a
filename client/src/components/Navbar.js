@@ -16,7 +16,7 @@ const useStyles = makeStyles({
     },
 });
 
-function Navbar({ openDrawer, history }) {
+function Navbar({ logout, openDrawer, history }) {
     const classes = useStyles();
     const [targetEl, setTargetEl] = useState(null);
 
@@ -54,4 +54,4 @@ function Navbar({ openDrawer, history }) {
     );
 }
 
-export default connect(null, { openDrawer })(Navbar);
+export default connect(null, { openDrawer, logout })(Navbar);
