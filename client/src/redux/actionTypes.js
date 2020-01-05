@@ -7,3 +7,5 @@ export const SET_PERIOD = 'SET_PERIOD';
 export const SET_CATEGORIES = 'SET_CATEGORIES';
 export const SET_STORES = 'SET_STORES';
 export const SET_SCREEN_SIZE = 'SET_SCREEN_SIZE';
+export const SET_SCREEN = 'SET_SCREEN';
+export const SET_SETTINGS_SCREEN = 'SET_SETTINGS_SCREEN';

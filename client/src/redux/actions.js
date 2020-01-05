@@ -8,6 +8,8 @@ import {
     SET_CATEGORIES,
     SET_STORES,
     SET_SCREEN_SIZE,
+    SET_SCREEN,
+    SET_SETTINGS_SCREEN,
 } from './actionTypes';
 
 export const setDate = content => ({
@@ -68,6 +70,20 @@ export const setStores = content => ({
 
 export const setScreenDimensions = content => ({
     type: SET_SCREEN_SIZE,
+    payload: {
+        content,
+    },
+});
+
+export const setScreen = content => ({
+    type: SET_SCREEN,
+    payload: {
+        content,
+    },
+});
+
+export const setSettingsScreen = content => ({
+    type: SET_SETTINGS_SCREEN,
     payload: {
         content,
     },
