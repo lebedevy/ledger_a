@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import clsx from 'clsx';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/styles';
 import Summary from '../components/Summary';
@@ -8,12 +9,17 @@ import { getSort, getSortIndexes } from '../utility/utility';
 
 const styles = theme => ({
     container: {
-        height: '84vh',
         width: '100%',
         display: 'flex',
         flexDirection: 'column',
         background: '#00000020',
         overflow: 'hidden',
+    },
+    mobile: {
+        height: '84vh',
+    },
+    desktop: {
+        height: 'calc(100vh - 65px)',
     },
     expenseList: {
         'overflow-y': 'auto',
@@ -97,11 +103,13 @@ class ExpensesAggregates extends Component {
     }
 
     render() {
-        const { classes } = this.props;
+        const { classes, width } = this.props;
         const { expenses, type, sortOpen, sort, order } = this.state;
         let total = 0;
         return (
-            <div className={classes.container}>
+            <div
+                className={clsx(width > 600 ? classes.desktop : classes.mobile, classes.container)}
+            >
                 <Header
                     setOpen={() => this.setState({ sortOpen: !sortOpen })}
                     open={sortOpen}
@@ -132,9 +140,9 @@ class ExpensesAggregates extends Component {
 }
 
 const mapStateToProps = state => {
-    const { date } = state;
-    const { start, end } = date.period;
-    return { date, start, end };
+    const { width } = state.screen;
+    const { start, end } = state.date.period;
+    return { width, start, end };
 };
 
 export default connect(mapStateToProps)(withStyles(styles)(ExpensesAggregates));

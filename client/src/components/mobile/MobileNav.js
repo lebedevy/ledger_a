@@ -44,6 +44,7 @@ function MobileNav({ match, location, history, screen, settings }) {
     }, [screen]);
 
     useEffect(() => {
+        console.log('Mount?');
         const link = `/users/app/settings/${settings === 0 ? 'app' : 'account'}`;
         setSettingsBase(link);
         history.push(link);
