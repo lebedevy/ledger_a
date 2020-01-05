@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import clsx from 'clsx';
+import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
-import { IconButton } from '@material-ui/core';
+import { setScreen, setSettingsScreen } from '../../redux/actions';
 
 import ListIcon from '@material-ui/icons/List';
 import DonutLargeIcon from '@material-ui/icons/DonutLarge';
-import clsx from 'clsx';
 
 const useStyles = makeStyles({
     container: {
@@ -37,40 +38,30 @@ const useStyles = makeStyles({
     },
 });
 
-const overviewLinks = ['', '/cat', '/store'];
-const detailLinks = [''];
-
-export default function MobileSubNav({ match, history, location }) {
+function MobileSubNav({ screen, setScreen, setSettingsScreen }) {
     const classes = useStyles();
-    const [type, setType] = useState(0);
-    const [page, setPage] = useState(0);
-
-    useEffect(() => {
-        const loc = location.pathname.split('/');
-        console.log(location);
-        console.log(loc[3], loc[4]);
-        setType(loc[3] === 'overview' ? 0 : 1);
-        setPage(loc[4] != null ? (loc[4] === 'cat' ? 1 : 2) : 0);
-    }, [location]);
-
-    function navTo(path) {
-        history.push(path);
-    }
 
     return (
         <div className={classes.container}>
             <div
-                className={clsx(classes.option, type === 0 && classes.selected)}
-                onClick={() => navTo(`/users/expenses/overview${overviewLinks[page]}`)}
+                className={clsx(classes.option, screen === 0 && classes.selected)}
+                onClick={() => setScreen(0)}
             >
                 <DonutLargeIcon fontSize="large" />
             </div>
             <div
-                className={clsx(classes.option, type === 1 && classes.selected)}
-                onClick={() => navTo(`/users/expenses/summary${overviewLinks[page]}`)}
+                className={clsx(classes.option, screen === 1 && classes.selected)}
+                onClick={() => setScreen(1)}
             >
                 <ListIcon fontSize="large" />
             </div>
         </div>
     );
 }
+
+const mapStateToProps = state => {
+    const { screen } = state.screenSelect;
+    return { screen };
+};
+
+export default connect(mapStateToProps, { setScreen, setSettingsScreen })(MobileSubNav);
