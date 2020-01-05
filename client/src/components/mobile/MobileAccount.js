@@ -25,19 +25,25 @@ const useStyles = makeStyles({
     },
 });
 
-function AppSettings({ history, logout }) {
+function MobileAccount({ history, logout }) {
     const classes = useStyles();
+
+    async function logoutUser() {
+        logout();
+        const res = await fetch('/api/users/logout', { method: 'POST' });
+        if (res.status === 200) history.go('/users/login');
+    }
 
     return (
         <div className={classes.container}>
             <div className={classes.item}>
-                <h2>App Date Range</h2>
-                <label>Select the date range for app data.</label>
-                <label>Show expenses for period:</label>
-                <DateRange />
+                <h2>Account Settings</h2>
+                <Button onClick={logoutUser} variant="contained" color="primary">
+                    Logout
+                </Button>
             </div>
         </div>
     );
 }
 
-export default connect(null, { logout })(AppSettings);
+export default connect(null, { logout })(MobileAccount);

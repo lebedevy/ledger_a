@@ -24,12 +24,14 @@ const useStyles = makeStyles({
     },
 });
 
-function MobileNav({ location, history, screen, settings }) {
+function MobileNav({ match, location, history, screen, settings }) {
     const classes = useStyles();
     const [baseLink, setBaseLink] = useState('/users/expenses/overview/');
+    const [settingsBase, setSettingsBase] = useState('/users/app/settings/app');
     function navTo(path) {
         history.push(path);
     }
+    console.log(settings, settingsBase);
 
     useEffect(() => {
         setBaseLink(`/users/expenses/${screen === 0 ? 'overview' : 'summary'}`);
@@ -40,6 +42,12 @@ function MobileNav({ location, history, screen, settings }) {
             `/users/expenses/${screen === 0 ? 'overview' : 'summary'}/${els[els.length - 1]}`
         );
     }, [screen]);
+
+    useEffect(() => {
+        const link = `/users/app/settings/${settings === 0 ? 'app' : 'account'}`;
+        setSettingsBase(link);
+        history.push(link);
+    }, [settings]);
 
     return (
         <div className={classes.container}>
@@ -52,7 +60,7 @@ function MobileNav({ location, history, screen, settings }) {
             <IconButton onClick={() => navTo(baseLink + '/store')}>
                 <StoreIcon fontSize="large" />
             </IconButton>
-            <IconButton onClick={() => navTo('/users/app/settings')}>
+            <IconButton onClick={() => navTo(settingsBase)}>
                 <SettingsApplicationsIcon fontSize="large" />
             </IconButton>
         </div>

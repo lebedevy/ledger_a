@@ -18,7 +18,9 @@ import CategoryOverview from './pages/AggregateOverview';
 import { setScreenDimensions } from './redux/actions';
 import MobileNav from './components/mobile/MobileNav';
 import MobileSubNav from './components/mobile/MobileSubNav';
-import MobileSettings from './components/mobile/MobileSettings';
+import MobileSettingsNav from './components/mobile/MobileSettingsNav';
+import AppSettings from './components/mobile/MobileSettings';
+import MobileAccount from './components/mobile/MobileAccount';
 
 const styles = theme => ({
     container: {
@@ -79,7 +81,13 @@ class App extends Component {
                                     <Route component={AppDrawer} />
                                 </React.Fragment>
                             ) : (
-                                <Route path="/users/expenses/:type/" component={MobileSubNav} />
+                                <React.Fragment>
+                                    <Route path="/users/expenses/:type/" component={MobileSubNav} />
+                                    <Route
+                                        path="/users/app/settings/"
+                                        component={MobileSettingsNav}
+                                    />
+                                </React.Fragment>
                             )}
                             <Switch>
                                 <Route exact path="/users/expenses/overview" component={Overview} />
@@ -105,7 +113,11 @@ class App extends Component {
                                     path="/users/expenses/manage/merge/:type"
                                     render={props => <Merge {...props} />}
                                 />
-                                <Route path="/users/app/settings" component={MobileSettings} />
+                                <Route path="/users/app/settings/app" component={AppSettings} />
+                                <Route
+                                    path="/users/app/settings/account"
+                                    component={MobileAccount}
+                                />
                                 <Route>
                                     <Redirect to="/users/expenses/overview/" />
                                 </Route>
