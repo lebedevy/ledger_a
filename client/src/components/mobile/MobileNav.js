@@ -31,16 +31,16 @@ function MobileNav({ match, location, history, screen, settings }) {
     function navTo(path) {
         history.push(path);
     }
-    console.log(settings, settingsBase);
 
     useEffect(() => {
         setBaseLink(`/users/expenses/${screen === 0 ? 'overview' : 'summary'}`);
+        // direct app to the correct screen to reflect change
         let path = location.pathname;
         if (path.slice(-1) === '/') path = path.slice(0, -1);
         const els = path.split('/');
-        history.push(
-            `/users/expenses/${screen === 0 ? 'overview' : 'summary'}/${els[els.length - 1]}`
-        );
+        // if has type (cat || store) add type
+        const type = els.length > 4 ? els[els.length - 1] : '';
+        history.push(`/users/expenses/${screen === 0 ? 'overview' : 'summary'}/${type}`);
     }, [screen]);
 
     useEffect(() => {
@@ -69,7 +69,6 @@ function MobileNav({ match, location, history, screen, settings }) {
 
 const mapStateToProps = state => {
     const { screenSelect } = state;
-    console.log(state);
     return { ...screenSelect };
 };
 

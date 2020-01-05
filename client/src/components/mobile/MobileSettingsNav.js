@@ -33,7 +33,7 @@ const useStyles = makeStyles({
     selected: {
         background: '#00000020',
         borderBottom: '2px solid #000000',
-        margin: 0,
+        // margin: 0,
         padding: 0,
     },
 });

@@ -8,6 +8,10 @@ import { logout } from '../../redux/actions';
 const useStyles = makeStyles({
     container: {
         padding: '0 10px',
+        '& h1': {
+            margin: 0,
+            padding: '10px 0',
+        },
         '& h2': {
             fontSize: '1.5em',
             margin: '10px 0',
@@ -30,6 +34,7 @@ function AppSettings({ history, logout }) {
 
     return (
         <div className={classes.container}>
+            <h1>App Settings</h1>
             <div className={classes.item}>
                 <h2>App Date Range</h2>
                 <label>Select the date range for app data.</label>
