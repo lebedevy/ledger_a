@@ -13,7 +13,7 @@ const styles = theme => ({
         width: '100vw',
         display: 'flex',
         flexDirection: 'column',
-        background: '#00000020',
+        // background: '#00000020',
         overflow: 'hidden',
     },
     mobile: {

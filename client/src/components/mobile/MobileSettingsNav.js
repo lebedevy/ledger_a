@@ -26,15 +26,15 @@ const useStyles = makeStyles({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        background: '#00000005',
-        paddingBottom: '2px',
-        // borderBottom: '2px solid #00000020',
-    },
-    selected: {
         background: '#00000020',
         borderBottom: '2px solid #000000',
-        // margin: 0,
         padding: 0,
+    },
+
+    selected: {
+        background: '#ffffff',
+        paddingBottom: '2px',
+        borderBottom: 'none',
     },
 });
 

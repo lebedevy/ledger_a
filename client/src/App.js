@@ -66,7 +66,6 @@ class App extends Component {
 
     render() {
         const { classes, user, width } = this.props;
-        console.log(width);
         return (
             <Router>
                 {user == null ? (

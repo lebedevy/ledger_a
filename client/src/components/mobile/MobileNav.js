@@ -18,8 +18,14 @@ const useStyles = makeStyles({
         left: 0,
         display: 'flex',
         justifyContent: 'space-around',
+        borderTop: 'solid 1px #00000020',
         '& svg': {
             // color: 'white',
+        },
+        '& button': {
+            height: '100%',
+            width: '50px',
+            padding: 0,
         },
     },
 });
@@ -34,20 +40,23 @@ function MobileNav({ match, location, history, screen, settings }) {
 
     useEffect(() => {
         setBaseLink(`/users/expenses/${screen === 0 ? 'overview' : 'summary'}`);
-        // direct app to the correct screen to reflect change
-        let path = location.pathname;
-        if (path.slice(-1) === '/') path = path.slice(0, -1);
-        const els = path.split('/');
-        // if has type (cat || store) add type
-        const type = els.length > 4 ? els[els.length - 1] : '';
-        history.push(`/users/expenses/${screen === 0 ? 'overview' : 'summary'}/${type}`);
+        if (location.pathname.includes('/users/expenses/')) {
+            // direct app to the correct screen to reflect change
+            let path = location.pathname;
+            if (path.slice(-1) === '/') path = path.slice(0, -1);
+            const els = path.split('/');
+            // if has type (cat || store) add type
+            const type = els.length > 4 ? els[els.length - 1] : '';
+            history.push(`/users/expenses/${screen === 0 ? 'overview' : 'summary'}/${type}`);
+        }
     }, [screen]);
 
     useEffect(() => {
-        console.log('Mount?');
         const link = `/users/app/settings/${settings === 0 ? 'app' : 'account'}`;
         setSettingsBase(link);
-        history.push(link);
+        if (location.pathname.includes('/users/app/settings/')) {
+            history.push(link);
+        }
     }, [settings]);
 
     return (

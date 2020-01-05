@@ -12,7 +12,7 @@ const styles = theme => ({
         width: '100%',
         display: 'flex',
         flexDirection: 'column',
-        background: '#00000020',
+        // background: '#00000020',
         overflow: 'hidden',
     },
     mobile: {
