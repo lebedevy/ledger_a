@@ -40,7 +40,7 @@ const styles = theme => ({
         marginTop: '65px',
     },
     mobile: {
-        // height: '84vh',
+        height: '84vh',
         margin: 0,
         margin: '8vh 0',
         overflow: 'auto',
@@ -96,7 +96,7 @@ class App extends Component {
                         )}
                         <div
                             className={clsx(width > 600 ? classes.desktop : classes.mobile)}
-                            style={width <= 600 ? { height: `calc(${height}px - 16vh)` } : {}}
+                            // style={width <= 600 ? { height: `calc(${height}px - 16vh)` } : {}}
                         >
                             <Switch>
                                 <Route exact path="/users/expenses/overview" component={Overview} />
