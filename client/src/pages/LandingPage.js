@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
-import Hero from '../components/Hero';
-import Presentation from '../components/Presentation';
+import Hero from '../components/landing/Hero';
+import Presentation from '../components/landing/Presentation';
 
 const useStyles = makeStyles({
     container: {
