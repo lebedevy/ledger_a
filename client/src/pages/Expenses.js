@@ -17,8 +17,8 @@ const styles = theme => ({
         overflow: 'hidden',
     },
     mobile: {
-        // height: '84vh',
-        height: '100%',
+        height: '84vh',
+        // maxHeight: '100%',
     },
     desktop: {
         height: 'calc(100vh - 65px)',

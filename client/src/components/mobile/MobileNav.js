@@ -12,7 +12,8 @@ const useStyles = makeStyles({
     container: {
         height: '8vh',
         background: '#ffffff',
-        position: 'fixed',
+        // position: 'fixed',
+        position: 'absolute',
         bottom: 0,
         right: 0,
         left: 0,

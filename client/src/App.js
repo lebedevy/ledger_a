@@ -41,6 +41,7 @@ const styles = theme => ({
     },
     mobile: {
         height: '84vh',
+        // maxHeight: 'calc(100% - 16vh)',
         margin: 0,
         margin: '8vh 0',
         overflow: 'auto',
@@ -83,6 +84,7 @@ class App extends Component {
                             className={classes.app}
                             // style={{ marginBottom: width > 600 ? 0 : '8vh' }}
                         > */}
+                        {/* <div style={{ height: '60px' }} /> */}
                         {width > 600 ? (
                             <React.Fragment>
                                 <Route component={Navbar} />
