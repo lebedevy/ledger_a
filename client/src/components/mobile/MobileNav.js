@@ -40,7 +40,10 @@ function MobileNav({ match, location, history, screen, settings }) {
 
     useEffect(() => {
         setBaseLink(`/users/expenses/${screen === 0 ? 'overview' : 'summary'}`);
-        if (location.pathname.includes('/users/expenses/')) {
+        if (
+            location.pathname.includes('/users/expenses/overview') ||
+            location.pathname.includes('/users/expenses/summary')
+        ) {
             // direct app to the correct screen to reflect change
             let path = location.pathname;
             if (path.slice(-1) === '/') path = path.slice(0, -1);

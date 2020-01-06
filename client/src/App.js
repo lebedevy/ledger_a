@@ -40,7 +40,7 @@ const styles = theme => ({
         marginTop: '65px',
     },
     mobile: {
-        height: '84vh',
+        // height: '84vh',
         margin: 0,
         margin: '8vh 0',
         overflow: 'auto',
@@ -65,7 +65,7 @@ class App extends Component {
     }
 
     render() {
-        const { classes, user, width } = this.props;
+        const { classes, user, width, height } = this.props;
         return (
             <Router>
                 {user == null ? (
@@ -94,7 +94,10 @@ class App extends Component {
                                 <Route path="/users/app/settings/" component={MobileSettingsNav} />
                             </React.Fragment>
                         )}
-                        <div className={clsx(width > 600 ? classes.desktop : classes.mobile)}>
+                        <div
+                            className={clsx(width > 600 ? classes.desktop : classes.mobile)}
+                            style={width <= 600 ? { height: `calc(${height}px - 16vh)` } : {}}
+                        >
                             <Switch>
                                 <Route exact path="/users/expenses/overview" component={Overview} />
                                 <Route
@@ -140,7 +143,8 @@ class App extends Component {
 
 const mapStateToProps = state => {
     const { user } = state;
-    return { user, width: state.screen.width };
+    const { width, height } = state.screen;
+    return { user, width, height };
 };
 
 export default connect(mapStateToProps, { setScreenDimensions })(withStyles(styles)(App));
