@@ -16,7 +16,7 @@ const styles = theme => ({
         overflow: 'hidden',
     },
     mobile: {
-        height: '84vh',
+        // height: '84vh',
     },
     desktop: {
         height: 'calc(100vh - 65px)',
@@ -103,12 +103,13 @@ class ExpensesAggregates extends Component {
     }
 
     render() {
-        const { classes, width } = this.props;
+        const { classes, width, height } = this.props;
         const { expenses, type, sortOpen, sort, order } = this.state;
         let total = 0;
         return (
             <div
                 className={clsx(width > 600 ? classes.desktop : classes.mobile, classes.container)}
+                style={width <= 600 ? { height: `calc(${height}px - 16vh)` } : {}}
             >
                 <Header
                     setOpen={() => this.setState({ sortOpen: !sortOpen })}
@@ -140,9 +141,9 @@ class ExpensesAggregates extends Component {
 }
 
 const mapStateToProps = state => {
-    const { width } = state.screen;
+    const { width, height } = state.screen;
     const { start, end } = state.date.period;
-    return { width, start, end };
+    return { height, width, start, end };
 };
 
 export default connect(mapStateToProps)(withStyles(styles)(ExpensesAggregates));
