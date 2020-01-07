@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TextField, Button, Link } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { EmailInput, PasswordInput } from '../components/ContainedInput';
-import LoadingBackdrop from './LoadingBackdrop';
+import LoadingBackdrop from '../components/landing/LoadingBackdrop';
 
 const backgroundImage = '/images/kim-gorga-bodXa3yTF0w-unsplash-min.jpg';
 // const backgroundImage = '/images/kim-gorga-bodXa3yTF0w-unsplash.jpg';

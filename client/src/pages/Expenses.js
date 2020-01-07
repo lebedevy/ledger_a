@@ -7,6 +7,7 @@ import ExpenseSummary from '../components/ExpenseSummary';
 import ExpenseFull from '../components/ExpenseFull';
 import Header from '../components/Header';
 import { getSort, getSortIndexes } from '../utility/utility';
+import LoadingComponent from '../components/LoadingComponent';
 
 const styles = theme => ({
     container: {
@@ -39,7 +40,7 @@ const optionsLower = options.map(el => el.toLowerCase());
 const orderDir = ['asc', 'desc'];
 
 class Expenses extends Component {
-    state = { expenses: [], openSort: false, expand: null, sort: 0, order: 0 };
+    state = { expenses: null, openSort: false, expand: null, sort: 0, order: 0 };
 
     componentDidMount() {
         const [sort, order] = getSortIndexes(optionsLower, ...getSort(this.props.location.search));
@@ -128,26 +129,29 @@ class Expenses extends Component {
                     }}
                 />
                 <div className={classes.expenseList}>
-                    {expenses.length === 0 ? <label>No recorded expenses</label> : null}
-                    {expenses.map((el, ind) => {
-                        total += el.amount;
-                        return el.id === expand ? (
-                            <ExpenseFull
-                                key={el.id}
-                                el={el}
-                                ind={ind}
-                                expand={() => this.setState({ expand: null })}
-                                deleteExpense={() => this.deleteExpense(el.id, ind)}
-                            />
-                        ) : (
-                            <ExpenseSummary
-                                key={el.id}
-                                el={el}
-                                ind={ind}
-                                expand={() => this.setState({ expand: el.id })}
-                            />
-                        );
-                    })}
+                    {expenses && expenses.length === 0 ? <label>No recorded expenses</label> : null}
+                    {expenses
+                        ? expenses.map((el, ind) => {
+                              total += el.amount;
+                              return el.id === expand ? (
+                                  <ExpenseFull
+                                      key={el.id}
+                                      el={el}
+                                      ind={ind}
+                                      expand={() => this.setState({ expand: null })}
+                                      deleteExpense={() => this.deleteExpense(el.id, ind)}
+                                  />
+                              ) : (
+                                  <ExpenseSummary
+                                      key={el.id}
+                                      el={el}
+                                      ind={ind}
+                                      expand={() => this.setState({ expand: el.id })}
+                                  />
+                              );
+                          })
+                        : null}
+                    {!expenses ? <LoadingComponent /> : null}
                 </div>
                 <Summary total={total} history={this.props.history} />
             </div>

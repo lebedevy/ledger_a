@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Link } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { EmailInput, PasswordInput } from '../components/ContainedInput';
-import LoadingBackdrop from './LoadingBackdrop';
+import LoadingBackdrop from '../components/landing/LoadingBackdrop';
 
 // const backgroundImage = '/images/fabian-blank-pElSkGRA2NU-unsplash.jpg';
 const backgroundImage = '/images/fabian-blank-pElSkGRA2NU-unsplash-min.jpg';

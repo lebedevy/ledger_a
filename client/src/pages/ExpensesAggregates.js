@@ -6,6 +6,7 @@ import Summary from '../components/Summary';
 import AggregateSummary from '../components/AggregateSummary';
 import Header from '../components/Header';
 import { getSort, getSortIndexes } from '../utility/utility';
+import LoadingComponent from '../components/LoadingComponent';
 
 const styles = theme => ({
     container: {
@@ -38,7 +39,7 @@ const orderDir = ['asc', 'desc'];
 
 class ExpensesAggregates extends Component {
     state = {
-        expenses: [],
+        expenses: null,
         sortOpen: false,
         type: this.props.match.params.type,
         sort: 0,
@@ -124,15 +125,18 @@ class ExpensesAggregates extends Component {
                     }}
                 />
                 <div className={classes.expenseList}>
-                    {expenses.length === 0 ? (
+                    {expenses && expenses.length === 0 ? (
                         <label>{`No expenses for ${
                             type === 'cat' ? 'categories' : 'stores'
                         }`}</label>
                     ) : null}
-                    {expenses.map(el => {
-                        total += el.amount;
-                        return <AggregateSummary key={el.id} type={type} el={el} />;
-                    })}
+                    {expenses
+                        ? expenses.map(el => {
+                              total += el.amount;
+                              return <AggregateSummary key={el.id} type={type} el={el} />;
+                          })
+                        : null}
+                    {!expenses ? <LoadingComponent /> : null}
                 </div>
                 <Summary total={total} history={this.props.history} />
             </div>

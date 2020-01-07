@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/styles';
 import PieLegend from '../components/pie_overview/PieLegend';
 import PieChart from '../components/pie_overview/PieChart';
 import AggregateDetails from '../components/pie_overview/AggregateDetails';
+import LoadingComponent from '../components/LoadingComponent';
 
 // ADD SUPPORT FOR RANDOM COLOR GENERATION
 const colors = [
@@ -68,8 +69,9 @@ function AggregateOverview({ start, end, match, width }) {
     const classes = useStyles();
     const [type, setType] = useState(match.params.type);
     const [total, setTotal] = useState(0);
-    const [data, setData] = useState([]);
+    const [data, setData] = useState(null);
     const [selected, setSelected] = useState(null);
+    const [loadingSelected, setLoadingSelected] = useState(false);
     const [legendOpen, setLegendOpen] = useState(false);
 
     // update type param
@@ -108,6 +110,7 @@ function AggregateOverview({ start, end, match, width }) {
 
     const getDetails = async el => {
         if (el) {
+            setLoadingSelected(true);
             console.log(`Getting ${type === 'cat' ? 'category' : 'store'} details`);
             console.log(el);
             const res = await fetch(
@@ -115,7 +118,6 @@ function AggregateOverview({ start, end, match, width }) {
             );
             if (res.ok) {
                 const data = await res.json();
-                console.log(data.expenses);
                 const selected = { data: data.expenses, el };
                 setSelected(selected);
                 return;
@@ -123,21 +125,32 @@ function AggregateOverview({ start, end, match, width }) {
             console.error('Error fetching data');
             console.log(await res.json());
         } else setSelected(null);
+        setLoadingSelected(false);
     };
 
+    console.log(selected);
     return (
         <div className={classes.container}>
             <div className={classes.page}>
                 <h1>{`${type === 'cat' ? 'Category' : 'Store'} Overview`}</h1>
                 <div className={classes.graph}>
-                    <PieChart data={data} total={total} setSelected={getDetails} />
-                    <PieLegend
-                        open={legendOpen}
-                        setLegendOpen={setLegendOpen}
-                        width={width}
-                        data={data}
-                        setSelected={getDetails}
-                    />
+                    {data ? (
+                        <React.Fragment>
+                            <PieChart data={data} total={total} setSelected={getDetails} />
+                            <PieLegend
+                                open={legendOpen}
+                                setLegendOpen={setLegendOpen}
+                                width={width}
+                                data={data}
+                                setSelected={getDetails}
+                            />
+                        </React.Fragment>
+                    ) : (
+                        <React.Fragment>
+                            <div style={{ height: '80vw', maxHeight: '500px' }} />
+                            <LoadingComponent />
+                        </React.Fragment>
+                    )}
                 </div>
                 <div className={classes.summaryItem}>
                     {!selected ? (
@@ -146,6 +159,7 @@ function AggregateOverview({ start, end, match, width }) {
                             <label style={{ paddingLeft: '32px' }}>{`Select a ${
                                 type === 'cat' ? 'category' : 'store'
                             } from the graph or legend to see its details`}</label>
+                            {loadingSelected ? <LoadingComponent /> : null}
                         </React.Fragment>
                     ) : (
                         <AggregateDetails selected={selected} type={type} />
