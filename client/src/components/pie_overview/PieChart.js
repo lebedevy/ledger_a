@@ -27,6 +27,7 @@ export default function PieChart({ data, total, setSelected }) {
         <div className={classes.svgContainer}>
             <svg viewBox="-1.1 -1.1 2.2 2.2" className={classes.svg}>
                 {drawCircle(data, total, setSelected)}
+                {!data || data.length === 0 ? <circle r="1" fill="grey" /> : null}
                 <circle r=".75" fill="#FEFCFB" onClick={() => setSelected(null)} />
             </svg>
         </div>

@@ -10,6 +10,7 @@ const useStyles = makeStyles({
         display: 'flex',
         margin: '0 10px',
         flexDirection: 'column',
+        width: '200px',
         maxWidth: '200px',
         overflow: 'auto',
         padding: '0 5px',
@@ -65,6 +66,9 @@ function CategoryOverview({ open, setLegendOpen, width, data, setSelected }) {
                             <label>{` ${Math.round(el.percent * 100)}%`}</label>
                         </div>
                     ))}
+                    {!data || data.length === 0 ? (
+                        <label style={{ textAlign: 'center' }}>No expenses for the period</label>
+                    ) : null}
                 </div>
             )}
         </React.Fragment>
