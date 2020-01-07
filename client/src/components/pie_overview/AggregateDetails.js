@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import clsx from 'clsx';
-import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 
 import SummaryDetailsButton from '../overview/SummaryDetailsButton';
@@ -53,7 +51,7 @@ export default function AggregateDetails({ selected, type }) {
                     }`}</label>
                 </h2>
             </div>
-            <label>{`Total ${type == 'cat' ? 'category' : 'store'} expense: $${getCurrencyFormat(
+            <label>{`Total ${type === 'cat' ? 'category' : 'store'} expense: $${getCurrencyFormat(
                 total
             )}`}</label>
             <SummaryDetailsButton expanded={expanded} setExpanded={setExpanded} />
@@ -61,7 +59,7 @@ export default function AggregateDetails({ selected, type }) {
                 ? selected.data.map(el => (
                       <ExpenseSummary
                           el={el}
-                          exclude={{ [type == 'cat' ? 'category' : 'store']: 1 }}
+                          exclude={{ [type === 'cat' ? 'category' : 'store']: 1 }}
                       />
                   ))
                 : null}

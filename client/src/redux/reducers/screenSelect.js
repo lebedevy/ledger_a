@@ -1,9 +1,4 @@
 import { SET_SETTINGS_SCREEN, SET_SCREEN } from '../actionTypes';
-import { getFormatedDate } from '../../utility/utility';
-
-const today = new Date();
-const month = today.getMonth();
-const year = today.getFullYear();
 
 const initialState = {
     screen: 0,

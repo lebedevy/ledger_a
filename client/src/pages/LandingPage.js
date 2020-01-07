@@ -45,10 +45,7 @@ function Footer() {
         <footer className={classes.footer}>
             <div>
                 <label>
-                    Icons by{' '}
-                    <a target="_blank" href="https://icons8.com">
-                        Icons8
-                    </a>
+                    Icons by <a href="https://icons8.com">Icons8</a>
                 </label>
             </div>
             <label>

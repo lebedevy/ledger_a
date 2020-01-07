@@ -1,4 +1,4 @@
-import { SET_DATE, SET_PERIOD } from '../actionTypes';
+import { /*SET_DATE, */ SET_PERIOD } from '../actionTypes';
 import { getFormatedDate } from '../../utility/utility';
 
 const today = new Date();

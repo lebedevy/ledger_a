@@ -74,6 +74,7 @@ export default function Login({ history }) {
                         style={{ display: 'none' }}
                         src={backgroundImage}
                         title="Photo by Fabian Blank on Unsplash"
+                        alt="Piggy bank"
                     />
                 </div>
             ) : null}

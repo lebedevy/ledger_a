@@ -84,7 +84,7 @@ function AggregateOverview({ start, end, match, width }) {
     }, [type]);
 
     async function fetchExpenses() {
-        console.log(`Getting ${type == 'cat' ? 'category' : 'store'} expenses overview`);
+        console.log(`Getting ${type === 'cat' ? 'category' : 'store'} expenses overview`);
         const res = await fetch(`/api/users/expenses/summary/${type}?start=${start}&end=${end}`);
         if (res.ok) {
             const data = await res.json();
@@ -108,7 +108,7 @@ function AggregateOverview({ start, end, match, width }) {
 
     const getDetails = async el => {
         if (el) {
-            console.log(`Getting ${type == 'cat' ? 'category' : 'store'} details`);
+            console.log(`Getting ${type === 'cat' ? 'category' : 'store'} details`);
             console.log(el);
             const res = await fetch(
                 `/api/users/expenses/overview/${type}/details?start=${start}&end=${end}&id=${el.id}`

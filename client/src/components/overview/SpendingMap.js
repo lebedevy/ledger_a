@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/styles';
 import { getCurrencyFormat } from '../../utility/utility';
 
 const dayGrade = ['empty', 'first', 'second', 'third'];
-const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+// const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const cellSize = 12;
 
 const useStyles = makeStyles({
@@ -80,8 +80,8 @@ export default function SpendingMap({ data, step, setDay, day }) {
                             key={el.date}
                             className={clsx(
                                 classes.day,
-                                day && el.date == day.date && classes.selected,
-                                day && el.date != day.date && classes.muted,
+                                day && el.date === day.date && classes.selected,
+                                day && el.date !== day.date && classes.muted,
                                 classes[
                                     dayGrade[
                                         Math.ceil(el.amount / step) > 3

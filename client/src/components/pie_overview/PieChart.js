@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import clsx from 'clsx';
-import { connect } from 'react-redux';
+import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles({

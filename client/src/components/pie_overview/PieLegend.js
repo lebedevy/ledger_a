@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
-import { IconButton } from '@material-ui/core';
 
 import MobileLegend from './legend/MobileLegend';
 
@@ -16,7 +15,6 @@ const useStyles = makeStyles({
         padding: '0 5px',
         border: 'solid 1px #00000020',
         borderRadius: '5px',
-        overflow: 'auto',
         height: '80vw',
         maxHeight: '500px',
     },
