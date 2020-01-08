@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 
 import MobileLegend from './legend/MobileLegend';
+import { getCurrencyFormat } from '../../utility/utility';
+import PieLegendDisplayOptions from './legend/PieLegendDisplayOptions';
 
 const useStyles = makeStyles({
     legend: {
@@ -18,6 +20,10 @@ const useStyles = makeStyles({
         borderRadius: '5px',
         height: '80vw',
         maxHeight: '500px',
+        '& h2': {
+            textAlign: 'center',
+            margin: '20px 0 5px 0',
+        },
     },
     legendItem: {
         padding: '5px',
@@ -27,9 +33,6 @@ const useStyles = makeStyles({
         cursor: 'pointer',
         // border: '#ffffff99 1px solid',
     },
-    legendTitle: {
-        textAlign: 'center',
-    },
     label: {
         paddingRight: '5px',
         wordBreak: 'break-all',
@@ -38,6 +41,7 @@ const useStyles = makeStyles({
 
 function CategoryOverview({ open, setLegendOpen, width, data, setSelected }) {
     const classes = useStyles();
+    const [totals, setTotals] = useState(false);
 
     return (
         <React.Fragment>
@@ -52,7 +56,8 @@ function CategoryOverview({ open, setLegendOpen, width, data, setSelected }) {
             ) : (
                 // Desktop/widescreen legend
                 <div className={classes.legend}>
-                    <h2 className={classes.legendTitle}>Legend</h2>
+                    <h2>Legend</h2>
+                    <PieLegendDisplayOptions totals={totals} setTotals={setTotals} />
                     {data.map((el, ind) => (
                         <div
                             key={el.id}
@@ -63,7 +68,11 @@ function CategoryOverview({ open, setLegendOpen, width, data, setSelected }) {
                             <label className={classes.label}>
                                 {el['category_name'] ? el['category_name'] : el['store_name']}
                             </label>
-                            <label>{` ${Math.round(el.percent * 100)}%`}</label>
+                            {totals ? (
+                                <label>{`$${getCurrencyFormat(el.amount)}`}</label>
+                            ) : (
+                                <label>{` ${Math.round(el.percent * 100)}%`}</label>
+                            )}
                         </div>
                     ))}
                     {!data || data.length === 0 ? (

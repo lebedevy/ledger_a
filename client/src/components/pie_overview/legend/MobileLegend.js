@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
 
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
+import PieLegendDisplayOptions from './PieLegendDisplayOptions';
+import { getCurrencyFormat } from '../../../utility/utility';
 
 const useStyles = makeStyles({
     container: {
@@ -21,6 +23,7 @@ const useStyles = makeStyles({
     legendOpen: {
         background: '#00000070',
         overflow: 'auto',
+        width: '200px',
     },
     backdrop: {
         background: '#00000020',
@@ -49,6 +52,8 @@ const useStyles = makeStyles({
 
 export default function MobileLegend({ open, setLegendOpen, data, common, setSelected }) {
     const classes = useStyles();
+    const [totals, setTotals] = useState(false);
+
     return (
         <div className={clsx(classes.container, open && classes.open)}>
             {open ? (
@@ -64,21 +69,30 @@ export default function MobileLegend({ open, setLegendOpen, data, common, setSel
                     <label className={classes.legendTitleMobile}>Legend</label>
                 </div>
                 {open ? (
-                    <div>
-                        {data.map((el, ind) => (
-                            <div
-                                key={el.id}
-                                className={common.legendItem}
-                                style={{ background: `#${el.color}` }}
-                                onClick={() => setSelected(el)}
-                            >
-                                <label className={common.label}>
-                                    {el['category_name'] ? el['category_name'] : el['store_name']}
-                                </label>
-                                <label>{` ${Math.round(el.percent * 100)}%`}</label>
-                            </div>
-                        ))}
-                    </div>
+                    <React.Fragment>
+                        <PieLegendDisplayOptions totals={totals} setTotals={setTotals} />
+                        <div>
+                            {data.map((el, ind) => (
+                                <div
+                                    key={el.id}
+                                    className={common.legendItem}
+                                    style={{ background: `#${el.color}` }}
+                                    onClick={() => setSelected(el)}
+                                >
+                                    <label className={common.label}>
+                                        {el['category_name']
+                                            ? el['category_name']
+                                            : el['store_name']}
+                                    </label>
+                                    {totals ? (
+                                        <label>{`$${getCurrencyFormat(el.amount)}`}</label>
+                                    ) : (
+                                        <label>{` ${Math.round(el.percent * 100)}%`}</label>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </React.Fragment>
                 ) : null}
             </div>
         </div>

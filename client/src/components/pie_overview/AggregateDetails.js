@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/styles';
 import SummaryDetailsButton from '../overview/SummaryDetailsButton';
 import ExpenseSummary from '../ExpenseSummary';
 import { getCurrencyFormat } from '../../utility/utility';
+import { Switch } from '@material-ui/core';
 
 const detailsUseStyles = makeStyles({
     selectedTitle: {
@@ -31,12 +32,26 @@ export default function AggregateDetails({ selected, type }) {
     const classes = detailsUseStyles();
     const [total, setTotal] = useState(0);
     const [expanded, setExpanded] = useState(false);
-
-    console.log(selected);
+    const [checked, setChecked] = useState(false);
+    const [grouped, setGrouped] = useState(null);
 
     useEffect(() => {
         let total = 0;
-        selected.data.forEach(el => (total += el.amount));
+        let grouped = {};
+        let t = type === 'cat' ? 'store_id' : 'category_id';
+        selected.data.forEach(el => {
+            if (grouped[el[t]]) grouped[el[t]]['amount'] += el['amount'];
+            else {
+                const { id, user_id, category_id, store_id, amount } = el;
+                const expense = { id, user_id, category_id, store_id, amount };
+                expense[type === 'cat' ? 'store' : 'category'] =
+                    el[type === 'cat' ? 'store' : 'category'];
+                grouped[el[t]] = expense;
+            }
+            return (total += el.amount);
+        });
+        const sorted = Object.values(grouped).sort((a, b) => b['amount'] - a['amount']);
+        setGrouped(sorted);
         setTotal(total);
     }, [selected]);
 
@@ -55,14 +70,47 @@ export default function AggregateDetails({ selected, type }) {
                 total
             )}`}</label>
             <SummaryDetailsButton expanded={expanded} setExpanded={setExpanded} />
-            {expanded
-                ? selected.data.map(el => (
-                      <ExpenseSummary
-                          el={el}
-                          exclude={{ [type === 'cat' ? 'category' : 'store']: 1 }}
-                      />
-                  ))
-                : null}
+            {expanded ? (
+                <GroupDetailsSwitch
+                    checked={checked}
+                    setChecked={setChecked}
+                    type={type === 'cat' ? 'store' : 'category'}
+                />
+            ) : null}
+            {expanded ? (
+                <React.Fragment>
+                    {!checked
+                        ? selected.data.map(el => (
+                              <ExpenseSummary
+                                  key={el.id}
+                                  el={el}
+                                  exclude={{ [type === 'cat' ? 'category' : 'store']: 1 }}
+                              />
+                          ))
+                        : grouped.map(el => (
+                              <ExpenseSummary
+                                  key={el.id}
+                                  el={el}
+                                  exclude={{ [type === 'cat' ? 'category' : 'store']: 1, date: 1 }}
+                              />
+                          ))}
+                </React.Fragment>
+            ) : null}
         </React.Fragment>
+    );
+}
+
+function GroupDetailsSwitch({ checked, setChecked, type }) {
+    const classes = {
+        contianer: {
+            display: 'flex',
+            alignItems: 'center',
+        },
+    };
+    return (
+        <div>
+            <label>Group by {type}</label>
+            <Switch checked={checked} onChange={() => setChecked(!checked)} />
+        </div>
     );
 }
