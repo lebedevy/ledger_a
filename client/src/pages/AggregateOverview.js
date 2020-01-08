@@ -83,7 +83,7 @@ function AggregateOverview({ start, end, match, width }) {
     // Fetch expenses on type change
     useEffect(() => {
         fetchExpenses();
-    }, [type]);
+    }, [type, start, end]);
 
     async function fetchExpenses() {
         console.log(`Getting ${type === 'cat' ? 'category' : 'store'} expenses overview`);
