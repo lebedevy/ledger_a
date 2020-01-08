@@ -40,11 +40,11 @@ const styles = theme => ({
         marginTop: '65px',
     },
     mobile: {
-        height: '84vh',
+        // height: '84vh',
         // maxHeight: 'calc(100% - 16vh)',
         margin: 0,
         margin: '8vh 0',
-        overflow: 'auto',
+        overflow: 'hidden',
     },
 });
 
@@ -80,11 +80,6 @@ class App extends Component {
                     </Switch>
                 ) : (
                     <React.Fragment>
-                        {/* <div
-                            className={classes.app}
-                            // style={{ marginBottom: width > 600 ? 0 : '8vh' }}
-                        > */}
-                        {/* <div style={{ height: '60px' }} /> */}
                         {width > 600 ? (
                             <React.Fragment>
                                 <Route component={Navbar} />
@@ -98,7 +93,6 @@ class App extends Component {
                         )}
                         <div
                             className={clsx(width > 600 ? classes.desktop : classes.mobile)}
-                            // style={width <= 600 ? { height: `calc(${height}px - 16vh)` } : {}}
                         >
                             <Switch>
                                 <Route exact path="/users/expenses/overview" component={Overview} />
