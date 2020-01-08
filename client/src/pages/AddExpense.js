@@ -17,44 +17,31 @@ const styles = theme => ({
     },
 });
 
-const expenses = [
-    { amount: 100.25, store: 'WalMart', category: 'Home' },
-    { amount: 15, store: 'NoFrills', category: 'Food' },
-    { amount: 9, store: 'Dollar Store', category: 'Office' },
-    { amount: 0.25, store: 'NoFrills', category: 'Food' },
-    { amount: 100.25, store: 'WalMart', category: 'Home' },
-    // {
-    //     amount: 15,
-    //     store: 'NoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoNoFrills',
-    //     category: 'Food',
-    // },
-    { amount: 9, store: 'Dollar Store', category: 'Office' },
-    { amount: 0.25, store: 'NoFrills', category: 'Food' },
-    { amount: 100.25, store: 'WalMart', category: 'Home' },
-    { amount: 15, store: 'NoFrills', category: 'Food' },
-    { amount: 9, store: 'Dollar Store', category: 'Office' },
-    { amount: 0.25, store: 'NoFrills', category: 'Food' },
-    { amount: 100.25, store: 'WalMart', category: 'Home' },
-    { amount: 15, store: 'NoFrills', category: 'Food' },
-    { amount: 9, store: 'Dollar Store', category: 'Office' },
-    { amount: 0.25, store: 'NoFrills', category: 'Food' },
-    { amount: 100.25, store: 'WalMart', category: 'Home' },
-    { amount: 15, store: 'NoFrills', category: 'Food' },
-    { amount: 9, store: 'Dollar Store', category: 'Office' },
-    { amount: 0.25, store: 'NoFrills', category: 'Food' },
-    { amount: 100.25, store: 'WalMart', category: 'Home' },
-    { amount: 15, store: 'NoFrills', category: 'Food' },
-    { amount: 9, store: 'Dollar Store', category: 'Office' },
-    { amount: 0.25, store: 'NoFrills', category: 'Food' },
-    { amount: 100.25, store: 'WalMart', category: 'Home' },
-    { amount: 15, store: 'NoFrills', category: 'Food' },
-    { amount: 9, store: 'Dollar Store', category: 'Office' },
-    { amount: 0.25, store: 'NoFrills', category: 'Food' },
-    { amount: 100.25, store: 'WalMart', category: 'Home' },
-    { amount: 15, store: 'NoFrills', category: 'Food' },
-    { amount: 9, store: 'Dollar Store', category: 'Office' },
-    { amount: 0.25, store: 'NoFrills', category: 'Food' },
-];
+// const stores = [
+//     'Dollar Store',
+//     'NoFrills',
+//     'WalMart',
+//     'Amazon',
+//     'Chapters',
+//     'Burger King',
+//     'McDonalds',
+//     'Metro',
+//     'Ikea',
+//     'Tim Hortons',
+//     'Sport Check',
+//     'Staples',
+//     'Steam',
+// ];
+// const categories = [
+//     'Household',
+//     'Groceries',
+//     'Snacks',
+//     'Takeout',
+//     'Transportation',
+//     'Travel',
+//     'Entertainment',
+//     'Education',
+// ];
 
 class AddExpense extends Component {
     state = { amount: '', store: '', category: '', date: getFormatedDate(this.props.date.today) };
@@ -78,41 +65,49 @@ class AddExpense extends Component {
     }
 
     // Adds expenses in bulk (save method for later)
-    async populateTemp() {
-        for (let i = 0; i < expenses.length; i++) {
-            const el = expenses[i];
-            const { amount, store, category } = el;
-            console.log(amount, store, category);
-            const res = await fetch('/api/users/expenses/add', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    expenses: {
-                        amount: Math.floor(Math.random() * 250) + 1,
-                        store,
-                        category,
-                        date: new Date(
-                            2019,
-                            Math.floor(Math.random() * 2) + 10,
-                            Math.floor(Math.random() * 30 + 1)
-                        ),
-                    },
-                }),
-            });
-            const data = await res.json();
-            console.log(res, data);
-        }
-    }
+    // async populateTemp() {
+    //     for (let i = 0; i < 35; i++) {
+    //         const expenses = {
+    //             amount: Math.floor(Math.random() * 125) + 1,
+    //             store: stores[this.randomNum(stores.length - 1)],
+    //             category: categories[this.randomNum(categories.length - 1)],
+    //             date: new Date(
+    //                 2020,
+    //                 // Math.floor(Math.random() * 11) + 1,
+    //                 0,
+    //                 Math.floor(Math.random() * 30 + 1)
+    //             ),
+    //         };
+
+    //         console.log(expenses.date);
+    //         const res = await fetch('/api/users/expenses/add', {
+    //             method: 'POST',
+    //             headers: { 'Content-Type': 'application/json' },
+    //             body: JSON.stringify({
+    //                 expenses,
+    //             }),
+    //         });
+    //         const data = await res.json();
+    //         console.log(res, data);
+    //     }
+    // }
+
+    // randomNum(max) {
+    //     return Math.floor(Math.random() * Math.floor(max) + 1);
+    // }
 
     updateField(field, value) {
         this.setState({ [field]: value });
     }
 
     render() {
-        const { classes } = this.props;
+        const { classes, height, mobile } = this.props;
         const { amount, store, category, date } = this.state;
         return (
-            <div className={classes.container}>
+            <div
+                className={classes.container}
+                style={mobile ? { height: `calc(${height}px - 16vh)` } : {}}
+            >
                 <h2>Add Expense</h2>
                 <ExpenseManager
                     amount={amount}
@@ -126,9 +121,7 @@ class AddExpense extends Component {
                     submit={() => this.addExpense()}
                     buttonLabel="Add Expense"
                 />
-                {/* <Button disabled onClick={() => this.populateTemp()}>
-                    Add temp
-                </Button> */}
+                {/* <button disabled onClick={() => this.populateTemp()}>Add temp</button> */}
             </div>
         );
     }
@@ -137,7 +130,8 @@ class AddExpense extends Component {
 // Get date from redux
 const mapStateToProps = state => {
     const { date } = state;
-    return { date };
+    const { height, mobile } = state.screen;
+    return { date, height, mobile };
 };
 
 export default connect(mapStateToProps)(withStyles(styles)(AddExpense));

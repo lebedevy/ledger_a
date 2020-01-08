@@ -66,7 +66,7 @@ class App extends Component {
     }
 
     render() {
-        const { classes, user, width, height } = this.props;
+        const { classes, user, width, height, mobile } = this.props;
         return (
             <Router>
                 {user == null ? (
@@ -93,6 +93,7 @@ class App extends Component {
                         )}
                         <div
                             className={clsx(width > 600 ? classes.desktop : classes.mobile)}
+                            style={mobile ? { minHeight: `calc(${height}px - 16vh)` } : {}}
                         >
                             <Switch>
                                 <Route exact path="/users/expenses/overview" component={Overview} />
@@ -139,8 +140,8 @@ class App extends Component {
 
 const mapStateToProps = state => {
     const { user } = state;
-    const { width, height } = state.screen;
-    return { user, width, height };
+    const { width, height, mobile } = state.screen;
+    return { user, width, height, mobile };
 };
 
 export default connect(mapStateToProps, { setScreenDimensions })(withStyles(styles)(App));

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
-import { getFormatedDate } from '../utility/utility';
 import ExpenseManager from '../components/ExpenseManager';
 
 const useStyles = makeStyles({
@@ -15,7 +15,7 @@ const useStyles = makeStyles({
     },
 });
 
-export default function EditExpense({ match, history }) {
+function EditExpense({ match, history, height, mobile }) {
     const classes = useStyles();
     const [amount, setAmount] = useState('');
     const [store, setStore] = useState('');
@@ -54,7 +54,10 @@ export default function EditExpense({ match, history }) {
     }
 
     return (
-        <div className={classes.container}>
+        <div
+            className={classes.container}
+            style={mobile ? { height: `calc(${height}px - 16vh)` } : {}}
+        >
             <h2>Edit Expense</h2>
             <ExpenseManager
                 amount={amount}
@@ -71,3 +74,10 @@ export default function EditExpense({ match, history }) {
         </div>
     );
 }
+
+const mapStateToProps = state => {
+    const { height, mobile } = state.screen;
+    return { height, mobile };
+};
+
+export default connect(mapStateToProps)(EditExpense);
