@@ -76,8 +76,10 @@ function AggregateOverview({ start, end, match, width }) {
 
     // update type param
     useEffect(() => {
-        setType(match.params.type);
-        setSelected(null);
+        if (match.params.type !== type) {
+            setType(match.params.type);
+            setSelected(null);
+        }
     }, [match]);
 
     // Fetch expenses on type change
@@ -103,7 +105,6 @@ function AggregateOverview({ start, end, match, width }) {
             total += el.amount;
             el.color = colors[ind];
         });
-        console.log(data);
         setTotal(total);
         setData(data);
     }
@@ -111,8 +112,7 @@ function AggregateOverview({ start, end, match, width }) {
     const getDetails = async el => {
         if (el) {
             setLoadingSelected(true);
-            console.log(`Getting ${type === 'cat' ? 'category' : 'store'} details`);
-            console.log(el);
+            console.info(`Getting ${type === 'cat' ? 'category' : 'store'} details`);
             const res = await fetch(
                 `/api/users/expenses/overview/${type}/details?start=${start}&end=${end}&id=${el.id}`
             );
@@ -128,7 +128,6 @@ function AggregateOverview({ start, end, match, width }) {
         setLoadingSelected(false);
     };
 
-    console.log(selected);
     return (
         <div className={classes.container}>
             <div className={classes.page}>
