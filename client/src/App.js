@@ -7,7 +7,7 @@ import AddExpense from './pages/AddExpense';
 import Expenses from './pages/Expenses';
 import ExpensesAggregates from './pages/ExpensesAggregates';
 import Merge from './pages/Merge';
-import Navbar from './components/Navbar';
+import Navbar from './components/desktop/Navbar';
 import AppDrawer from './components/AppDrawer';
 import Register from './pages/Register';
 import Login from './pages/Login';
@@ -22,6 +22,7 @@ import MobileSettingsNav from './components/mobile/MobileSettingsNav';
 import AppSettings from './components/mobile/MobileSettings';
 import MobileAccount from './components/mobile/MobileAccount';
 import clsx from 'clsx';
+import DesktopSubNav from './components/desktop/DesktopSubNav';
 
 const styles = theme => ({
     container: {
@@ -36,8 +37,8 @@ const styles = theme => ({
     //     position: 'relative',
     // },
     desktop: {
-        height: 'calc(100vh - 65px)',
-        marginTop: '65px',
+        height: 'calc(100vh - 130px)',
+        marginTop: '130px',
     },
     mobile: {
         // height: '84vh',
@@ -83,7 +84,7 @@ class App extends Component {
                         {width > 600 ? (
                             <React.Fragment>
                                 <Route component={Navbar} />
-                                <Route component={AppDrawer} />
+                                <Route path="/users/expenses/:type/" component={DesktopSubNav} />
                             </React.Fragment>
                         ) : (
                             <React.Fragment>

@@ -22,7 +22,7 @@ const styles = theme => ({
         // maxHeight: '100%',
     },
     desktop: {
-        height: 'calc(100vh - 65px)',
+        height: 'calc(100vh - 130px)',
     },
     expenseList: {
         'overflow-y': 'auto',

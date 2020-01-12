@@ -20,7 +20,7 @@ const styles = theme => ({
         // height: '84vh',
     },
     desktop: {
-        height: 'calc(100vh - 65px)',
+        height: 'calc(100vh - 130px)',
     },
     expenseList: {
         'overflow-y': 'auto',

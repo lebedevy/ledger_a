@@ -2,7 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
-import { setScreen, setSettingsScreen } from '../../redux/actions';
+import { setScreen } from '../../redux/actions';
 
 import ListIcon from '@material-ui/icons/List';
 import DonutLargeIcon from '@material-ui/icons/DonutLarge';
@@ -38,7 +38,7 @@ const useStyles = makeStyles({
     },
 });
 
-function MobileSubNav({ screen, setScreen, setSettingsScreen }) {
+function MobileSubNav({ screen, setScreen }) {
     const classes = useStyles();
 
     return (
@@ -64,4 +64,4 @@ const mapStateToProps = state => {
     return { screen };
 };
 
-export default connect(mapStateToProps, { setScreen, setSettingsScreen })(MobileSubNav);
+export default connect(mapStateToProps, { setScreen })(MobileSubNav);

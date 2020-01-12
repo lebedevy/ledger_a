@@ -34,6 +34,7 @@ function MobileNav({ match, location, history, screen, settings }) {
     const classes = useStyles();
     const [baseLink, setBaseLink] = useState('/users/expenses/overview/');
     const [settingsBase, setSettingsBase] = useState('/users/app/settings/app');
+
     function navTo(path) {
         history.push(path);
     }
