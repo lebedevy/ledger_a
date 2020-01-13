@@ -10,7 +10,9 @@ import LoadingComponent from '../components/LoadingComponent';
 
 const styles = theme => ({
     container: {
-        width: '100%',
+        margin: '0 auto',
+        width: '100vw',
+        maxWidth: '1200px',
         display: 'flex',
         flexDirection: 'column',
         // background: '#00000020',

@@ -32,15 +32,23 @@ const useStyles = makeStyles({
         justifyContent: 'center',
         alignItems: 'center',
         background: '#00000020',
+        borderRight: '1px solid #00000020',
+        borderLeft: '1px solid #00000020',
         borderBottom: '2px solid #000000',
         cursor: 'pointer',
         padding: 0,
+        '&:hover': {
+            background: '#E7E5E8',
+        },
     },
 
     selected: {
         background: '#ffffff',
         paddingBottom: '2px',
         borderBottom: 'none',
+        '&:hover': {
+            background: '#ffffff',
+        },
     },
 });
 

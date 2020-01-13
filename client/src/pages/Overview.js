@@ -21,7 +21,7 @@ class PaddingCell {
     }
 }
 
-const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+// const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 const useStyles = makeStyles({
     container: {
@@ -31,11 +31,10 @@ const useStyles = makeStyles({
     page: {
         boxSizing: 'border-box',
         flex: 1,
-        padding: '2vh 10px 0 10px',
-        height: '100vh - 50px',
+        padding: '10px',
         maxWidth: '1200px',
-        // maxWidth: '100vw',
         overflow: 'hidden',
+        // borderRight: '1px solid #00000010',
         '& h1': {
             margin: '10px 0',
             padding: '10px 0',
@@ -124,14 +123,14 @@ function DailySummary({ start, end, history }) {
             }
         }
 
-        // Add padding to the front
+        // Add padding cells to the front
         let offset = [];
         for (let i = 0; i < offsetCount; i++) {
             offset.push(new PaddingCell());
         }
         result.unshift(...offset);
 
-        // Add padding to the back
+        // Add padding cells to the back
         const padding = 7 - (result.length % 7);
         if (padding < 7) {
             let backPadding = [];
