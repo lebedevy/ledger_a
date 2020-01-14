@@ -99,7 +99,6 @@ function MobileSubNav({ screen, setScreen, history, location }) {
 const mapStateToProps = state => {
     const { screen } = state.screenSelect;
     const { mobile } = state.screen;
-    console.log(state);
     return { screen, mobile };
 };
 

@@ -75,6 +75,10 @@ function ExpenseManager({
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        // Resolve: currently, categories gets resolved before stores
+        // When categories are set, useEffect gets called again, at which point the stores are still null
+        // which causes another call to get stores
+        // (async timing problem)
         if (categories === null) {
             console.log('Categories not set.');
             getCategories();

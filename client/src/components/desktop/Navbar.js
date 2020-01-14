@@ -79,7 +79,7 @@ function Navbar({ logout, openDrawer, history, screen }) {
         if (res.status === 200) history.go('/users/login');
         closeProfile();
     }
-    console.log(screen);
+
     return (
         <div className={classes.container}>
             <div className={classes.appbar}>
