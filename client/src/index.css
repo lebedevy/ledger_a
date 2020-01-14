@@ -17,3 +17,13 @@ code {
 * {
     box-sizing: border-box;
 }
+
+@keyframes fade-in-title {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

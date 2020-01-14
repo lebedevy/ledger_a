@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { IconButton } from '@material-ui/core';
+import { connect } from 'react-redux';
 
 const backgroundImage = '/images/kamil-feczko-GhxWry42_zQ-unsplash.jpg';
 
@@ -15,7 +16,7 @@ const useStyles = makeStyles({
         margin: '5px auto',
     },
     presentation: {
-        height: '100vh',
+        height: '98vh',
         zIndex: 1,
         position: 'relative',
         display: 'flex',
@@ -51,6 +52,14 @@ const useStyles = makeStyles({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
+        '& label': {
+            opacity: 0,
+            animation: '4s fade-in-title 1s forwards',
+        },
+        '& h1': {
+            opacity: 0,
+            animation: '4s fade-in-title 3s forwards',
+        },
     },
     moreButton: {
         marginTop: '10px',
@@ -58,53 +67,41 @@ const useStyles = makeStyles({
         background: '#BA5624',
         color: 'black',
         marginBottom: '10px',
+        opacity: 0,
+        animation: '4s fade-in-title 3s forwards',
     },
 });
 
-export default function Hero() {
+function Hero({ height, mobile }) {
     const classes = useStyles();
-    const [screenWidth, setScreenWidth] = useState(window.innerWidth);
-    const [screenHeight, setScreenHeight] = useState(window.innerHeight);
-
-    useEffect(() => {
-        function handleResize() {
-            setScreenWidth(window.innerWidth);
-            if (Math.abs(screenHeight - window.innerHeight) > 80)
-                setScreenHeight(window.innerHeight);
-        }
-        window.addEventListener('resize', handleResize);
-
-        return () => {
-            // clean up function
-            window.removeEventListener('resize', handleResize);
-        };
-    });
 
     return (
         <div className={classes.presentation}>
             <div className={classes.backdrop} />
             <div className={classes.summary}>
-                <h1
-                    className={clsx(
-                        classes.pageTitle,
-                        window.innerWidth < 601 ? classes.pageTitleMobile : null
-                    )}
-                >
-                    Ledger A
+                <h1 className={clsx(classes.pageTitle, mobile && classes.pageTitleMobile)}>
+                    LEDGER A
                 </h1>
                 <label>Your expenses shouldn't be a mystery</label>
             </div>
-            <IconButton className={clsx(classes.moreButton)}>
-                <ExpandMoreIcon
-                    fontSize={screenWidth > 600 ? 'medium' : 'small'}
-                    onClick={() =>
-                        window.scrollTo({
-                            top: screenHeight,
-                            behavior: 'smooth',
-                        })
-                    }
-                />
+            <IconButton
+                className={clsx(classes.moreButton)}
+                onClick={() =>
+                    window.scrollTo({
+                        top: height,
+                        behavior: 'smooth',
+                    })
+                }
+            >
+                <ExpandMoreIcon fontSize={mobile ? 'small' : 'medium'} />
             </IconButton>
         </div>
     );
 }
+
+const mapStateToProps = state => {
+    const { mobile, height } = state.screen;
+    return { mobile, height };
+};
+
+export default connect(mapStateToProps)(Hero);

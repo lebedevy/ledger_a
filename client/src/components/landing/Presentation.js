@@ -7,6 +7,7 @@ import SummaryItem from '../SummaryItem';
 
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
+import { connect } from 'react-redux';
 
 const cardImage = '/images/icons8-card-payment-80.png';
 const recordImage = '/images/icons8-book-and-pencil-100.png';
@@ -31,7 +32,7 @@ const useStyles = makeStyles({
         margin: '5px auto',
     },
     presentation: {
-        height: '100vh',
+        height: '98vh',
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
@@ -39,13 +40,16 @@ const useStyles = makeStyles({
         alignItems: 'center',
         textAlign: 'center',
         padding: '10px',
-        background: 'linear-gradient(#96C3CE,#73C1C6)',
+        background: '#ffffff',
+        // background: 'linear-gradient(#FFFFFF,#E6E8E6)',
         '& label': {
-            color: 'white',
+            // color: 'white',
+            fontWeight: 'bold',
             fontSize: '1.2em',
         },
-        '& h1': {
-            color: '#ffffff',
+        '& h2': {
+            color: '#191919',
+            fontSize: '2.5em',
         },
     },
     summaryMobile: {
@@ -55,20 +59,31 @@ const useStyles = makeStyles({
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',
+        justifyContent: 'space-around',
         alignItems: 'center',
+        maxHeight: '650px',
     },
     button: {
         marginTop: '10px',
         fontWeight: 'bold',
     },
+    card: {
+        display: 'flex',
+    },
+    mobile: {
+        flexDirection: 'column',
+    },
+    desktop: {
+        width: '600px',
+        justifyContent: 'space-around',
+        marginBottom: '50px',
+    },
 });
 
-export default function Presentation() {
+function Presentation({ mobile }) {
     const classes = useStyles();
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
     const [screenHeight, setScreenHeight] = useState(window.innerHeight);
-    const [presentation, setPresentation] = useState(0);
 
     useEffect(() => {
         function handleResize() {
@@ -84,37 +99,21 @@ export default function Presentation() {
         };
     });
 
-    function changePresentation() {
-        setPresentation(presentation === 1 ? 0 : 1);
-    }
-
     return (
         <div className={classes.presentation}>
-            <NavButton
-                dir={presentation ? 'left' : 'right'}
-                changePresentation={changePresentation}
-            />
-            <div className={clsx(classes.summary, screenWidth <= 600 && classes.summaryMobile)}>
-                <h1
+            <div className={clsx(classes.summary, mobile && classes.summaryMobile)}>
+                <h2
                     className={
                         window.innerWidth < 601 ? classes.pageTitleMobile : classes.pageTitle
                     }
                 >
-                    Ledger A
-                </h1>
-                {presentation ? (
-                    <React.Fragment>
-                        <SummaryItem image={surpriseImage} imageAlt="Surprise" label={pointOne} />
-                        <SummaryItem image={walkingImage} label={pointTwo} />
-                        <SummaryItem image={timeImage} imageAlt="Time" label={pointThree} />
-                    </React.Fragment>
-                ) : (
-                    <React.Fragment>
-                        <SummaryItem image={cardImage} imageAlt="Credit Card" label="Spend" />
-                        <SummaryItem image={recordImage} imageAlt="Notebook" label="Log" />
-                        <SummaryItem image={analyzeImage} imageAlt="Analyze" label="Analyze" />
-                    </React.Fragment>
-                )}
+                    HOW IT WORKS
+                </h2>
+                <div className={clsx(classes.card, mobile ? classes.mobile : classes.desktop)}>
+                    <SummaryItem image={cardImage} imageAlt="Credit Card" label="Spend" />
+                    <SummaryItem image={recordImage} imageAlt="Notebook" label="Log" />
+                    <SummaryItem image={analyzeImage} imageAlt="Analyze" label="Analyze" />
+                </div>
 
                 <Button
                     href="/users/register"
@@ -122,37 +121,22 @@ export default function Presentation() {
                     variant="contained"
                     className={classes.button}
                 >
-                    Register
+                    GET STARTED
                 </Button>
             </div>
         </div>
     );
 }
 
-const useButStyles = makeStyles({
-    button: {
-        background: '#',
-        position: 'absolute',
-        top: '50%',
-        marginTop: '10px',
-        fontWeight: 'bold',
-        background: '#BA5624',
-        color: 'black',
-        marginBottom: '10px',
-    },
-    right: {
-        right: '10px',
-    },
-    left: {
-        left: '10px',
-    },
-});
+const mapStateToProps = state => {
+    const { mobile } = state.screen;
+    return { mobile };
+};
 
-function NavButton({ dir, changePresentation }) {
-    const classes = useButStyles();
-    return (
-        <IconButton onClick={changePresentation} className={clsx(classes.button, classes[dir])}>
-            {dir === 'right' ? <KeyboardArrowRightIcon /> : <KeyboardArrowLeftIcon />}
-        </IconButton>
-    );
-}
+export default connect(mapStateToProps)(Presentation);
+
+//   <React.Fragment>
+//       <SummaryItem image={surpriseImage} imageAlt="Surprise" label={pointOne} />
+//       <SummaryItem image={walkingImage} label={pointTwo} />
+//       <SummaryItem image={timeImage} imageAlt="Time" label={pointThree} />
+//   </React.Fragment>;
