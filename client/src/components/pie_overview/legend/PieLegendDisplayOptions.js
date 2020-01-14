@@ -22,7 +22,7 @@ const useStyles = makeStyles({
 
 function PieLegendDisplayOptions({ totals, setTotals, mobile }) {
     const classes = useStyles();
-    console.log(mobile);
+
     return (
         <div className={clsx(classes.displayOption, mobile && classes.mobile)}>
             <label>%</label>
@@ -34,7 +34,6 @@ function PieLegendDisplayOptions({ totals, setTotals, mobile }) {
 
 const mapStateToProps = state => {
     const { mobile } = state.screen;
-    console.log();
     return { mobile };
 };
 

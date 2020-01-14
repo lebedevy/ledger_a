@@ -54,6 +54,7 @@ function drawCircle(data, total, setSelected) {
         const path = `M ${startX} ${startY} A 1 1 0 ${largeArc} 1 ${endX} ${endY} L 0 0`;
         lines.push(
             <line
+                key={slice.id + 'line'}
                 x1={endX}
                 y1={endY}
                 x2={0}

@@ -60,7 +60,7 @@ const useStyles = makeStyles({
 function Navbar({ logout, openDrawer, history, screen }) {
     const classes = useStyles();
     const [targetEl, setTargetEl] = useState(null);
-    const [showSetting, setShowSetting] = useState(true);
+    const [showSetting, setShowSetting] = useState(false);
     const [path, setPath] = useState(null);
 
     useEffect(() => {

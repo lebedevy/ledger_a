@@ -34,28 +34,47 @@ const useStyles = makeStyles({
 
 function DateRange({ start, end, setPeriod }) {
     const classes = useStyles();
-    const [endError, setEndError] = useState(null);
+    const [startStr, setStartStr] = useState(start);
+    const [endStr, setEndStr] = useState(end);
+    const [error, setError] = useState(null);
     const [startError, setStartError] = useState(null);
 
-    const setEnd = e => {
-        let endDate = e.target.value;
-        if (new Date(endDate) >= new Date(start)) {
-            clearErrors();
-            setPeriod({ end: endDate, start });
-        } else setEndError('Must be before or after start date');
-    };
+    function getDates(start, end) {
+        return [new Date(start), new Date(end)];
+    }
 
-    const setStart = e => {
-        let startDate = e.target.value;
-        if (new Date(startDate) <= new Date(end)) {
-            clearErrors();
-            setPeriod({ start: startDate, end });
-        } else setStartError('Must be less than or equal to end date');
-    };
+    function setDates(start, end) {
+        const [first, second] = getDates(start, end);
+        setStartStr(start);
+        setEndStr(end);
+        // Exit function if first date not a valid date
+        if (isNaN(first.getTime())) {
+            setStartError('Invalid date');
+            return;
+        }
+        // Exit if second date not valid
+        if (isNaN(second.getTime())) {
+            setError('Invalid date');
+            return;
+        }
+        // Exit if first date greater than second date
+        if (first > second) {
+            setError('End date must be greater than start date');
+            return false;
+        }
+        // Exit if difference between dates is greater than one year
+        if (Math.abs((first - second) / 86400000) > 365) {
+            setError('Difference between dates can be at most a year');
+            return;
+        }
+        // Else clear errors and set the periods in redux
+        clearErrors();
+        setPeriod({ start, end });
+    }
 
     function clearErrors() {
         setStartError(null);
-        setEndError(null);
+        setError(null);
     }
 
     return (
@@ -66,8 +85,8 @@ function DateRange({ start, end, setPeriod }) {
                     type="date"
                     margin="dense"
                     variant="outlined"
-                    value={start}
-                    onChange={setStart}
+                    value={startStr}
+                    onChange={e => setDates(e.target.value, endStr)}
                 />
             </div>
             {startError ? <label className={classes.error}>{startError}</label> : null}
@@ -77,11 +96,11 @@ function DateRange({ start, end, setPeriod }) {
                     type="date"
                     margin="dense"
                     variant="outlined"
-                    value={end}
-                    onChange={setEnd}
+                    value={endStr}
+                    onChange={e => setDates(startStr, e.target.value)}
                 />
             </div>
-            {endError ? <label className={classes.error}>{endError}</label> : null}
+            {error ? <label className={classes.error}>{error}</label> : null}
         </div>
     );
 }
@@ -89,6 +108,7 @@ function DateRange({ start, end, setPeriod }) {
 const mapStateToProps = state => {
     const { date } = state;
     const { start, end } = date.period;
+    console.log(start, end);
     return { start, end };
 };
 
