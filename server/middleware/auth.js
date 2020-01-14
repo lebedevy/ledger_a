@@ -1,15 +1,11 @@
 const db = require('../models');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
-const secret = 'hj2bas2361d55hKJhd9AHd9a.asd0121';
+const secret = require(__dirname + '/../config/config.json')['jwt']['secret'];
 
 async function checkAuth(req, res, next) {
     console.log('Checking Auth');
-    console.log(req.cookies);
     const token = req.cookies.jwt;
-    // const token =
-    //     'egJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE1NzU2NTYwNjJ9.2xzHgv3iHamt058C2WwSmTdz2WjW9Vj8HQ2GCSc6GiQ';
     let check;
     try {
         check = await jwt.verify(token, secret);

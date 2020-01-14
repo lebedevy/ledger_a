@@ -3,8 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const db = require('../models');
 const jwt = require('jsonwebtoken');
-
-const secret = 'hj2bas2361d55hKJhd9AHd9a.asd0121';
+const secret = require(__dirname + '/../config/config.json')['jwt']['secret'];
 
 /* GET users listing. */
 // router.get('/', async (req, res, next) => {
