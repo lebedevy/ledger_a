@@ -56,6 +56,12 @@ class Expenses extends Component {
         }
     }
 
+    componentDidUpdate(props) {
+        if (this.props.start !== props.start || this.props.end !== props.end) {
+            this.fetchExpenses();
+        }
+    }
+
     updateFilters() {
         this.fetchExpenses();
         this.updateURL();

@@ -61,7 +61,11 @@ class ExpensesAggregates extends Component {
 
     // If component pathname changed from cat to store, reload component data to change type
     componentDidUpdate(props) {
-        if (this.props.location.pathname !== props.location.pathname) {
+        if (
+            this.props.location.pathname !== props.location.pathname ||
+            props.start !== this.props.start ||
+            props.end !== this.props.end
+        ) {
             const { match } = this.props;
             const [sort, order] = getSortIndexes(
                 optionsLower,

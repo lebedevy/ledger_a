@@ -3,12 +3,18 @@ import { connect } from 'react-redux';
 import { getCurrencyFormat } from '../utility/utility';
 import { makeStyles } from '@material-ui/styles';
 import AddExpenseButton from './AddExpenseButton';
+import clsx from 'clsx';
+import DateRange from './DateRange';
 
 const useStyles = makeStyles({
     summary: {
         padding: '10px',
         height: '70px',
-        background: '#96C3CE',
+        background: '#EBF2FA',
+        borderTop: '1px solid #00000050',
+    },
+    desktop: {
+        border: 'solid 1px #00000020',
     },
     total: {
         fontWeight: 'bold',
@@ -21,10 +27,10 @@ const useStyles = makeStyles({
     },
 });
 
-function Summary({ total, start, end, history }) {
+function Summary({ total, start, end, history, mobile, width }) {
     const classes = useStyles();
     return (
-        <div className={classes.summary}>
+        <div className={clsx(classes.summary, width >= 1200 && classes.desktop)}>
             <label>Total: </label>
             <label className={classes.total}>${getCurrencyFormat(total)}</label>
             <br />
@@ -35,9 +41,9 @@ function Summary({ total, start, end, history }) {
 }
 
 const mapStateToProps = state => {
-    const { date } = state;
-    const { start, end } = date.period;
-    return { start, end };
+    const { start, end } = state.date.period;
+    const { mobile, width } = state.screen;
+    return { start, end, mobile, width };
 };
 
 export default connect(mapStateToProps)(Summary);

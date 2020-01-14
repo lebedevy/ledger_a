@@ -21,7 +21,7 @@ const useStyles = makeStyles({
         right: 0,
         left: 0,
         height: '65px',
-        background: 'gray',
+        background: '#353A47',
     },
     appbar: {
         width: '100%',
@@ -32,18 +32,24 @@ const useStyles = makeStyles({
     options: {
         display: 'flex',
         alignItems: 'center',
-        '& button': {
-            display: 'flex',
-            alignItems: 'center',
-            color: '#ffffff',
-            fontSize: '1em',
-            background: 'none',
-            border: 'none',
-            padding: '10px',
-            margin: '10px',
-            '&:hover': {
-                background: '#00000020',
-            },
+    },
+    menuItem: {
+        display: 'flex',
+        alignItems: 'center',
+        background: 'none',
+        fontSize: '1em',
+        border: 'none',
+        padding: '10px',
+        margin: '10px',
+        color: '#ffffff',
+        borderRadius: '2px',
+        outlineColor: '#DC136C',
+        userSelect: 'none',
+        '&:hover': {
+            background: '#00000020',
+        },
+        '& label': {
+            paddingLeft: '5px',
         },
     },
     icon: {
@@ -54,7 +60,7 @@ const useStyles = makeStyles({
 function Navbar({ logout, openDrawer, history, screen }) {
     const classes = useStyles();
     const [targetEl, setTargetEl] = useState(null);
-    const [showSetting, setShowSetting] = useState(false);
+    const [showSetting, setShowSetting] = useState(true);
     const [path, setPath] = useState(null);
 
     useEffect(() => {
@@ -81,60 +87,44 @@ function Navbar({ logout, openDrawer, history, screen }) {
     }
 
     return (
-        <div className={classes.container}>
-            <div className={classes.appbar}>
-                <div className={classes.options}>
-                    <button onClick={() => navTo(path)}>
-                        <MonetizationOnIcon />
-                        All Expenses
-                    </button>
-                    <button onClick={() => navTo(path + 'cat')}>
-                        <div>
+        <React.Fragment>
+            {showSetting ? <PeriodSettings close={() => setShowSetting(false)} /> : null}
+            <div className={classes.container}>
+                <div className={classes.appbar}>
+                    <div className={classes.options}>
+                        <button className={classes.menuItem} onClick={() => navTo(path)}>
+                            <MonetizationOnIcon />
+                            <label>All Expenses</label>
+                        </button>
+                        <button className={classes.menuItem} onClick={() => navTo(path + 'cat')}>
                             <CategoryIcon />
-                            By Category
-                        </div>
-                    </button>
-                    <button onClick={() => navTo(path + 'store')}>
-                        <StoreIcon />
-                        By Store
-                    </button>
-                    <button onClick={() => setShowSetting(!showSetting)}>
-                        <SettingsApplicationsIcon />
-                        Period Settings
-                    </button>
-                    {showSetting ? <PeriodSettings close={() => setShowSetting(false)} /> : null}
-
-                    {/* <IconButton>
-                        <SettingsApplicationsIcon />
-                    </IconButton> */}
-                </div>
-                <div className={classes.options}>
-                    <IconButton onClick={openProfile}>
-                        <AccountCircleIcon className={classes.icon} />
-                    </IconButton>
-                    <Menu anchorEl={targetEl} open={Boolean(targetEl)} onClose={closeProfile}>
-                        <MenuItem button onClick={logoutUser}>
-                            Logout
-                        </MenuItem>
-                    </Menu>
+                            <label>By Category</label>
+                        </button>
+                        <button className={classes.menuItem} onClick={() => navTo(path + 'store')}>
+                            <StoreIcon />
+                            <label>By Store</label>
+                        </button>
+                    </div>
+                    <div className={classes.options}>
+                        <button
+                            className={classes.menuItem}
+                            onClick={() => setShowSetting(!showSetting)}
+                        >
+                            <SettingsApplicationsIcon />
+                            <label>Period Settings</label>
+                        </button>
+                        <IconButton onClick={openProfile}>
+                            <AccountCircleIcon className={classes.icon} />
+                        </IconButton>
+                        <Menu anchorEl={targetEl} open={Boolean(targetEl)} onClose={closeProfile}>
+                            <MenuItem button onClick={logoutUser}>
+                                Logout
+                            </MenuItem>
+                        </Menu>
+                    </div>
                 </div>
             </div>
-        </div>
-        // <AppBar>
-        //     <Toolbar className={classes.appbar}>
-        //         <IconButton onClick={openDrawer}>
-        //             <MenuIcon className={classes.icon} />
-        //         </IconButton>
-        //         <IconButton onClick={openProfile}>
-        //             <AccountCircleIcon className={classes.icon} />
-        //         </IconButton>
-        //         <Menu anchorEl={targetEl} open={Boolean(targetEl)} onClose={closeProfile}>
-        //             <MenuItem button onClick={logoutUser}>
-        //                 Logout
-        //             </MenuItem>
-        //         </Menu>
-        //     </Toolbar>
-        // </AppBar>
+        </React.Fragment>
     );
 }
 
@@ -146,7 +136,7 @@ const mapStateToProps = state => {
 export default connect(mapStateToProps, { openDrawer, logout })(Navbar);
 
 const periodSetUseStyles = makeStyles({
-    periodSetting: {
+    container: {
         zIndex: '1300',
 
         display: 'flex',
@@ -169,11 +159,19 @@ const periodSetUseStyles = makeStyles({
     dateRangeContainer: {
         zIndex: 1,
         padding: '30px',
+        width: '500px',
         color: 'black',
         background: '#ffffff',
+        borderRadius: '5px',
         border: '1px solid #00000060',
         '& label': {
             display: 'block',
+            padding: '3px',
+        },
+        '& h2': {
+            margin: 0,
+            marginBottom: '10px',
+            textAlign: 'center',
         },
     },
 });
@@ -181,15 +179,9 @@ const periodSetUseStyles = makeStyles({
 function PeriodSettings({ close }) {
     const classes = periodSetUseStyles();
     return (
-        <div className={classes.periodSetting}>
+        <div className={classes.container}>
             <div className={classes.backdrop} onClick={close} />
-            <div
-                className={classes.dateRangeContainer}
-                onClick={e => {
-                    e.preventDefault();
-                    return false;
-                }}
-            >
+            <div className={classes.dateRangeContainer}>
                 <h2>App Date Range</h2>
                 <label>Select the date range for app data.</label>
                 <label>Show expenses for period:</label>

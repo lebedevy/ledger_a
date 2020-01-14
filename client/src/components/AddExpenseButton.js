@@ -11,12 +11,12 @@ const useStyles = makeStyles({
     },
 });
 
-function AddExpenseButton({ history, width }) {
+function AddExpenseButton({ history, mobile }) {
     const classes = useStyles();
     return (
         <Fab
             className={classes.addExpense}
-            style={{ bottom: width > 600 ? '10px' : '9vh ' }}
+            style={{ bottom: mobile ? '9vh' : '10px' }}
             size="medium"
             color="secondary"
             onClick={() => history.push('/users/expenses/add')}
@@ -27,8 +27,8 @@ function AddExpenseButton({ history, width }) {
 }
 
 const mapStateToProps = state => {
-    const { width } = state.screen;
-    return { width };
+    const { mobile } = state.screen;
+    return { mobile };
 };
 
 export default connect(mapStateToProps)(AddExpenseButton);
