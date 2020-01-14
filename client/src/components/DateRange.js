@@ -38,18 +38,26 @@ function DateRange({ start, end, setPeriod }) {
     const [startError, setStartError] = useState(null);
 
     const setEnd = e => {
-        let endDate = e.target.value;
-        if (new Date(endDate) >= new Date(start)) {
-            clearErrors();
-            setPeriod({ end: endDate, start });
-        } else setEndError('Must be before or after start date');
+        const endDate = e.target.value;
+        const first = new Date(start);
+        const second = new Date(endDate);
+        if (second >= first) {
+            if (second.getFullYear() - first.getFullYear() <= 1) {
+                clearErrors();
+                setPeriod({ end: endDate, start });
+            } else setEndError('Period cannot be longer than a year');
+        } else setEndError('End date must be equal or greater than start date');
     };
 
     const setStart = e => {
-        let startDate = e.target.value;
-        if (new Date(startDate) <= new Date(end)) {
-            clearErrors();
-            setPeriod({ start: startDate, end });
+        const startDate = e.target.value;
+        const first = new Date(startDate);
+        const second = new Date(end);
+        if (first <= second) {
+            if (second.getFullYear() - first.getFullYear() <= 1) {
+                clearErrors();
+                setPeriod({ start: startDate, end });
+            } else setStartError('Period cannot be longer than a year');
         } else setStartError('Must be less than or equal to end date');
     };
 
