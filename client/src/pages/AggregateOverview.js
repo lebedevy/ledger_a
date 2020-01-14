@@ -120,6 +120,7 @@ function AggregateOverview({ start, end, match, width }) {
                 const data = await res.json();
                 const selected = { data: data.expenses, el };
                 setSelected(selected);
+                setLoadingSelected(false);
                 return;
             }
             console.error('Error fetching data');
