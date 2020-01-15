@@ -4,7 +4,6 @@ import { getCurrencyFormat } from '../utility/utility';
 import { makeStyles } from '@material-ui/styles';
 import AddExpenseButton from './AddExpenseButton';
 import clsx from 'clsx';
-import DateRange from './DateRange';
 
 const useStyles = makeStyles({
     summary: {

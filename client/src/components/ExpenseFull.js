@@ -30,7 +30,7 @@ export default function ExpenseFull(props) {
                 <Button
                     variant="outlined"
                     color="primary"
-                    href={`/users/expenses/edit/${props.el.id}`}
+                    onClick={() => props.history.push(`/users/expenses/edit/${props.el.id}`)}
                 >
                     Edit
                 </Button>

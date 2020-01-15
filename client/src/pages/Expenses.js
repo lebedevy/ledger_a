@@ -117,7 +117,7 @@ class Expenses extends Component {
     }
 
     render() {
-        const { classes, width, height } = this.props;
+        const { classes, width, height, history } = this.props;
         const { expenses, expand, openSort, sort, order } = this.state;
         let total = 0;
         return (
@@ -145,6 +145,7 @@ class Expenses extends Component {
                               return el.id === expand ? (
                                   <ExpenseFull
                                       key={el.id}
+                                      history={history}
                                       el={el}
                                       ind={ind}
                                       expand={() => this.setState({ expand: null })}
@@ -162,7 +163,7 @@ class Expenses extends Component {
                         : null}
                     {!expenses ? <LoadingComponent /> : null}
                 </div>
-                <Summary total={total} history={this.props.history} />
+                <Summary total={total} history={history} />
             </div>
         );
     }
