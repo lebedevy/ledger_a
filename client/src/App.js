@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import clsx from 'clsx';
 import { connect } from 'react-redux';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import { withStyles } from '@material-ui/styles';
+import { setScreenDimensions } from './redux/actions';
 
 import AddExpense from './pages/AddExpense';
 import Expenses from './pages/Expenses';
@@ -15,13 +17,11 @@ import LandingPage from './pages/LandingPage';
 import EditExpense from './pages/EditExpense';
 import Overview from './pages/Overview';
 import CategoryOverview from './pages/AggregateOverview';
-import { setScreenDimensions } from './redux/actions';
 import MobileNav from './components/mobile/MobileNav';
 import MobileSubNav from './components/mobile/MobileSubNav';
 import MobileSettingsNav from './components/mobile/MobileSettingsNav';
 import AppSettings from './components/mobile/MobileSettings';
 import MobileAccount from './components/mobile/MobileAccount';
-import clsx from 'clsx';
 import DesktopSubNav from './components/desktop/DesktopSubNav';
 
 const styles = theme => ({
@@ -81,29 +81,40 @@ class App extends Component {
                     </Switch>
                 ) : (
                     <React.Fragment>
-                        {width > 600 ? (
+                        {!mobile ? (
                             <React.Fragment>
                                 <Route component={Navbar} />
-                                <Route path="/users/expenses/:type/" component={DesktopSubNav} />
+                                <Route
+                                    path="/users/expenses/get/:type/"
+                                    component={DesktopSubNav}
+                                />
                             </React.Fragment>
                         ) : (
                             <React.Fragment>
-                                <Route path="/users/expenses/:type/" component={MobileSubNav} />
+                                <Route path="/users/expenses/get/:type/" component={MobileSubNav} />
                                 <Route path="/users/app/settings/" component={MobileSettingsNav} />
                             </React.Fragment>
                         )}
                         <div
-                            className={clsx(width > 600 ? classes.desktop : classes.mobile)}
+                            className={clsx(mobile ? classes.mobile : classes.desktop)}
                             style={mobile ? { minHeight: `calc(${height}px - 16vh)` } : {}}
                         >
                             <Switch>
-                                <Route exact path="/users/expenses/overview" component={Overview} />
                                 <Route
                                     exact
-                                    path="/users/expenses/overview/:type"
+                                    path="/users/expenses/get/overview"
+                                    component={Overview}
+                                />
+                                <Route
+                                    exact
+                                    path="/users/expenses/get/overview/:type"
                                     component={CategoryOverview}
                                 />
-                                <Route exact path="/users/expenses/summary" component={Expenses} />
+                                <Route
+                                    exact
+                                    path="/users/expenses/get/summary"
+                                    component={Expenses}
+                                />
                                 <Route exact path="/users/expenses/add" component={AddExpense} />
                                 <Route
                                     exact
@@ -112,26 +123,25 @@ class App extends Component {
                                 />
                                 <Route
                                     exact
-                                    path="/users/expenses/summary/:type"
+                                    path="/users/expenses/get/summary/:type"
                                     component={ExpensesAggregates}
                                 />
-                                <Route
+                                {/* <Route
                                     exact
                                     path="/users/expenses/manage/merge/:type"
                                     render={props => <Merge {...props} />}
-                                />
+                                /> */}
                                 <Route path="/users/app/settings/app" component={AppSettings} />
                                 <Route
                                     path="/users/app/settings/account"
                                     component={MobileAccount}
                                 />
                                 <Route>
-                                    <Redirect to="/users/expenses/overview/" />
+                                    <Redirect to="/users/expenses/get/overview/" />
                                 </Route>
                             </Switch>
                         </div>
-                        {width < 601 ? <Route component={MobileNav} /> : null}
-                        {/* </div> */}
+                        {mobile ? <Route component={MobileNav} /> : null}
                     </React.Fragment>
                 )}
             </Router>

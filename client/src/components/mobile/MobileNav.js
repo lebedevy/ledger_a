@@ -32,7 +32,7 @@ const useStyles = makeStyles({
 
 function MobileNav({ match, location, history, screen, settings }) {
     const classes = useStyles();
-    const [baseLink, setBaseLink] = useState('/users/expenses/overview/');
+    const [baseLink, setBaseLink] = useState('/users/expenses/get/overview/');
     const [settingsBase, setSettingsBase] = useState('/users/app/settings/app');
 
     function navTo(path) {
@@ -40,18 +40,18 @@ function MobileNav({ match, location, history, screen, settings }) {
     }
 
     useEffect(() => {
-        setBaseLink(`/users/expenses/${screen === 0 ? 'overview' : 'summary'}`);
+        setBaseLink(`/users/expenses/get/${screen === 0 ? 'overview' : 'summary'}`);
         if (
-            location.pathname.includes('/users/expenses/overview') ||
-            location.pathname.includes('/users/expenses/summary')
+            location.pathname.includes('/users/expenses/get/overview') ||
+            location.pathname.includes('/users/expenses/get/summary')
         ) {
             // direct app to the correct screen to reflect change
             let path = location.pathname;
             if (path.slice(-1) === '/') path = path.slice(0, -1);
             const els = path.split('/');
             // if has type (cat || store) add type
-            const type = els.length > 4 ? els[els.length - 1] : '';
-            history.push(`/users/expenses/${screen === 0 ? 'overview' : 'summary'}/${type}`);
+            const type = els.length > 5 ? els[els.length - 1] : '';
+            history.push(`/users/expenses/get/${screen === 0 ? 'overview' : 'summary'}/${type}`);
         }
     }, [screen]);
 

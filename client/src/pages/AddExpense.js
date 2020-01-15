@@ -6,14 +6,17 @@ import ExpenseManager from '../components/ExpenseManager';
 
 const styles = theme => ({
     container: {
-        height: '100%',
-        width: '100%',
+        position: 'fixed',
+        top: 0,
+        bottom: 0,
+        right: 0,
+        left: 0,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        // background: '#ffffff80',
-        background: '#96C3CE',
+        // background: '#00000010',
+        background: '#C9D1D6',
     },
 });
 
@@ -61,7 +64,7 @@ class AddExpense extends Component {
         });
         const data = await res.json();
         // console.log(res, data);
-        if (res.status === 200) this.props.history.push('/users/expenses/summary');
+        if (res.status === 200) this.props.history.push('/users/expenses/get/summary');
     }
 
     // Adds expenses in bulk (save method for later)
@@ -104,10 +107,7 @@ class AddExpense extends Component {
         const { classes, height, mobile } = this.props;
         const { amount, store, category, date } = this.state;
         return (
-            <div
-                className={classes.container}
-                style={mobile ? { height: `calc(${height}px - 16vh)` } : {}}
-            >
+            <div className={classes.container} style={mobile ? { bottom: '8vh' } : { top: '65px' }}>
                 <h2>Add Expense</h2>
                 <ExpenseManager
                     amount={amount}

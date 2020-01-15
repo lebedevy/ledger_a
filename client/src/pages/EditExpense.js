@@ -5,8 +5,11 @@ import ExpenseManager from '../components/ExpenseManager';
 
 const useStyles = makeStyles({
     container: {
-        height: '100%',
-        width: '100%',
+        position: 'fixed',
+        top: 0,
+        bottom: 0,
+        right: 0,
+        left: 0,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -50,14 +53,11 @@ function EditExpense({ match, history, height, mobile }) {
         });
         const data = await res.json();
         console.log(res, data);
-        if (res.status === 200) history.push('/users/expenses/summary');
+        if (res.status === 200) history.push('/users/expenses/get/summary');
     }
 
     return (
-        <div
-            className={classes.container}
-            style={mobile ? { height: `calc(${height}px - 16vh)` } : {}}
-        >
+        <div className={classes.container} style={mobile ? { bottom: '8vh' } : { top: '65px' }}>
             <h2>Edit Expense</h2>
             <ExpenseManager
                 amount={amount}

@@ -7,14 +7,19 @@ import { setCategories, setStores } from '../redux/actions';
 
 const useStyles = makeStyles({
     form: {
-        position: ' relative',
+        position: 'relative',
         padding: '10px',
+        width: 'calc(100% - 60px)',
+        minWidth: '230px',
+        maxWidth: '300px',
+        margin: '0 50px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         background: '#FBF5F399',
         borderRadius: '5px',
+        border: '1px solid #00000020',
         '& button': { marginTop: '10px' },
         '& div': { width: '100%' },
     },

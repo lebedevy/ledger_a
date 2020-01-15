@@ -64,7 +64,7 @@ function Navbar({ logout, openDrawer, history, screen }) {
     const [path, setPath] = useState(null);
 
     useEffect(() => {
-        setPath(`/users/expenses/${screen === 0 ? 'overview' : 'summary'}/`);
+        setPath(`/users/expenses/get/${screen === 0 ? 'overview' : 'summary'}/`);
     }, [screen]);
 
     function navTo(path) {

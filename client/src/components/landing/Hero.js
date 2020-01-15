@@ -54,7 +54,7 @@ const useStyles = makeStyles({
         alignItems: 'center',
         '& label': {
             opacity: 0,
-            animation: '4s fade-in-title 1s forwards',
+            animation: '3s fade-in-title 1s forwards',
         },
         '& h1': {
             opacity: 0,
