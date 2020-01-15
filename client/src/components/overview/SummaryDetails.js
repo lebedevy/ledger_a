@@ -13,7 +13,11 @@ const useStylesDetails = makeStyles({
 export default function Details({ expenses }) {
     const classes = useStylesDetails();
     return expenses ? (
-        expenses.map(el => <ExpenseSummary key={el.id} el={el} exclude={{ date: 1 }} />)
+        <table>
+            {expenses.map(el => (
+                <ExpenseSummary key={el.id} el={el} exclude={{ date: 1 }} />
+            ))}
+        </table>
     ) : (
         <div className={classes.container}>
             <CircularProgress />

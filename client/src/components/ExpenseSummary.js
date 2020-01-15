@@ -3,11 +3,12 @@ import { makeStyles } from '@material-ui/styles';
 import { getCurrencyFormat } from '../utility/utility';
 
 const useStyles = makeStyles({
-    expenseEntry: {
+    expenseEntdy: {
         padding: '0 1px',
         display: 'flex',
         bottomBorder: '1px solid #00000060',
-        '& label': {
+        '& td': {
+            minHeight: '1em',
             padding: '2px 0',
             flex: '1 1 0',
             border: '1px solid #00000020',
@@ -26,16 +27,14 @@ const useStyles = makeStyles({
 function ExpenseSummary({ el, ind, expand, exclude }) {
     const classes = useStyles();
     return (
-        <div className={classes.expenseEntry} onClick={expand}>
-            <label>{`$${getCurrencyFormat(el.amount)}`}</label>
-            {!exclude || !exclude['store'] ? (
-                <label>{el.store ? el.store.store_name : ''}</label>
-            ) : null}
+        <tr className={classes.expenseEntdy} onClick={expand}>
+            <td>{`$${getCurrencyFormat(el.amount)}`}</td>
+            {!exclude || !exclude['store'] ? <td>{el.store ? el.store.store_name : ''}</td> : null}
             {!exclude || !exclude['category'] ? (
-                <label>{el.category ? el.category.category_name : ''}</label>
+                <td>{el.category ? el.category.category_name : ''}</td>
             ) : null}
-            {!exclude || !exclude['date'] ? <label>{el.date}</label> : null}
-        </div>
+            {!exclude || !exclude['date'] ? <td>{el.date}</td> : null}
+        </tr>
     );
 }
 

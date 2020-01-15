@@ -139,28 +139,30 @@ class Expenses extends Component {
                 />
                 <div className={classes.expenseList}>
                     {expenses && expenses.length === 0 ? <label>No recorded expenses</label> : null}
-                    {expenses
-                        ? expenses.map((el, ind) => {
-                              total += el.amount;
-                              return el.id === expand ? (
-                                  <ExpenseFull
-                                      key={el.id}
-                                      history={history}
-                                      el={el}
-                                      ind={ind}
-                                      expand={() => this.setState({ expand: null })}
-                                      deleteExpense={() => this.deleteExpense(el.id, ind)}
-                                  />
-                              ) : (
-                                  <ExpenseSummary
-                                      key={el.id}
-                                      el={el}
-                                      ind={ind}
-                                      expand={() => this.setState({ expand: el.id })}
-                                  />
-                              );
-                          })
-                        : null}
+                    {expenses ? (
+                        <table>
+                            {expenses.map((el, ind) => {
+                                total += el.amount;
+                                return el.id === expand ? (
+                                    <ExpenseFull
+                                        key={el.id}
+                                        history={history}
+                                        el={el}
+                                        ind={ind}
+                                        expand={() => this.setState({ expand: null })}
+                                        deleteExpense={() => this.deleteExpense(el.id, ind)}
+                                    />
+                                ) : (
+                                    <ExpenseSummary
+                                        key={el.id}
+                                        el={el}
+                                        ind={ind}
+                                        expand={() => this.setState({ expand: el.id })}
+                                    />
+                                );
+                            })}
+                        </table>
+                    ) : null}
                     {!expenses ? <LoadingComponent /> : null}
                 </div>
                 <Summary total={total} history={history} />

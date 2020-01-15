@@ -78,7 +78,7 @@ export default function AggregateDetails({ selected, type }) {
                 />
             ) : null}
             {expanded ? (
-                <React.Fragment>
+                <table>
                     {!checked
                         ? selected.data.map(el => (
                               <ExpenseSummary
@@ -94,7 +94,7 @@ export default function AggregateDetails({ selected, type }) {
                                   exclude={{ [type === 'cat' ? 'category' : 'store']: 1, date: 1 }}
                               />
                           ))}
-                </React.Fragment>
+                </table>
             ) : null}
         </React.Fragment>
     );
