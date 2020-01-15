@@ -13,7 +13,7 @@ const useStylesDetails = makeStyles({
 export default function Details({ expenses }) {
     const classes = useStylesDetails();
     return expenses ? (
-        <table>
+        <table style={{ width: '100%' }}>
             {expenses.map(el => (
                 <ExpenseSummary key={el.id} el={el} exclude={{ date: 1 }} />
             ))}

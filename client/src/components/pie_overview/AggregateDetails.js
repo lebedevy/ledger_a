@@ -78,7 +78,7 @@ export default function AggregateDetails({ selected, type }) {
                 />
             ) : null}
             {expanded ? (
-                <table>
+                <table style={{ width: '100%' }}>
                     {!checked
                         ? selected.data.map(el => (
                               <ExpenseSummary

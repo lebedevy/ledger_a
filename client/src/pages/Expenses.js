@@ -140,7 +140,7 @@ class Expenses extends Component {
                 <div className={classes.expenseList}>
                     {expenses && expenses.length === 0 ? <label>No recorded expenses</label> : null}
                     {expenses ? (
-                        <table>
+                        <table style={{ width: '100%' }}>
                             {expenses.map((el, ind) => {
                                 total += el.amount;
                                 return el.id === expand ? (

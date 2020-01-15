@@ -50,6 +50,10 @@ export default function Login({ history }) {
 
     async function submit(e) {
         e.preventDefault();
+        if (email === '' || password === '') {
+            setLoginError('Please ensure all fields are filled out');
+            return;
+        }
         setWaitingRes(true);
         const res = await fetch('/api/users/login', {
             method: 'POST',
