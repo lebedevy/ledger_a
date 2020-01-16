@@ -139,6 +139,42 @@ router.get('/overview', checkAuth, async (req, res, next) => {
     return res.status(200).send({ expenses });
 });
 
+router.get('/overview/:type/trends', checkAuth, async (req, res, next) => {
+    const { type } = req.params;
+    console.info('Serving trends for ' + type);
+    const include = [];
+    include.push(type === 'cat' ? db.categories : db.stores);
+    const where = { user_id: req.user.id };
+    // const group = ['date'];
+    // group.push(type === 'cat' ? 'category.id' : 'store.id');
+
+    if (req.query.id == null)
+        return res
+            .status(400)
+            .send({ message: 'Please ensure the request specifies the source for details' });
+    where[type === 'cat' ? 'category_id' : 'store_id'] = req.query.id;
+    if (req.query.start && req.query.end) {
+        where.date = { [db.Sequelize.Op.between]: [req.query.start, req.query.end] };
+    }
+
+    const expenses = await db.expenses.findAll({
+        where,
+        attributes: [
+            [db.sequelize.fn('date_trunc', 'month', db.sequelize.col('date')), 'txn_date'],
+            [db.sequelize.fn('sum', db.sequelize.col('amount')), 'amount'],
+        ],
+        group: [db.sequelize.col('txn_date')],
+        order: [db.sequelize.col('txn_date')],
+        // include,
+    });
+    // .catch(err => {
+    //     console.log(err);
+    //     return res.status(500).send({ message: 'Server error processing your request' });
+    // });
+
+    return res.status(200).send({ expenses: expenses });
+});
+
 router.get('/overview/:type/details', checkAuth, async (req, res, next) => {
     const { type } = req.params;
     console.info('Serving details for ' + type);

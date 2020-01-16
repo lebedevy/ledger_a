@@ -6,6 +6,7 @@ import PieLegend from '../components/pie_overview/PieLegend';
 import PieChart from '../components/pie_overview/PieChart';
 import AggregateDetails from '../components/pie_overview/AggregateDetails';
 import LoadingComponent from '../components/LoadingComponent';
+import OverviewDetailsTrends from '../components/AggregateOverview/OverviewDetailsTrends';
 
 // ADD SUPPORT FOR RANDOM COLOR GENERATION
 const colors = [
@@ -171,7 +172,6 @@ function AggregateOverview({ start, end, match, width }) {
 }
 
 const mapStateToProps = state => {
-    // const { date } = state;
     const { start, end } = state.date.period;
     const { width } = state.screen;
     return { start, end, width };

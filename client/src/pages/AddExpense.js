@@ -20,31 +20,31 @@ const styles = theme => ({
     },
 });
 
-// const stores = [
-//     'Dollar Store',
-//     'NoFrills',
-//     'WalMart',
-//     'Amazon',
-//     'Chapters',
-//     'Burger King',
-//     'McDonalds',
-//     'Metro',
-//     'Ikea',
-//     'Tim Hortons',
-//     'Sport Check',
-//     'Staples',
-//     'Steam',
-// ];
-// const categories = [
-//     'Household',
-//     'Groceries',
-//     'Snacks',
-//     'Takeout',
-//     'Transportation',
-//     'Travel',
-//     'Entertainment',
-//     'Education',
-// ];
+const stores = [
+    'Dollar Store',
+    'NoFrills',
+    'WalMart',
+    'Amazon',
+    'Chapters',
+    'Burger King',
+    'McDonalds',
+    'Metro',
+    'Ikea',
+    'Tim Hortons',
+    'Sport Check',
+    'Staples',
+    'Steam',
+];
+const categories = [
+    'Household',
+    'Groceries',
+    'Snacks',
+    'Takeout',
+    'Transportation',
+    'Travel',
+    'Entertainment',
+    'Education',
+];
 
 class AddExpense extends Component {
     state = { amount: '', store: '', category: '', date: getFormatedDate(this.props.date.today) };
@@ -68,36 +68,36 @@ class AddExpense extends Component {
     }
 
     // Adds expenses in bulk (save method for later)
-    // async populateTemp() {
-    //     for (let i = 0; i < 35; i++) {
-    //         const expenses = {
-    //             amount: Math.floor(Math.random() * 125) + 1,
-    //             store: stores[this.randomNum(stores.length - 1)],
-    //             category: categories[this.randomNum(categories.length - 1)],
-    //             date: new Date(
-    //                 2020,
-    //                 // Math.floor(Math.random() * 11) + 1,
-    //                 0,
-    //                 Math.floor(Math.random() * 30 + 1)
-    //             ),
-    //         };
+    async populateTemp() {
+        for (let i = 0; i < 35; i++) {
+            const expenses = {
+                amount: Math.floor(Math.random() * 30) + 1,
+                store: stores[this.randomNum(stores.length - 1)],
+                category: categories[this.randomNum(categories.length - 1)],
+                date: new Date(
+                    2019,
+                    Math.floor(Math.random() * 11) + 1,
+                    0,
+                    Math.floor(Math.random() * 30 + 1)
+                ),
+            };
 
-    //         console.log(expenses.date);
-    //         const res = await fetch('/api/users/expenses/add', {
-    //             method: 'POST',
-    //             headers: { 'Content-Type': 'application/json' },
-    //             body: JSON.stringify({
-    //                 expenses,
-    //             }),
-    //         });
-    //         const data = await res.json();
-    //         console.log(res, data);
-    //     }
-    // }
+            // console.log(expenses);
+            const res = await fetch('/api/users/expenses/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    expenses,
+                }),
+            });
+            const data = await res.json();
+            console.log(res, data);
+        }
+    }
 
-    // randomNum(max) {
-    //     return Math.floor(Math.random() * Math.floor(max) + 1);
-    // }
+    randomNum(max) {
+        return Math.floor(Math.random() * Math.floor(max) + 1);
+    }
 
     updateField(field, value) {
         this.setState({ [field]: value });
@@ -121,7 +121,7 @@ class AddExpense extends Component {
                     submit={() => this.addExpense()}
                     buttonLabel="Add Expense"
                 />
-                {/* <button disabled onClick={() => this.populateTemp()}>Add temp</button> */}
+                <button /*disabled*/ onClick={() => this.populateTemp()}>Add temp</button>
             </div>
         );
     }

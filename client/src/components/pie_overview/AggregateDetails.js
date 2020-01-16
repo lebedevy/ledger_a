@@ -5,6 +5,7 @@ import SummaryDetailsButton from '../overview/SummaryDetailsButton';
 import ExpenseSummary from '../ExpenseSummary';
 import { getCurrencyFormat } from '../../utility/utility';
 import { Switch } from '@material-ui/core';
+import OverviewDetailsTrends from '../AggregateOverview/OverviewDetailsTrends';
 
 const detailsUseStyles = makeStyles({
     selectedTitle: {
@@ -66,6 +67,7 @@ export default function AggregateDetails({ selected, type }) {
                     }`}</label>
                 </h2>
             </div>
+            <h3>Period Details</h3>
             <label>{`Total ${type === 'cat' ? 'category' : 'store'} expense: $${getCurrencyFormat(
                 total
             )}`}</label>
@@ -79,26 +81,19 @@ export default function AggregateDetails({ selected, type }) {
             ) : null}
             {expanded ? (
                 <table style={{ width: '100%' }}>
-                    {!checked
-                        ? selected.data.map(el => (
-                              <ExpenseSummary
-                                  key={el.id}
-                                  el={el}
-                                  exclude={{ [type === 'cat' ? 'category' : 'store']: 1 }}
-                              />
-                          ))
-                        : grouped.map(el => (
-                              <ExpenseSummary
-                                  key={el.id}
-                                  el={el}
-                                  exclude={{ [type === 'cat' ? 'category' : 'store']: 1, date: 1 }}
-                              />
-                          ))}
+                    {(() => (checked ? grouped : selected.data))().map(el => {
+                        const exclude = { [type === 'cat' ? 'category' : 'store']: true };
+                        if (checked) exclude['date'] = true;
+                        return <ExpenseSummary key={el.id} el={el} exclude={exclude} />;
+                    })}
                 </table>
             ) : null}
+            <OverviewDetailsTrends selected={selected} type={type} />
         </React.Fragment>
     );
 }
+
+function OverviewDetailsPeriod() {}
 
 function GroupDetailsSwitch({ checked, setChecked, type }) {
     const classes = {
