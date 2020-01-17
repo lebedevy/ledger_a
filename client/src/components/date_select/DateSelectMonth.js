@@ -39,7 +39,7 @@ const useStyles = makeStyles({
 
 function DateSelectMonth({ setPeriod, end }) {
     const classes = useStyles();
-    const [year, setYear] = useState(end.slice(0, 4));
+    const [year, setYear] = useState(parseInt(end.slice(0, 4)));
 
     function setDates(month) {
         const start = getFormatedDate(new Date(year, month, 1));
