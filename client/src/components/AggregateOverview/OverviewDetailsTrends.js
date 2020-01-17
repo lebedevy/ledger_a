@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { CircularProgress } from '@material-ui/core';
 import { getFormatedDate } from '../../utility/utility';
 import BarChartAggregate from './BarChartAggregate';
+import { months } from '../../data/data';
 
 const useStyles = makeStyles({
     container: {
@@ -26,8 +27,6 @@ const useStyles = makeStyles({
         stroke: '#000000',
     },
 });
-
-let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
 
 function OverviewDetailsTrends({ selected, type, start, end }) {
     const classes = useStyles();
