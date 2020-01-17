@@ -79,12 +79,12 @@ function AggregateOverview({ start, end, match, width }) {
     useEffect(() => {
         if (match.params.type !== type) {
             setType(match.params.type);
-            setSelected(null);
         }
     }, [match]);
 
     // Fetch expenses on type change
     useEffect(() => {
+        setSelected(null);
         fetchExpenses();
     }, [type, start, end]);
 

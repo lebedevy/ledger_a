@@ -67,7 +67,6 @@ function OverviewDetailsTrends({ selected, type, start, end }) {
         let max = 0;
         let startMonth = parseInt(start.slice(5, 7)) - 1;
         let year = parseInt(start.slice(0, 4));
-        console.log('Start year', year);
         if (startMonth < 0) startMonth = 11;
         for (let i = 0, ind = 0; i < 12; i++) {
             let month = i + startMonth >= 12 ? i + startMonth - 12 : i + startMonth;
