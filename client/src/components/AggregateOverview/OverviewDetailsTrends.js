@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/styles';
 import { connect } from 'react-redux';
 import { CircularProgress } from '@material-ui/core';
 import { getFormatedDate } from '../../utility/utility';
+import BarChartAggregate from './BarChartAggregate';
 
 const useStyles = makeStyles({
     container: {
@@ -91,12 +92,6 @@ function OverviewDetailsTrends({ selected, type, start, end }) {
         return formatted;
     }
 
-    // Bar chart positioning variables
-    const topOffset = 15;
-    const barHeight = 70;
-    const rightOffset = 3;
-    const barWidth = 6;
-
     return (
         <div className={classes.container}>
             <h3>
@@ -104,92 +99,7 @@ function OverviewDetailsTrends({ selected, type, start, end }) {
                 <label>{`${selected.el[type === 'cat' ? 'category_name' : 'store_name']}`}</label>
             </h3>
             {data ? null : <CircularProgress style={{ alignSelf: 'center', margin: '10px' }} />}
-            <svg className={classes.svg}>
-                {(() => {
-                    let gridlines = [];
-                    for (let i = 0; i < 6; i++) {
-                        let y = topOffset + i * (barHeight / 6);
-                        let label = max - i * (max / 6);
-                        gridlines.push(
-                            <text key={'amountLabel' + i} x="0.5%" y={`${y + 2}%`}>
-                                {label >= 1000
-                                    ? (Math.ceil(label / 100) / 10).toFixed(1) + 'k'
-                                    : label}
-                            </text>,
-                            <line
-                                key={'gridLine' + i}
-                                className={classes.gridLines}
-                                y1={`${y}%`}
-                                y2={`${y}%`}
-                                x1="98.5%"
-                                x2={`${rightOffset - 0.5}%`}
-                                stroke="#00000035"
-                            />
-                        );
-                    }
-                    return gridlines;
-                })()}
-                <line
-                    y1={`${topOffset + 6 * (barHeight / 6)}%`}
-                    y2={`${topOffset + 6 * (barHeight / 6)}%`}
-                    x1="98.5%"
-                    x2={`${rightOffset - 0.5}%`}
-                    stroke="#00000090"
-                />
-                <line
-                    y1={`${5 + 6 * (80 / 6)}%`}
-                    y2="5%"
-                    x1={`${rightOffset - 0.5}%`}
-                    x2={`${rightOffset - 0.5}%`}
-                    stroke="#00000090"
-                />
-                {data
-                    ? data.map((el, ind) => (
-                          <React.Fragment key={el.month + 'container'}>
-                              {/* The first rec is to catch hover events for small rects*/}
-                              <rect
-                                  key={el.month + 'barBackup'}
-                                  x={`${rightOffset + 8 * ind}%`}
-                                  y={`${topOffset}%`}
-                                  width={`${barWidth}%`}
-                                  height={`${barHeight}%`}
-                                  style={{ fill: '#00000000' }}
-                              />
-                              <rect
-                                  key={el.month + 'bar'}
-                                  x={`${rightOffset + 8 * ind}%`}
-                                  y={`${topOffset + barHeight - barHeight * (el.amount / max)}%`}
-                                  width={`${barWidth}%`}
-                                  height={`${barHeight * (el.amount / max)}%`}
-                                  style={{ fill: '#F75C03' }}
-                              />
-                              <text
-                                  key={el.month + 'amountLabel'}
-                                  x={`${rightOffset + barWidth / 2 + 8 * ind}%`}
-                                  y={`${topOffset +
-                                      barHeight -
-                                      barHeight * (el.amount / max) -
-                                      3}%`}
-                                  textAnchor="middle"
-                              >
-                                  {`$${
-                                      el.amount >= 1000
-                                          ? (el.amount / 1000).toFixed(2) + 'k'
-                                          : Math.round(el.amount)
-                                  }`}
-                              </text>
-                              <text
-                                  key={el.month + 'label'}
-                                  x={`${rightOffset + barWidth / 2 + 8 * ind}%`}
-                                  y={`${95}%`}
-                                  textAnchor="middle"
-                              >
-                                  {`${el.month} ${el.year}`}
-                              </text>
-                          </React.Fragment>
-                      ))
-                    : null}
-            </svg>
+            <BarChartAggregate max={max} data={data} />
         </div>
     );
 }
