@@ -13,7 +13,17 @@ const useStyles = makeStyles({
         flexDirection: 'column',
         marginTop: '10px',
     },
-    selectType: {},
+    selectTypeCont: {
+        alignItems: 'center',
+        display: 'flex',
+        flexWrap: 'wrap',
+        marginBottom: '10px',
+    },
+    selectType: {
+        flex: 1,
+        display: 'flex',
+        justifyContent: 'center',
+    },
     button: {
         padding: '5px',
         width: '100px',
@@ -32,8 +42,8 @@ function DateRange({ start, end, setPeriod }) {
 
     return (
         <div className={classes.container}>
-            <div>
-                <label>Date select type:</label>
+            <div className={classes.selectTypeCont}>
+                <label>Select type:</label>
                 <div className={classes.selectType}>
                     <button
                         className={clsx(classes.button, selectType === 0 && classes.selected)}

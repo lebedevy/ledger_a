@@ -7,9 +7,19 @@ import BarChartAggregate from './BarChartAggregate';
 import { months } from '../../data/data';
 
 const useStyles = makeStyles({
-    container: {
+    summaryItem: {
         display: 'flex',
         flexDirection: 'column',
+        border: '1px solid #00000020',
+        padding: '10px',
+        margin: '10px 0',
+        '& label': {
+            padding: '5px',
+        },
+        '& h2': {
+            padding: '5px',
+            margin: 0,
+        },
     },
     svg: {
         alignSelf: 'center',
@@ -32,29 +42,27 @@ function OverviewDetailsTrends({ selected, type, start, end }) {
     const classes = useStyles();
     const [data, setData] = useState(null);
     const [max, setMax] = useState(null);
+    const [startMonth, setStartMonth] = useState(null);
+    const [endMonth, setEndMonth] = useState(null);
 
     useEffect(() => {
         if (selected) getData();
     }, [selected]);
 
     async function getData() {
-        // console.log(selected);
-        console.log(start);
         const currentDate = new Date(end);
         const [year, month] = [currentDate.getFullYear(), currentDate.getMonth()];
         // Get one year period
         const endDate = getFormatedDate(new Date(year, month + 1, 0));
         const startDate = getFormatedDate(new Date(year - 1, month + 1, 1));
-        console.log(startDate, start);
-        console.log(endDate, end);
+        setStartMonth([months[parseInt(startDate.slice(5, 7)) - 1], startDate.slice(0, 4)]);
+        setEndMonth([months[parseInt(endDate.slice(5, 7)) - 1], endDate.slice(0, 4)]);
         const res = await fetch(
-            `/api/users/expenses/overview/${type}/trends?start=${startDate}&end=${endDate}&id=${selected.el.id}`
+            `/api/users/expenses/overview/${type}/trends` +
+                `?start=${startDate}&end=${endDate}&id=${selected.el.id}`
         );
-        console.log(res);
         if (res.ok) {
             const data = await res.json();
-            console.log(data);
-            console.log(endDate.slice(5, 7));
             const formatted = formatData(data.expenses, startDate);
             setData(formatted);
             return data;
@@ -91,11 +99,19 @@ function OverviewDetailsTrends({ selected, type, start, end }) {
     }
 
     return (
-        <div className={classes.container}>
+        <div className={classes.summaryItem}>
             <h3>
                 Trends Overview:
                 <label>{`${selected.el[type === 'cat' ? 'category_name' : 'store_name']}`}</label>
             </h3>
+            {startMonth && endMonth && (
+                <label>{`${startMonth[0]} ${startMonth[1]} to ${endMonth[0]} ${endMonth[1]}`}</label>
+            )}
+            <label>
+                {`${
+                    selected.el[type === 'cat' ? 'category_name' : 'store_name']
+                } spending overview over the last year`}
+            </label>
             {data ? null : <CircularProgress style={{ alignSelf: 'center', margin: '10px' }} />}
             <BarChartAggregate max={max} data={data} />
         </div>

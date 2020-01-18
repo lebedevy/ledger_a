@@ -4,9 +4,10 @@ import { makeStyles } from '@material-ui/styles';
 
 import PieLegend from '../components/pie_overview/PieLegend';
 import PieChart from '../components/pie_overview/PieChart';
-import AggregateDetails from '../components/pie_overview/AggregateDetails';
+import AggregateDetails from '../components/AggregateOverview/AggregateDetails';
 import LoadingComponent from '../components/LoadingComponent';
 import OverviewDetailsTrends from '../components/AggregateOverview/OverviewDetailsTrends';
+import DetailsHeader from '../components/AggregateOverview/DetailsHeader';
 
 // ADD SUPPORT FOR RANDOM COLOR GENERATION
 const colors = [
@@ -49,20 +50,6 @@ const useStyles = makeStyles({
         background: '#FEFCFB',
         border: 'solid #00000020 1px',
         display: 'flex',
-    },
-    summaryItem: {
-        display: 'flex',
-        flexDirection: 'column',
-        border: '1px solid #00000020',
-        padding: '10px',
-        margin: '10px 0',
-        '& label': {
-            padding: '5px',
-        },
-        '& h2': {
-            padding: '5px',
-            margin: 0,
-        },
     },
 });
 
@@ -153,19 +140,15 @@ function AggregateOverview({ start, end, match, width }) {
                         </React.Fragment>
                     )}
                 </div>
-                <div className={classes.summaryItem}>
-                    {!selected ? (
-                        <React.Fragment>
-                            <h2 style={{ paddingLeft: '32px' }}>Details</h2>
-                            <label style={{ paddingLeft: '32px' }}>{`Select a ${
-                                type === 'cat' ? 'category' : 'store'
-                            } from the graph or legend to see its details`}</label>
-                            {loadingSelected ? <LoadingComponent /> : null}
-                        </React.Fragment>
-                    ) : (
+                <DetailsHeader selected={selected} type={type} />
+                {!selected ? (
+                    <React.Fragment>{loadingSelected ? <LoadingComponent /> : null}</React.Fragment>
+                ) : (
+                    <React.Fragment>
                         <AggregateDetails selected={selected} type={type} />
-                    )}
-                </div>
+                        <OverviewDetailsTrends selected={selected} type={type} />
+                    </React.Fragment>
+                )}
             </div>
         </div>
     );

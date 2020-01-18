@@ -5,31 +5,27 @@ import SummaryDetailsButton from '../overview/SummaryDetailsButton';
 import ExpenseSummary from '../ExpenseSummary';
 import { getCurrencyFormat } from '../../utility/utility';
 import { Switch } from '@material-ui/core';
-import OverviewDetailsTrends from '../AggregateOverview/OverviewDetailsTrends';
+import OverviewDetailsTrends from './OverviewDetailsTrends';
+import { connect } from 'react-redux';
 
 const detailsUseStyles = makeStyles({
-    selectedTitle: {
+    summaryItem: {
         display: 'flex',
-        alignItems: 'center',
-        // justifyContent: 'space-between',
-        paddingBottom: '10px',
-        '& h2': {
-            wordBreak: 'break-all',
-            '& label': {
-                fontSize: '0.9em',
-                fontStyle: 'italic',
-                verticalAlign: 'center',
-            },
+        flexDirection: 'column',
+        border: '1px solid #00000020',
+        padding: '10px',
+        margin: '10px 0',
+        '& label': {
+            padding: '5px',
         },
-        '& div': {
-            minHeight: '32px',
-            minWidth: '32px',
-            borderRadius: '50%',
+        '& h2': {
+            padding: '5px',
+            margin: 0,
         },
     },
 });
 
-export default function AggregateDetails({ selected, type }) {
+function AggregateDetails({ selected, type, start, end }) {
     const classes = detailsUseStyles();
     const [total, setTotal] = useState(0);
     const [expanded, setExpanded] = useState(false);
@@ -57,17 +53,9 @@ export default function AggregateDetails({ selected, type }) {
     }, [selected]);
 
     return (
-        <React.Fragment>
-            <div className={classes.selectedTitle}>
-                <div style={{ background: `#${selected.el.color}` }} />
-                <h2>
-                    Details:
-                    <label>{`${
-                        selected.el[type === 'cat' ? 'category_name' : 'store_name']
-                    }`}</label>
-                </h2>
-            </div>
+        <div className={classes.summaryItem}>
             <h3>Period Details</h3>
+            <label>{`${start} to ${end}`}</label>
             <label>{`Total ${type === 'cat' ? 'category' : 'store'} expense: $${getCurrencyFormat(
                 total
             )}`}</label>
@@ -88,12 +76,16 @@ export default function AggregateDetails({ selected, type }) {
                     })}
                 </table>
             ) : null}
-            <OverviewDetailsTrends selected={selected} type={type} />
-        </React.Fragment>
+        </div>
     );
 }
 
-function OverviewDetailsPeriod() {}
+const mapStateToProps = state => {
+    const { start, end } = state.date.period;
+    return { start, end };
+};
+
+export default connect(mapStateToProps)(AggregateDetails);
 
 function GroupDetailsSwitch({ checked, setChecked, type }) {
     const classes = {
