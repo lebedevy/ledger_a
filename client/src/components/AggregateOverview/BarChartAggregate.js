@@ -34,15 +34,14 @@ function BarChartAggregate({ max, data, mobile }) {
     // Bar chart positioning variables
     const topOffset = 15;
     const [barHeight, setBarHeight] = useState(mobile ? 60 : 70);
-    const [rightOffset, setRightOffset] = useState(mobile ? 4 : 3);
-    const barWidth = 6;
+    const [rightOffset, setRightOffset] = useState(mobile ? 7 : 3);
+    const [barWidth, setBarWidth] = useState(mobile ? 5 : 6);
 
     useEffect(() => {
         setBarHeight(mobile ? 60 : 70);
-        setRightOffset(mobile ? 5 : 3);
+        setRightOffset(mobile ? 7 : 3);
+        setBarWidth(mobile ? 5 : 6);
     }, [mobile]);
-
-    console.log(rightOffset);
 
     return (
         <svg className={clsx(classes.svg, classes[mobile ? 'mobile' : 'desktop'])}>
