@@ -16,10 +16,10 @@ const detailsUseStyles = makeStyles({
         padding: '10px',
         margin: '10px 0',
         '& label': {
-            padding: '5px',
+            padding: '5px 0',
         },
         '& h2': {
-            padding: '5px',
+            padding: '5px 0',
             margin: 0,
         },
     },
@@ -54,7 +54,7 @@ function AggregateDetails({ selected, type, start, end }) {
 
     return (
         <div className={classes.summaryItem}>
-            <h3>Period Details</h3>
+            <h2>Period Details</h2>
             <label>{`${start} to ${end}`}</label>
             <label>{`Total ${type === 'cat' ? 'category' : 'store'} expense: $${getCurrencyFormat(
                 total

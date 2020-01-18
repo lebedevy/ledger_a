@@ -14,10 +14,10 @@ const useStyles = makeStyles({
         padding: '10px',
         margin: '10px 0',
         '& label': {
-            padding: '5px',
+            padding: '5px 0',
         },
         '& h2': {
-            padding: '5px',
+            padding: '5px 0',
             margin: 0,
         },
     },
@@ -100,10 +100,10 @@ function OverviewDetailsTrends({ selected, type, start, end }) {
 
     return (
         <div className={classes.summaryItem}>
-            <h3>
+            <h2>
                 Trends Overview:
                 <label>{`${selected.el[type === 'cat' ? 'category_name' : 'store_name']}`}</label>
-            </h3>
+            </h2>
             {startMonth && endMonth && (
                 <label>{`${startMonth[0]} ${startMonth[1]} to ${endMonth[0]} ${endMonth[1]}`}</label>
             )}
