@@ -23,6 +23,7 @@ import MobileSettingsNav from './components/mobile/MobileSettingsNav';
 import AppSettings from './components/mobile/MobileSettings';
 import MobileAccount from './components/mobile/MobileAccount';
 import DesktopSubNav from './components/desktop/DesktopSubNav';
+import UploadExpenses from './pages/UploadExpenses';
 
 const styles = theme => ({
     container: {
@@ -136,6 +137,7 @@ class App extends Component {
                                     path="/users/app/settings/account"
                                     component={MobileAccount}
                                 />
+                                <Route path="/users/expenses/upload" component={UploadExpenses} />
                                 <Route>
                                     <Redirect to="/users/expenses/get/overview/" />
                                 </Route>
