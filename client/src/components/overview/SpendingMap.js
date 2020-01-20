@@ -3,8 +3,8 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
 import { getCurrencyFormat } from '../../utility/utility';
 
+const weekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const dayGrade = ['empty', 'first', 'second', 'third'];
-// const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const cellSize = 12;
 
 const useStyles = makeStyles({
@@ -16,7 +16,11 @@ const useStyles = makeStyles({
         padding: '10px 10px',
         margin: '10px 0',
     },
+    periodContainer: {
+        display: 'flex',
+    },
     period: {
+        minWidth: `${cellSize}px`,
         display: 'grid',
         gridAutoFlow: 'column',
         gridTemplateRows: `repeat(7, ${cellSize}px)`,
@@ -29,21 +33,24 @@ const useStyles = makeStyles({
         width: `${cellSize}px`,
         background: 'gray',
     },
+    dayLabel: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'white',
+        fontSize: `${cellSize - cellSize * 0.3}px`,
+        fontWeight: 'bold',
+    },
     paddingDay: {
-        // background: '#ADBABD',
-        // background: '#BFC0C0',
         background: '#CED0CE',
     },
     legend: {
         paddingTop: '15px',
         display: 'grid',
-        // gridAutoFlow: 'column',
-        // gridTemplateRows: 'repeat(7, 10px)',
         gridTemplateColumns: `repeat( auto-fit, minmax(${cellSize}px, ${cellSize}px) )`,
         gridGap: '2px',
     },
     empty: {
-        // background: '#CED0CE',
         background: '#A1A3A1',
     },
     first: {
@@ -67,33 +74,42 @@ export default function SpendingMap({ data, step, setDay, day }) {
     const classes = useStyles();
     return (
         <div className={classes.spendingMap} onClick={() => setDay(null)}>
-            <div className={classes.period}>
-                {data.map((el, ind) =>
-                    el.type === 'padding' ? (
-                        <div key={ind} className={clsx(classes.day, classes.paddingDay)} />
-                    ) : (
-                        <div
-                            onClick={e => {
-                                e.stopPropagation();
-                                setDay(el);
-                            }}
-                            key={el.date}
-                            className={clsx(
-                                classes.day,
-                                day && el.date === day.date && classes.selected,
-                                day && el.date !== day.date && classes.muted,
-                                classes[
-                                    dayGrade[
-                                        Math.ceil(el.amount / step) > 3
-                                            ? 3
-                                            : Math.ceil(el.amount / step)
+            <div className={classes.periodContainer}>
+                <div className={classes.period}>
+                    {weekdays.map(wd => (
+                        <div key={wd} className={clsx(classes.day, classes.dayLabel)}>
+                            {wd}
+                        </div>
+                    ))}
+                </div>
+                <div className={classes.period}>
+                    {data.map((el, ind) =>
+                        el.type === 'padding' ? (
+                            <div key={ind} className={clsx(classes.day, classes.paddingDay)} />
+                        ) : (
+                            <div
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    setDay(el);
+                                }}
+                                key={el.date}
+                                className={clsx(
+                                    classes.day,
+                                    day && el.date === day.date && classes.selected,
+                                    day && el.date !== day.date && classes.muted,
+                                    classes[
+                                        dayGrade[
+                                            Math.ceil(el.amount / step) > 3
+                                                ? 3
+                                                : Math.ceil(el.amount / step)
+                                        ]
                                     ]
-                                ]
-                            )}
-                            title={`${el.date}\n$${el.amount}`}
-                        />
-                    )
-                )}
+                                )}
+                                title={`${el.date}\n$${el.amount}`}
+                            />
+                        )
+                    )}
+                </div>
             </div>
             <div className={classes.legend}>
                 {/* <label>less</label> */}
