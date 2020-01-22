@@ -3,6 +3,7 @@ import { Stepper, Step, StepLabel } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
 import ColumnSelect from '../components/expenses_upload/ColumnSelect';
+import ApproveData from '../components/expenses_upload/ApproveData';
 
 const useStyles = makeStyles({
     container: {},
@@ -15,6 +16,7 @@ function getSteps() {
 export default function UploadExpenses() {
     const classes = useStyles();
     const steps = getSteps();
+    const [data, setData] = useState(null);
     const [expenses, setExpenses] = useState(null);
     const [step, setStep] = useState(0);
 
@@ -22,14 +24,16 @@ export default function UploadExpenses() {
         // Get FileList object from the input element
         const { files } = event.target;
         const rows = await getContent(files);
-        const expenses = [];
+        const data = [];
 
         for (let row in rows) {
-            const expense = rows[row].split(',');
-            expenses.push(expense);
+            if (rows[row] !== '') {
+                const expense = rows[row].split(',');
+                data.push(expense);
+            }
         }
         setStep(step + 1);
-        setExpenses(expenses);
+        setData(data);
     }
 
     async function getContent(files) {
@@ -39,6 +43,11 @@ export default function UploadExpenses() {
         const file = files.item(0);
         const contents = await file.text();
         return contents.split('\n');
+    }
+
+    function updateExpenses(expenses) {
+        setExpenses(expenses);
+        setStep(2);
     }
 
     return (
@@ -54,7 +63,8 @@ export default function UploadExpenses() {
                 ))}
             </Stepper>
             {step === 0 && <input type="file" onChange={handleUpload} accept={'.csv'} />}
-            {step === 1 && <ColumnSelect expenses={expenses} />}
+            {step === 1 && <ColumnSelect data={data} setExpenses={updateExpenses} />}
+            {step === 2 && <ApproveData expenses={expenses} />}
         </div>
     );
 }
