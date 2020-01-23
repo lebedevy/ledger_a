@@ -7,6 +7,7 @@ import { getCurrencyFormat } from '../../utility/utility';
 import { Switch } from '@material-ui/core';
 import OverviewDetailsTrends from './OverviewDetailsTrends';
 import { connect } from 'react-redux';
+import WeeklySummary from './WeeklySummary';
 
 const detailsUseStyles = makeStyles({
     summaryItem: {
@@ -25,7 +26,7 @@ const detailsUseStyles = makeStyles({
     },
 });
 
-function AggregateDetails({ selected, type, start, end }) {
+function AggregateDetails({ selected, type, start, end, mobile }) {
     const classes = detailsUseStyles();
     const [total, setTotal] = useState(0);
     const [expanded, setExpanded] = useState(false);
@@ -33,6 +34,10 @@ function AggregateDetails({ selected, type, start, end }) {
     const [grouped, setGrouped] = useState(null);
 
     useEffect(() => {
+        groupExpenses();
+    }, [selected]);
+
+    function groupExpenses() {
         let total = 0;
         let grouped = {};
         let t = type === 'cat' ? 'store_id' : 'category_id';
@@ -50,7 +55,7 @@ function AggregateDetails({ selected, type, start, end }) {
         const sorted = Object.values(grouped).sort((a, b) => b['amount'] - a['amount']);
         setGrouped(sorted);
         setTotal(total);
-    }, [selected]);
+    }
 
     return (
         <div className={classes.summaryItem}>
@@ -59,6 +64,11 @@ function AggregateDetails({ selected, type, start, end }) {
             <label>{`Total ${type === 'cat' ? 'category' : 'store'} expense: $${getCurrencyFormat(
                 total
             )}`}</label>
+            <h3>Period Overview</h3>
+            <h4>Period expenses by week</h4>
+
+            <WeeklySummary expenses={selected.data} />
+            <h3>Transactions</h3>
             <SummaryDetailsButton expanded={expanded} setExpanded={setExpanded} />
             {expanded ? (
                 <GroupDetailsSwitch
@@ -82,7 +92,8 @@ function AggregateDetails({ selected, type, start, end }) {
 
 const mapStateToProps = state => {
     const { start, end } = state.date.period;
-    return { start, end };
+    const { mobile } = state.screen;
+    return { start, end, mobile };
 };
 
 export default connect(mapStateToProps)(AggregateDetails);

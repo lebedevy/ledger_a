@@ -3,6 +3,19 @@ export function getFormatedDate(date) {
         (date.getMonth() + 1)}-${(date.getDate() < 10 ? '0' : '') + date.getDate()}`;
 }
 
+export function getDateObj(date) {
+    const [year, month, day] = date.split('-');
+    return new Date(year, parseInt(month) - 1, day);
+}
+
+export function compareDates(date1, date2) {
+    // Check if date 2 is larger than date 1
+    if (date1.getUTCFullYear() < date2.getUTCFullYear()) return 1;
+    if (date1.getUTCMonth() < date2.getUTCMonth()) return 1;
+    if (date1.getUTCDate() < date2.getUTCDate()) return 1;
+    return 0;
+}
+
 export function getCurrencyFormat(number) {
     let num = Math.round(number * 100) / 100; // Round to 2
     let formatted = Number(num).toLocaleString(); // Add ',' seperators
