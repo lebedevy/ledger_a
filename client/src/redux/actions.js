@@ -10,7 +10,33 @@ import {
     SET_SCREEN_SIZE,
     SET_SCREEN,
     SET_SETTINGS_SCREEN,
+    INVALIDATE_EXPENSES,
+    REQUEST_EXPENSES,
+    RECIEVE_EXPENSES,
 } from './actionTypes';
+
+const requestExpenses = aggregateType => ({
+    type: REQUEST_EXPENSES,
+    aggregateType,
+});
+
+const invalidateExpenses = aggregateType => ({
+    type: INVALIDATE_EXPENSES,
+    aggregateType,
+});
+
+const recieveExpenses = (aggregateType, json) => ({
+    type: RECIEVE_EXPENSES,
+    items: json.data,
+    aggregateType,
+    recievedAt: Date.now(),
+});
+
+export function fetchAggregateResponses(aggregateType) {
+    return function(dispatch) {
+        dispatch(requestExpenses(aggregateType));
+    };
+}
 
 export const setDate = content => ({
     type: SET_DATE,
