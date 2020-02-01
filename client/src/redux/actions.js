@@ -25,16 +25,42 @@ const invalidateExpenses = aggregateType => ({
     aggregateType,
 });
 
-const recieveExpenses = (aggregateType, json) => ({
+const recieveExpenses = (aggregateType, data) => ({
     type: RECIEVE_EXPENSES,
-    items: json.data,
+    items: data,
     aggregateType,
     recievedAt: Date.now(),
 });
 
-export function fetchAggregateResponses(aggregateType) {
-    return function(dispatch) {
-        dispatch(requestExpenses(aggregateType));
+const fetchAggregateExpenses = (aggregateType, params) => dispatch => {
+    dispatch(requestExpenses(aggregateType));
+    fetch(`/api/users/expenses/summary/${aggregateType}${params}`)
+        .then(data => data.json())
+        .then(data => {
+            console.log(data);
+            dispatch(recieveExpenses(aggregateType, data));
+        });
+};
+
+function shouldFetchAggregateExpenses(state, aggregateType) {
+    console.log(state, aggregateType);
+    const expenses = state.aggregateExpenses[aggregateType];
+    if (!expenses) {
+        return true;
+    } else if (expenses.isFetching) {
+        return false;
+    } else {
+        return expenses.didInvalidate;
+    }
+}
+
+export function fetchAggregateExpensesIfNeeded([aggregateType, params]) {
+    return (dispatch, getState) => {
+        if (shouldFetchAggregateExpenses(getState(), aggregateType)) {
+            return dispatch(fetchAggregateExpenses(aggregateType, params));
+        } else {
+            return Promise.resolve();
+        }
     };
 }
 

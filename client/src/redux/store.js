@@ -1,12 +1,21 @@
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunkMiddleware from 'redux-thunk';
 import rootReducer from './reducers';
 import Cookies from 'js-cookie';
-import { devToolsEnhancer } from 'redux-devtools-extension';
+import { composeWithDevTools } from 'redux-devtools-extension';
+import { fetchAggregateExpensesIfNeeded } from './actions';
 
 const token = Cookies.get('jwt');
 const user = parseJwt(token);
 console.info('Initializing store...');
-export default createStore(rootReducer, { user }, devToolsEnhancer());
+const store = createStore(
+    rootReducer,
+    { user, aggregateExpenses: {} },
+    composeWithDevTools(applyMiddleware(thunkMiddleware))
+);
+
+// store.dispatch(fetchAggregateExpensesIfNeeded(['category']));
+export default store;
 
 function parseJwt(token) {
     try {

@@ -8,6 +8,7 @@ import AggregateDetails from '../components/AggregateOverview/AggregateDetails';
 import LoadingComponent from '../components/LoadingComponent';
 import OverviewDetailsTrends from '../components/AggregateOverview/OverviewDetailsTrends';
 import DetailsHeader from '../components/AggregateOverview/DetailsHeader';
+import { fetchAggregateExpensesIfNeeded } from '../redux/actions';
 
 // ADD SUPPORT FOR RANDOM COLOR GENERATION
 const colors = [
@@ -53,7 +54,7 @@ const useStyles = makeStyles({
     },
 });
 
-function AggregateOverview({ start, end, match, width }) {
+function AggregateOverview({ start, end, match, width, fetchData }) {
     const classes = useStyles();
     const [type, setType] = useState(match.params.type);
     const [total, setTotal] = useState(0);
@@ -76,15 +77,21 @@ function AggregateOverview({ start, end, match, width }) {
     }, [type, start, end]);
 
     async function fetchExpenses() {
-        console.log(`Getting ${type === 'cat' ? 'category' : 'store'} expenses overview`);
-        const res = await fetch(`/api/users/expenses/summary/${type}?start=${start}&end=${end}`);
-        if (res.ok) {
-            const data = await res.json();
-            formatData(data);
-            return;
-        }
-        console.log('Error fetching data');
-        console.log(await res.json());
+        const params = `${type}?start=${start}&end=${end}`;
+        console.log(fetchData);
+        fetchData([type === 'cat' ? 'category' : 'store', params]);
+        // store.dispatch(
+        //     fetchAggregateExpensesIfNeeded([type === 'cat' ? 'category' : 'store', params])
+        // );
+        // console.log(`Getting ${type === 'cat' ? 'category' : 'store'} expenses overview`);
+        // const res = await fetch(`/api/users/expenses/summary/${type}?start=${start}&end=${end}`);
+        // if (res.ok) {
+        //     const data = await res.json();
+        //     formatData(data);
+        //     return;
+        // }
+        // console.log('Error fetching data');
+        // console.log(await res.json());
     }
 
     function formatData(data) {
@@ -160,4 +167,10 @@ const mapStateToProps = state => {
     return { start, end, width };
 };
 
-export default connect(mapStateToProps)(AggregateOverview);
+const mapDispatchToProps = dispatch => {
+    return {
+        fetchData: args => dispatch(fetchAggregateExpensesIfNeeded(args)),
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AggregateOverview);

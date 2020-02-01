@@ -1,5 +1,4 @@
-import { combineReducers } from 'redux';
-import { INVALIDATE_EXPENSES, REQUEST_EXPENSES, RECIEVE_EXPENSES } from '../actions';
+import { INVALIDATE_EXPENSES, REQUEST_EXPENSES, RECIEVE_EXPENSES } from '../actionTypes';
 
 function expenses(state = { isFetching: false, didInvalidate: false, items: [] }, action) {
     switch (action.type) {
@@ -25,7 +24,9 @@ export default function aggregateExpenses(state = {}, action) {
         case REQUEST_EXPENSES:
         case RECIEVE_EXPENSES:
             return Object.assign({}, state, {
-                [action.aggregateType]: expenses(state[action.aggregateType], action),
+                aggregateExpenses: {
+                    [action.aggregateType]: expenses(state[action.aggregateType], action),
+                },
             });
         default:
             return state;
