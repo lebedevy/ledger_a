@@ -102,14 +102,14 @@ function OverviewDetailsTrends({ selected, type, start, end }) {
         <div className={classes.summaryItem}>
             <h2>
                 Trends Overview:
-                <label>{`${selected.el[type === 'cat' ? 'category_name' : 'store_name']}`}</label>
+                <label>{`${selected.el[type === 'category' ? 'category_name' : 'store_name']}`}</label>
             </h2>
             {startMonth && endMonth && (
                 <label>{`${startMonth[0]} ${startMonth[1]} to ${endMonth[0]} ${endMonth[1]}`}</label>
             )}
             <label>
                 {`${
-                    selected.el[type === 'cat' ? 'category_name' : 'store_name']
+                    selected.el[type === 'category' ? 'category_name' : 'store_name']
                 } spending overview over the last year`}
             </label>
             {data ? null : <CircularProgress style={{ alignSelf: 'center', margin: '10px' }} />}

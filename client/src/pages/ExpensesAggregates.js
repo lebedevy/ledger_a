@@ -59,7 +59,7 @@ class ExpensesAggregates extends Component {
         }
     }
 
-    // If component pathname changed from cat to store, reload component data to change type
+    // If component pathname changed from category to store, reload component data to change type
     componentDidUpdate(props) {
         if (
             this.props.location.pathname !== props.location.pathname ||
@@ -121,7 +121,7 @@ class ExpensesAggregates extends Component {
                 <Header
                     setOpen={() => this.setState({ sortOpen: !sortOpen })}
                     open={sortOpen}
-                    title={`Expenses by ${type === 'cat' ? 'Category' : 'Store'}`}
+                    title={`Expenses by ${type === 'category' ? 'Category' : 'Store'}`}
                     dashboard={{
                         setSort: val => this.setState({ sort: val }, this.updateFilters),
                         setOrder: val => this.setState({ order: val }, this.updateFilters),
@@ -133,7 +133,7 @@ class ExpensesAggregates extends Component {
                 <div className={classes.expenseList}>
                     {expenses && expenses.length === 0 ? (
                         <label>{`No expenses for ${
-                            type === 'cat' ? 'categories' : 'stores'
+                            type === 'category' ? 'categories' : 'stores'
                         }`}</label>
                     ) : null}
                     {expenses

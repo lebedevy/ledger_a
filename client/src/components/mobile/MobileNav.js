@@ -49,7 +49,7 @@ function MobileNav({ match, location, history, screen, settings }) {
             let path = location.pathname;
             if (path.slice(-1) === '/') path = path.slice(0, -1);
             const els = path.split('/');
-            // if has type (cat || store) add type
+            // if has type (category || store) add type
             const type = els.length > 5 ? els[els.length - 1] : '';
             history.push(`/users/expenses/get/${screen === 0 ? 'overview' : 'summary'}/${type}`);
         }
@@ -68,7 +68,7 @@ function MobileNav({ match, location, history, screen, settings }) {
             <IconButton onClick={() => navTo(baseLink)}>
                 <MonetizationOnIcon fontSize="large" />
             </IconButton>
-            <IconButton onClick={() => navTo(baseLink + '/cat')}>
+            <IconButton onClick={() => navTo(baseLink + '/category')}>
                 <CategoryIcon fontSize="large" />
             </IconButton>
             <IconButton onClick={() => navTo(baseLink + '/store')}>

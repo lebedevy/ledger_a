@@ -40,14 +40,14 @@ function AggregateDetails({ selected, type, start, end, mobile }) {
     function groupExpenses() {
         let total = 0;
         let grouped = {};
-        let t = type === 'cat' ? 'store_id' : 'category_id';
+        let t = type === 'category' ? 'store_id' : 'category_id';
         selected.data.forEach(el => {
             if (grouped[el[t]]) grouped[el[t]]['amount'] += el['amount'];
             else {
                 const { id, user_id, category_id, store_id, amount } = el;
                 const expense = { id, user_id, category_id, store_id, amount };
-                expense[type === 'cat' ? 'store' : 'category'] =
-                    el[type === 'cat' ? 'store' : 'category'];
+                expense[type === 'category' ? 'store' : 'category'] =
+                    el[type === 'category' ? 'store' : 'category'];
                 grouped[el[t]] = expense;
             }
             return (total += el.amount);
@@ -61,7 +61,7 @@ function AggregateDetails({ selected, type, start, end, mobile }) {
         <div className={classes.summaryItem}>
             <h2>Period Details</h2>
             <label>{`${start} to ${end}`}</label>
-            <label>{`Total ${type === 'cat' ? 'category' : 'store'} expense: $${getCurrencyFormat(
+            <label>{`Total ${type === 'category' ? 'category' : 'store'} expense: $${getCurrencyFormat(
                 total
             )}`}</label>
             <h3>Period Overview</h3>
@@ -74,13 +74,13 @@ function AggregateDetails({ selected, type, start, end, mobile }) {
                 <GroupDetailsSwitch
                     checked={checked}
                     setChecked={setChecked}
-                    type={type === 'cat' ? 'store' : 'category'}
+                    type={type === 'category' ? 'store' : 'category'}
                 />
             ) : null}
             {expanded ? (
                 <table style={{ width: '100%' }}>
                     {(() => (checked ? grouped : selected.data))().map(el => {
-                        const exclude = { [type === 'cat' ? 'category' : 'store']: true };
+                        const exclude = { [type === 'category' ? 'category' : 'store']: true };
                         if (checked) exclude['date'] = true;
                         return <ExpenseSummary key={el.id} el={el} exclude={exclude} />;
                     })}
