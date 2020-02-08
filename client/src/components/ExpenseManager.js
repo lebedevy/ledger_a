@@ -3,7 +3,11 @@ import { connect } from 'react-redux';
 import { Autocomplete } from '@material-ui/lab';
 import { TextField, Button, CircularProgress } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/styles';
-import { fetchTemplateListIfNeeded } from '../redux/actions';
+import {
+    fetchTemplateListIfNeeded,
+    invalidateExpenses,
+    invalidateTemplateList,
+} from '../redux/actions';
 
 const useStyles = makeStyles({
     form: {
@@ -74,6 +78,8 @@ function ExpenseManager({
     categories,
     stores,
     fetchDataIfNeeded,
+    invalidateExpenses,
+    invalidateTemplateList,
 }) {
     const classes = useStyles();
     const [submitting, setSubmitting] = useState(false);
@@ -83,23 +89,26 @@ function ExpenseManager({
         fetchDataIfNeeded('stores');
     }, []);
 
-    function submitExpense(e) {
+    const submitExpense = e => {
         e.preventDefault();
         setSubmitting(true);
+        if (stores && !stores.items.includes(store)) invalidateTemplateList('stores');
+        if (categories && !categories.items.includes(category))
+            invalidateTemplateList('categories');
+        invalidateExpenses('category');
+        invalidateExpenses('store');
         submit();
-    }
+    };
 
-    console.log(stores && stores.items);
-    console.log(categories && categories.items);
     return (
-        <form className={classes.form} onSubmit={e => submitExpense(e)}>
+        <form className={classes.form} onSubmit={submitExpense}>
             <div className={classes.backlay} />
-            {submitting ? (
+            {submitting && (
                 <div className={classes.loading}>
                     <div className={classes.backlay} />
                     <CircularProgress />
                 </div>
-            ) : null}
+            )}
             <FormatedTextField
                 className={classes.root}
                 placeholder="Amount"
@@ -150,6 +159,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         fetchDataIfNeeded: args => dispatch(fetchTemplateListIfNeeded(args)),
+        invalidateExpenses: args => dispatch(invalidateExpenses(args)),
+        invalidateTemplateList: args => dispatch(invalidateTemplateList(args)),
     };
 };
 

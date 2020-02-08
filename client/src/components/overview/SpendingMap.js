@@ -76,8 +76,8 @@ export default function SpendingMap({ data, step, setDay, day }) {
         <div className={classes.spendingMap} onClick={() => setDay(null)}>
             <div className={classes.periodContainer}>
                 <div className={classes.period}>
-                    {weekdays.map(wd => (
-                        <div key={wd} className={clsx(classes.day, classes.dayLabel)}>
+                    {weekdays.map((wd, ind) => (
+                        <div key={wd + ind} className={clsx(classes.day, classes.dayLabel)}>
                             {wd}
                         </div>
                     ))}

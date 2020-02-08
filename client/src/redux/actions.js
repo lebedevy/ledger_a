@@ -21,7 +21,7 @@ const requestExpenses = aggregateType => ({
     aggregateType,
 });
 
-const invalidateExpenses = aggregateType => ({
+export const invalidateExpenses = aggregateType => ({
     type: INVALIDATE_EXPENSES,
     aggregateType,
 });
@@ -68,7 +68,7 @@ const requestTemplateList = listType => ({
     listType,
 });
 
-const invalidateTemplateList = listType => ({
+export const invalidateTemplateList = listType => ({
     type: INVALIDATE_TEMPLATE_LIST,
     listType,
 });
