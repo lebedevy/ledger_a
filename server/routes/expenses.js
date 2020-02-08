@@ -6,6 +6,7 @@ const validateExpense = require('../middleware/validateExpense');
 const getSortAggregate = require('../middleware/getSortAggregate');
 const getSortSummary = require('../middleware/getSortSummary');
 
+// Add Expense
 router.post('/add', checkAuth, validateExpense, async (req, res, next) => {
     console.info('Adding expense...');
     const { expense } = req;
@@ -43,6 +44,7 @@ router.post('/add', checkAuth, validateExpense, async (req, res, next) => {
     res.status(200).send({ message: 'Expense added ok.' });
 });
 
+// Edit Expense: GET
 router.get('/edit/:id', checkAuth, async (req, res, next) => {
     console.log('Getting expense');
     const { id } = req.params;
@@ -64,6 +66,7 @@ router.get('/edit/:id', checkAuth, async (req, res, next) => {
     return res.status(400).send({ message: 'Please ensure the correct expense is requested' });
 });
 
+// Edit Expense: POST
 router.post('/edit/:id', checkAuth, validateExpense, async (req, res, next) => {
     console.info('Updating expense...');
     const { amount, date, store, category } = req.expense;
@@ -109,6 +112,7 @@ router.post('/edit/:id', checkAuth, validateExpense, async (req, res, next) => {
     });
 });
 
+// List of all expenses for a period
 router.get('/summary', checkAuth, getSortSummary, async (req, res, next) => {
     console.info('Serving expense summary');
     console.log(req.sortOption);
@@ -124,6 +128,7 @@ router.get('/summary', checkAuth, getSortSummary, async (req, res, next) => {
     res.status(200).send({ expenses: expenses });
 });
 
+// Summary for all expenses for a period
 router.get('/overview', checkAuth, async (req, res, next) => {
     console.log('Serving daily summary');
     const where = { user_id: req.user.id };
@@ -139,6 +144,7 @@ router.get('/overview', checkAuth, async (req, res, next) => {
     return res.status(200).send({ expenses });
 });
 
+// 12 month overview of expenses by category/store
 router.get('/overview/:type/trends', checkAuth, async (req, res, next) => {
     const { type } = req.params;
     console.info('Serving trends for ' + type);
@@ -288,7 +294,7 @@ router.get('/categories', checkAuth, async (req, res, next) => {
     console.info('Getting user categories');
     console.log(req.query);
     const where = { user_id: req.user.id };
-    const categories = await db.categories.findAll({
+    const result = await db.categories.findAll({
         attributes: ['category_name'],
         order: ['category_name'],
         include: {
@@ -297,6 +303,9 @@ router.get('/categories', checkAuth, async (req, res, next) => {
             where,
         },
     });
+
+    const categories = result.map(item => item.category_name);
+
     res.status(200).send({ categories });
 });
 
@@ -304,7 +313,7 @@ router.get('/stores', checkAuth, async (req, res, next) => {
     console.info('Getting user stores');
     console.log(req.query);
     const where = { user_id: req.user.id };
-    const stores = await db.stores.findAll({
+    const result = await db.stores.findAll({
         attributes: ['store_name'],
         order: ['store_name'],
         include: {
@@ -313,6 +322,9 @@ router.get('/stores', checkAuth, async (req, res, next) => {
             where,
         },
     });
+
+    const stores = result.map(item => item.store_name);
+
     res.status(200).send({ stores });
 });
 
