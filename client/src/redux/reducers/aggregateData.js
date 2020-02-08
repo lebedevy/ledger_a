@@ -24,9 +24,7 @@ export default function aggregateExpenses(state = {}, action) {
         case REQUEST_EXPENSES:
         case RECIEVE_EXPENSES:
             return Object.assign({}, state, {
-                aggregateExpenses: {
-                    [action.aggregateType]: expenses(state[action.aggregateType], action),
-                },
+                [action.aggregateType]: expenses(state[action.aggregateType], action),
             });
         default:
             return state;
