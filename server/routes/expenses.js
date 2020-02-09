@@ -6,6 +6,7 @@ const validateExpense = require('../middleware/validateExpense');
 const getSortAggregate = require('../middleware/getSortAggregate');
 const getSortSummary = require('../middleware/getSortSummary');
 
+// Add Expense
 router.post('/add', checkAuth, validateExpense, async (req, res, next) => {
     console.info('Adding expense...');
     const { expense } = req;
@@ -43,6 +44,7 @@ router.post('/add', checkAuth, validateExpense, async (req, res, next) => {
     res.status(200).send({ message: 'Expense added ok.' });
 });
 
+// Edit Expense: GET
 router.get('/edit/:id', checkAuth, async (req, res, next) => {
     console.log('Getting expense');
     const { id } = req.params;
@@ -64,6 +66,7 @@ router.get('/edit/:id', checkAuth, async (req, res, next) => {
     return res.status(400).send({ message: 'Please ensure the correct expense is requested' });
 });
 
+// Edit Expense: POST
 router.post('/edit/:id', checkAuth, validateExpense, async (req, res, next) => {
     console.info('Updating expense...');
     const { amount, date, store, category } = req.expense;
@@ -109,6 +112,7 @@ router.post('/edit/:id', checkAuth, validateExpense, async (req, res, next) => {
     });
 });
 
+// List of all expenses for a period
 router.get('/summary', checkAuth, getSortSummary, async (req, res, next) => {
     console.info('Serving expense summary');
     console.log(req.sortOption);
@@ -124,6 +128,7 @@ router.get('/summary', checkAuth, getSortSummary, async (req, res, next) => {
     res.status(200).send({ expenses: expenses });
 });
 
+// Summary for all expenses for a period
 router.get('/overview', checkAuth, async (req, res, next) => {
     console.log('Serving daily summary');
     const where = { user_id: req.user.id };
@@ -139,20 +144,21 @@ router.get('/overview', checkAuth, async (req, res, next) => {
     return res.status(200).send({ expenses });
 });
 
+// 12 month overview of expenses by category/store
 router.get('/overview/:type/trends', checkAuth, async (req, res, next) => {
     const { type } = req.params;
     console.info('Serving trends for ' + type);
     const include = [];
-    include.push(type === 'cat' ? db.categories : db.stores);
+    include.push(type === 'category' ? db.categories : db.stores);
     const where = { user_id: req.user.id };
     // const group = ['date'];
-    // group.push(type === 'cat' ? 'category.id' : 'store.id');
+    // group.push(type === 'category' ? 'category.id' : 'store.id');
 
     if (req.query.id == null)
         return res
             .status(400)
             .send({ message: 'Please ensure the request specifies the source for details' });
-    where[type === 'cat' ? 'category_id' : 'store_id'] = req.query.id;
+    where[type === 'category' ? 'category_id' : 'store_id'] = req.query.id;
     if (req.query.start && req.query.end) {
         where.date = { [db.Sequelize.Op.between]: [req.query.start, req.query.end] };
     }
@@ -179,14 +185,14 @@ router.get('/overview/:type/details', checkAuth, async (req, res, next) => {
     const { type } = req.params;
     console.info('Serving details for ' + type);
     const include = [];
-    include.push(type === 'cat' ? db.stores : db.categories);
+    include.push(type === 'category' ? db.stores : db.categories);
     const where = { user_id: req.user.id };
 
     if (req.query.id == null)
         return res
             .status(400)
             .send({ message: 'Please ensure the request specifies the source for details' });
-    where[type === 'cat' ? 'category_id' : 'store_id'] = req.query.id;
+    where[type === 'category' ? 'category_id' : 'store_id'] = req.query.id;
     if (req.query.start && req.query.end) {
         where.date = { [db.Sequelize.Op.between]: [req.query.start, req.query.end] };
     }
@@ -202,14 +208,13 @@ router.get('/overview/:type/details', checkAuth, async (req, res, next) => {
 router.get('/summary/:type', checkAuth, getSortAggregate, async (req, res, next) => {
     const { type } = req.params;
     console.info('Serving aggregated summary type: ', type);
-    console.info(req.sortOption);
     const where = { user_id: req.user.id };
     if (req.query.start && req.query.end) {
         where.date = { [db.Sequelize.Op.between]: [req.query.start, req.query.end] };
     }
 
     const resources =
-        type === 'cat'
+        type === 'category'
             ? { table: 'categories', column: 'category_name', group: 'categories.id' }
             : { table: 'stores', column: 'store_name', group: 'stores.id' };
 
@@ -242,7 +247,7 @@ router.get('/summary/:type', checkAuth, getSortAggregate, async (req, res, next)
 router.get('/manage/merge/:type', checkAuth, async (req, res, next) => {
     const { type } = req.params;
     const expenses =
-        type === 'cat'
+        type === 'category'
             ? await db.categories.findAll({
                   attributes: ['id', 'category_name'],
                   include: [
@@ -289,7 +294,7 @@ router.get('/categories', checkAuth, async (req, res, next) => {
     console.info('Getting user categories');
     console.log(req.query);
     const where = { user_id: req.user.id };
-    const categories = await db.categories.findAll({
+    const result = await db.categories.findAll({
         attributes: ['category_name'],
         order: ['category_name'],
         include: {
@@ -298,6 +303,9 @@ router.get('/categories', checkAuth, async (req, res, next) => {
             where,
         },
     });
+
+    const categories = result.map(item => item.category_name);
+
     res.status(200).send({ categories });
 });
 
@@ -305,7 +313,7 @@ router.get('/stores', checkAuth, async (req, res, next) => {
     console.info('Getting user stores');
     console.log(req.query);
     const where = { user_id: req.user.id };
-    const stores = await db.stores.findAll({
+    const result = await db.stores.findAll({
         attributes: ['store_name'],
         order: ['store_name'],
         include: {
@@ -314,6 +322,9 @@ router.get('/stores', checkAuth, async (req, res, next) => {
             where,
         },
     });
+
+    const stores = result.map(item => item.store_name);
+
     res.status(200).send({ stores });
 });
 

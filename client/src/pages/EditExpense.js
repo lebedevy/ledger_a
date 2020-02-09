@@ -25,34 +25,26 @@ function EditExpense({ match, history, height, mobile }) {
     const [category, setCategory] = useState('');
     const [date, setDate] = useState('');
 
-    console.log(match.params.id);
+    useEffect(() => {
+        fetchAPI();
+    }, []);
 
     async function fetchAPI() {
         const res = await fetch(`/api/users/expenses/edit/${match.params.id}`);
-        console.log(res);
         const data = await res.json();
-        console.log(data);
         setAmount(data.expense.amount);
         setStore(data.expense.store);
         setCategory(data.expense.category);
         setDate(data.expense.date);
     }
 
-    useEffect(() => {
-        fetchAPI();
-    }, []);
-
-    // store/category popup if did not exist in db before
-
     async function edit() {
-        console.log(amount, store, category, date);
         const res = await fetch(`/api/users/expenses/edit/${match.params.id}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ expenses: { amount, store, category, date } }),
         });
         const data = await res.json();
-        console.log(res, data);
         if (res.status === 200) history.push('/users/expenses/get/summary');
     }
 

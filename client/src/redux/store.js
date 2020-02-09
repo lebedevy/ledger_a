@@ -1,12 +1,18 @@
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunkMiddleware from 'redux-thunk';
 import rootReducer from './reducers';
 import Cookies from 'js-cookie';
-import { devToolsEnhancer } from 'redux-devtools-extension';
+import { composeWithDevTools } from 'redux-devtools-extension';
 
 const token = Cookies.get('jwt');
 const user = parseJwt(token);
 console.info('Initializing store...');
-export default createStore(rootReducer, { user }, devToolsEnhancer());
+
+export default createStore(
+    rootReducer,
+    { user },
+    composeWithDevTools(applyMiddleware(thunkMiddleware))
+);
 
 function parseJwt(token) {
     try {

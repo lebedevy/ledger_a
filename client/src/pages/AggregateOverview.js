@@ -8,6 +8,7 @@ import AggregateDetails from '../components/AggregateOverview/AggregateDetails';
 import LoadingComponent from '../components/LoadingComponent';
 import OverviewDetailsTrends from '../components/AggregateOverview/OverviewDetailsTrends';
 import DetailsHeader from '../components/AggregateOverview/DetailsHeader';
+import { fetchAggregateExpensesIfNeeded } from '../redux/actions';
 
 // ADD SUPPORT FOR RANDOM COLOR GENERATION
 const colors = [
@@ -53,9 +54,10 @@ const useStyles = makeStyles({
     },
 });
 
-function AggregateOverview({ start, end, match, width }) {
+function AggregateOverview({ start, end, match, width, aggregateExpenses, fetchDataIfNeeded }) {
     const classes = useStyles();
-    const [type, setType] = useState(match.params.type);
+    const [expenses, setExpenses] = useState({});
+    const [type, setType] = useState(getType());
     const [total, setTotal] = useState(0);
     const [data, setData] = useState(null);
     const [selected, setSelected] = useState(null);
@@ -65,7 +67,7 @@ function AggregateOverview({ start, end, match, width }) {
     // update type param
     useEffect(() => {
         if (match.params.type !== type) {
-            setType(match.params.type);
+            setType(getType());
         }
     }, [match]);
 
@@ -75,16 +77,21 @@ function AggregateOverview({ start, end, match, width }) {
         fetchExpenses();
     }, [type, start, end]);
 
-    async function fetchExpenses() {
-        console.log(`Getting ${type === 'cat' ? 'category' : 'store'} expenses overview`);
-        const res = await fetch(`/api/users/expenses/summary/${type}?start=${start}&end=${end}`);
-        if (res.ok) {
-            const data = await res.json();
-            formatData(data);
-            return;
+    // Rebuild expense list on change to expenses
+    useEffect(() => {
+        if (aggregateExpenses[type]) {
+            formatData(aggregateExpenses[type].items);
+            setExpenses(aggregateExpenses[type]);
         }
-        console.log('Error fetching data');
-        console.log(await res.json());
+    }, [aggregateExpenses[type]]);
+
+    function getType() {
+        return match.params.type === 'category' ? 'category' : 'store';
+    }
+
+    async function fetchExpenses() {
+        const params = `?start=${start}&end=${end}`;
+        fetchDataIfNeeded([type, params]);
     }
 
     function formatData(data) {
@@ -100,7 +107,7 @@ function AggregateOverview({ start, end, match, width }) {
     const getDetails = async el => {
         if (el) {
             setLoadingSelected(true);
-            console.info(`Getting ${type === 'cat' ? 'category' : 'store'} details`);
+            console.info(`Getting ${type} details`);
             const res = await fetch(
                 `/api/users/expenses/overview/${type}/details?start=${start}&end=${end}&id=${el.id}`
             );
@@ -120,24 +127,26 @@ function AggregateOverview({ start, end, match, width }) {
     return (
         <div className={classes.container}>
             <div className={classes.page}>
-                <h1>{`${type === 'cat' ? 'Category' : 'Store'} Overview`}</h1>
+                <h1>{`${type === 'category' ? 'Category' : 'Store'} Overview`}</h1>
                 <div className={classes.graph}>
-                    {data ? (
-                        <React.Fragment>
-                            <PieChart data={data} total={total} setSelected={getDetails} />
-                            <PieLegend
-                                open={legendOpen}
-                                setLegendOpen={setLegendOpen}
-                                width={width}
-                                data={data}
-                                setSelected={getDetails}
-                            />
-                        </React.Fragment>
-                    ) : (
+                    {expenses.isFetching ? (
                         <React.Fragment>
                             <div style={{ height: '80vw', maxHeight: '500px' }} />
                             <LoadingComponent />
                         </React.Fragment>
+                    ) : (
+                        data && (
+                            <React.Fragment>
+                                <PieChart data={data} total={total} setSelected={getDetails} />
+                                <PieLegend
+                                    open={legendOpen}
+                                    setLegendOpen={setLegendOpen}
+                                    width={width}
+                                    data={data}
+                                    setSelected={getDetails}
+                                />
+                            </React.Fragment>
+                        )
                     )}
                 </div>
                 <DetailsHeader selected={selected} type={type} />
@@ -155,9 +164,16 @@ function AggregateOverview({ start, end, match, width }) {
 }
 
 const mapStateToProps = state => {
+    const { aggregateExpenses } = state;
     const { start, end } = state.date.period;
     const { width } = state.screen;
-    return { start, end, width };
+    return { start, end, width, aggregateExpenses };
 };
 
-export default connect(mapStateToProps)(AggregateOverview);
+const mapDispatchToProps = dispatch => {
+    return {
+        fetchDataIfNeeded: args => dispatch(fetchAggregateExpensesIfNeeded(args)),
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AggregateOverview);

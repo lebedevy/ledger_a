@@ -39,8 +39,8 @@ function AppDrawer({ open, closeDrawer, history }) {
                 />
                 <Section
                     name="By Categories"
-                    overviewLink="/users/expenses/overview/cat"
-                    detailsLink="/users/expenses/summary/cat"
+                    overviewLink="/users/expenses/overview/category"
+                    detailsLink="/users/expenses/summary/category"
                     navTo={navTo}
                 />
                 <Section

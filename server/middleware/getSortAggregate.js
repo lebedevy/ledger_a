@@ -15,7 +15,7 @@ function getSortAggregate(req, res, next) {
             case 'store':
                 column = 'store_name';
                 break;
-            case 'cat':
+            case 'category':
                 column = 'category_name';
                 break;
         }

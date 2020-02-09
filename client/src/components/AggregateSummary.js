@@ -21,7 +21,7 @@ function AggregateSummary({ el, type, ind, expand }) {
     const classes = useStyles();
     return (
         <div className={classes.expenseEntry} onClick={expand}>
-            <label>{type === 'cat' ? el.category_name : el.store_name}</label>
+            <label>{type === 'category' ? el.category_name : el.store_name}</label>
             <label>{`$${getCurrencyFormat(el.amount)}`}</label>
         </div>
     );

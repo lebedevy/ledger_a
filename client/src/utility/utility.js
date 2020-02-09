@@ -39,7 +39,7 @@ export function getSortIndexes(options, sort, order) {
         sortInd = null;
     if (order) {
         order = order.toLowerCase();
-        orderInd = order === 'asc' ? 0 : (order = 'desc' ? 1 : null);
+        orderInd = order === 'asc' ? 0 : order === 'desc' ? 1 : null;
     }
     if (sort) {
         sort = sort.toLowerCase();

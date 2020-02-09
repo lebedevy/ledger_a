@@ -46,7 +46,7 @@ export default function DetailsHeader({ selected, type }) {
                     <h2>
                         Details:
                         <label>{`${
-                            selected.el[type === 'cat' ? 'category_name' : 'store_name']
+                            selected.el[type === 'category' ? 'category_name' : 'store_name']
                         }`}</label>
                     </h2>
                 ) : (
@@ -55,7 +55,7 @@ export default function DetailsHeader({ selected, type }) {
             </div>
             {!selected && (
                 <label>{`Select a ${
-                    type === 'cat' ? 'category' : 'store'
+                    type === 'category' ? 'category' : 'store'
                 } from the graph or legend to see its details`}</label>
             )}
         </div>

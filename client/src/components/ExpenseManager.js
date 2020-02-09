@@ -3,7 +3,11 @@ import { connect } from 'react-redux';
 import { Autocomplete } from '@material-ui/lab';
 import { TextField, Button, CircularProgress } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/styles';
-import { setCategories, setStores } from '../redux/actions';
+import {
+    fetchTemplateListIfNeeded,
+    invalidateExpenses,
+    invalidateTemplateList,
+} from '../redux/actions';
 
 const useStyles = makeStyles({
     form: {
@@ -73,60 +77,38 @@ function ExpenseManager({
     buttonLabel,
     categories,
     stores,
-    setCategories,
-    setStores,
+    fetchDataIfNeeded,
+    invalidateExpenses,
+    invalidateTemplateList,
 }) {
     const classes = useStyles();
-    const [loading, setLoading] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
-        // Resolve: currently, categories gets resolved before stores
-        // When categories are set, useEffect gets called again, at which point the stores are still null
-        // which causes another call to get stores
-        // (async timing problem)
-        if (categories === null) {
-            console.log('Categories not set.');
-            getCategories();
-        }
-        if (stores === null) {
-            console.log('Stores not set.');
-            getStores();
-        }
-    });
+        fetchDataIfNeeded('categories');
+        fetchDataIfNeeded('stores');
+    }, []);
 
-    async function getCategories() {
-        const catRes = await fetch('/api/users/expenses/categories');
-        if (catRes.status === 200) {
-            const data = await catRes.json();
-            const output = data.categories.map(el => el['category_name']);
-            setCategories(output);
-        }
-    }
-
-    async function getStores() {
-        const strRes = await fetch('/api/users/expenses/stores');
-        if (strRes.status === 200) {
-            const data = await strRes.json();
-            const result = data.stores.map(el => el['store_name']);
-            setStores(result);
-        }
-    }
-
-    function submitExpense(e) {
+    const submitExpense = e => {
         e.preventDefault();
-        setLoading(true);
+        setSubmitting(true);
+        if (stores && !stores.items.includes(store)) invalidateTemplateList('stores');
+        if (categories && !categories.items.includes(category))
+            invalidateTemplateList('categories');
+        invalidateExpenses('category');
+        invalidateExpenses('store');
         submit();
-    }
+    };
 
     return (
-        <form className={classes.form} onSubmit={e => submitExpense(e)}>
+        <form className={classes.form} onSubmit={submitExpense}>
             <div className={classes.backlay} />
-            {loading ? (
+            {submitting && (
                 <div className={classes.loading}>
                     <div className={classes.backlay} />
                     <CircularProgress />
                 </div>
-            ) : null}
+            )}
             <FormatedTextField
                 className={classes.root}
                 placeholder="Amount"
@@ -138,7 +120,7 @@ function ExpenseManager({
             <Autocomplete
                 freeSolo
                 autoCapitalize="words"
-                options={stores || []}
+                options={stores && stores.items}
                 disableClearable
                 inputValue={store}
                 onInputChange={(e, val) => setStore(val)}
@@ -147,7 +129,7 @@ function ExpenseManager({
             <Autocomplete
                 freeSolo
                 autoCapitalize="words"
-                options={categories || []}
+                options={categories && categories.items}
                 disableClearable
                 inputValue={category}
                 onInputChange={(e, val) => setCategory(val)}
@@ -162,7 +144,7 @@ function ExpenseManager({
                 type="date"
                 onChange={e => setDate(e.target.value)}
             />
-            <Button type="submit" color="primary" variant="contained" disabled={loading}>
+            <Button type="submit" color="primary" variant="contained" disabled={submitting}>
                 {buttonLabel}
             </Button>
         </form>
@@ -170,8 +152,16 @@ function ExpenseManager({
 }
 
 const mapStateToProps = state => {
-    const { categories, stores } = state;
+    const { stores, categories } = state.templateLists;
     return { categories, stores };
 };
 
-export default connect(mapStateToProps, { setCategories, setStores })(ExpenseManager);
+const mapDispatchToProps = dispatch => {
+    return {
+        fetchDataIfNeeded: args => dispatch(fetchTemplateListIfNeeded(args)),
+        invalidateExpenses: args => dispatch(invalidateExpenses(args)),
+        invalidateTemplateList: args => dispatch(invalidateTemplateList(args)),
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ExpenseManager);

@@ -96,7 +96,7 @@ function Navbar({ logout, openDrawer, history, screen }) {
                             <MonetizationOnIcon />
                             <label>All Expenses</label>
                         </button>
-                        <button className={classes.menuItem} onClick={() => navTo(path + 'cat')}>
+                        <button className={classes.menuItem} onClick={() => navTo(path + 'category')}>
                             <CategoryIcon />
                             <label>By Category</label>
                         </button>
