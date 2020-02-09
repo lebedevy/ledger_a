@@ -64,6 +64,10 @@ function AggregateOverview({ start, end, match, width, aggregateExpenses, fetchD
     const [loadingSelected, setLoadingSelected] = useState(false);
     const [legendOpen, setLegendOpen] = useState(false);
 
+    useEffect(() => {
+        fetchExpenses();
+    });
+
     // update type param
     useEffect(() => {
         if (match.params.type !== type) {
@@ -74,7 +78,6 @@ function AggregateOverview({ start, end, match, width, aggregateExpenses, fetchD
     // Fetch expenses on type change
     useEffect(() => {
         setSelected(null);
-        fetchExpenses();
     }, [type, start, end]);
 
     // Rebuild expense list on change to expenses
