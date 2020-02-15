@@ -7,26 +7,9 @@ import { getCurrencyFormat } from '../../utility/utility';
 import { Switch } from '@material-ui/core';
 import OverviewDetailsTrends from './OverviewDetailsTrends';
 import { connect } from 'react-redux';
-
-const detailsUseStyles = makeStyles({
-    summaryItem: {
-        display: 'flex',
-        flexDirection: 'column',
-        border: '1px solid #00000020',
-        padding: '10px',
-        margin: '10px 0',
-        '& label': {
-            padding: '5px 0',
-        },
-        '& h2': {
-            padding: '5px 0',
-            margin: 0,
-        },
-    },
-});
+import SummaryItem from '../SummaryItem';
 
 function AggregateDetails({ selected, type, start, end }) {
-    const classes = detailsUseStyles();
     const [total, setTotal] = useState(0);
     const [expanded, setExpanded] = useState(false);
     const [checked, setChecked] = useState(false);
@@ -53,7 +36,7 @@ function AggregateDetails({ selected, type, start, end }) {
     }, [selected]);
 
     return (
-        <div className={classes.summaryItem}>
+        <SummaryItem>
             <h2>Period Details</h2>
             <label>{`${start} to ${end}`}</label>
             <label>{`Total ${type === 'cat' ? 'category' : 'store'} expense: $${getCurrencyFormat(
@@ -76,7 +59,7 @@ function AggregateDetails({ selected, type, start, end }) {
                     })}
                 </table>
             ) : null}
-        </div>
+        </SummaryItem>
     );
 }
 

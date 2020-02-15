@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { IconButton, Button } from '@material-ui/core';
-import SummaryItem from '../SummaryItem';
+import LandingItem from '../LandingItem';
 
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
@@ -110,9 +110,9 @@ function Presentation({ mobile }) {
                     HOW IT WORKS
                 </h2>
                 <div className={clsx(classes.card, mobile ? classes.mobile : classes.desktop)}>
-                    <SummaryItem image={cardImage} imageAlt="Credit Card" label="Spend" />
-                    <SummaryItem image={recordImage} imageAlt="Notebook" label="Log" />
-                    <SummaryItem image={analyzeImage} imageAlt="Analyze" label="Analyze" />
+                    <LandingItem image={cardImage} imageAlt="Credit Card" label="Spend" />
+                    <LandingItem image={recordImage} imageAlt="Notebook" label="Log" />
+                    <LandingItem image={analyzeImage} imageAlt="Analyze" label="Analyze" />
                 </div>
 
                 <Button
@@ -136,7 +136,7 @@ const mapStateToProps = state => {
 export default connect(mapStateToProps)(Presentation);
 
 //   <React.Fragment>
-//       <SummaryItem image={surpriseImage} imageAlt="Surprise" label={pointOne} />
-//       <SummaryItem image={walkingImage} label={pointTwo} />
-//       <SummaryItem image={timeImage} imageAlt="Time" label={pointThree} />
+//       <LandingItem image={surpriseImage} imageAlt="Surprise" label={pointOne} />
+//       <LandingItem image={walkingImage} label={pointTwo} />
+//       <LandingItem image={timeImage} imageAlt="Time" label={pointThree} />
 //   </React.Fragment>;
