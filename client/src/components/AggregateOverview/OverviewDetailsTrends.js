@@ -21,21 +21,6 @@ const useStyles = makeStyles({
             margin: 0,
         },
     },
-    svg: {
-        alignSelf: 'center',
-        width: '80vw',
-        maxWidth: '99%',
-        height: '200px',
-        maxHeight: '300px',
-        // transform: 'rotate(-0.25turn)',
-        // background: 'yellow',
-        border: '1px solid #00000030',
-        borderRadius: '3px',
-        fontSize: '10px',
-    },
-    chartGrid: {
-        stroke: '#000000',
-    },
 });
 
 function OverviewDetailsTrends({ selected, type, start, end }) {
@@ -102,7 +87,9 @@ function OverviewDetailsTrends({ selected, type, start, end }) {
         <div className={classes.summaryItem}>
             <h2>
                 Trends Overview:
-                <label>{`${selected.el[type === 'category' ? 'category_name' : 'store_name']}`}</label>
+                <label>{`${
+                    selected.el[type === 'category' ? 'category_name' : 'store_name']
+                }`}</label>
             </h2>
             {startMonth && endMonth && (
                 <label>{`${startMonth[0]} ${startMonth[1]} to ${endMonth[0]} ${endMonth[1]}`}</label>

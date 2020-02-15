@@ -52,7 +52,7 @@ function WeeklySummary({ expenses, start, end, mobile }) {
     }
 
     return (
-        <React.Fragment>
+        <>
             <input onChange={() => setShowGrid(!showGrid)} type="checkbox" />
             <svg className={classes.svg}>
                 {(() => {
@@ -107,6 +107,7 @@ function WeeklySummary({ expenses, start, end, mobile }) {
                                     x={`${10 + (80 / weekly.length) * ind}%`}
                                     y="97%"
                                     textAnchor={mobile ? '' : 'middle'}
+                                    writingMode={mobile ? 'tb' : ''}
                                 >{`Week ${ind + 1}`}</text>
                             </React.Fragment>
                         );
@@ -114,7 +115,7 @@ function WeeklySummary({ expenses, start, end, mobile }) {
                 <line x1="10%" x2="10%" y1="90%" y2="10%" stroke="#00000090" />
                 <line x1="10%" x2="90%" y1="90%" y2="90%" stroke="#00000090" />
             </svg>
-        </React.Fragment>
+        </>
     );
 }
 

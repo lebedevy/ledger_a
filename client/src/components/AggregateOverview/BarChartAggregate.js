@@ -81,57 +81,56 @@ function BarChartAggregate({ max, data, mobile }) {
                 x2={`${rightOffset - 0.5}%`}
                 stroke="#2274A5"
             />
-            {data
-                ? data.map((el, ind) => (
-                      <React.Fragment key={el.month + 'container'}>
-                          {/* The first rec is to catch hover events for small rects*/}
-                          <rect
-                              key={el.month + 'barBackup'}
-                              x={`${rightOffset + 8 * ind}%`}
-                              y={`${topOffset}%`}
-                              width={`${barWidth}%`}
-                              height={`${barHeight}%`}
-                              style={{ fill: '#00000000' }}
-                          />
-                          <rect
-                              key={el.month + 'bar'}
-                              x={`${rightOffset + 8 * ind}%`}
-                              y={`${topOffset + barHeight - barHeight * (el.amount / max)}%`}
-                              width={`${barWidth}%`}
-                              height={`${barHeight * (el.amount / max)}%`}
-                              style={{ fill: '#F75C03' }}
-                          />
-                          <text
-                              key={el.month + 'amountLabel'}
-                              x={`${rightOffset + barWidth / 2 + 8 * ind}%`}
-                              y={`${Math.min(
-                                  topOffset +
-                                      barHeight -
-                                      barHeight * (el.amount / max) -
-                                      (mobile ? -2 : 3),
-                                  topOffset + barHeight - 8
-                              )}%`}
-                              textAnchor={mobile ? '' : 'middle'}
-                              writingMode={mobile ? 'tb' : ''}
-                          >
-                              {`$${
-                                  el.amount >= 1000
-                                      ? (el.amount / 1000).toFixed(2) + 'k'
-                                      : Math.round(el.amount)
-                              }`}
-                          </text>
-                          <text
-                              key={el.month + 'label'}
-                              x={`${rightOffset + barWidth / 2 + 8 * ind}%`}
-                              y={`${topOffset + barHeight + (mobile ? 15 : 10)}%`}
-                              textAnchor="middle"
-                              writingMode={mobile ? 'tb' : ''}
-                          >
-                              {`${el.month} ${el.year}`}
-                          </text>
-                      </React.Fragment>
-                  ))
-                : null}
+            {data &&
+                data.map((el, ind) => (
+                    <React.Fragment key={el.month + 'container'}>
+                        {/* The first rec is to catch hover events for small rects*/}
+                        <rect
+                            key={el.month + 'barBackup'}
+                            x={`${rightOffset + 8 * ind}%`}
+                            y={`${topOffset}%`}
+                            width={`${barWidth}%`}
+                            height={`${barHeight}%`}
+                            style={{ fill: '#00000000' }}
+                        />
+                        <rect
+                            key={el.month + 'bar'}
+                            x={`${rightOffset + 8 * ind}%`}
+                            y={`${topOffset + barHeight - barHeight * (el.amount / max)}%`}
+                            width={`${barWidth}%`}
+                            height={`${barHeight * (el.amount / max)}%`}
+                            style={{ fill: '#F75C03' }}
+                        />
+                        <text
+                            key={el.month + 'amountLabel'}
+                            x={`${rightOffset + barWidth / 2 + 8 * ind}%`}
+                            y={`${Math.min(
+                                topOffset +
+                                    barHeight -
+                                    barHeight * (el.amount / max) -
+                                    (mobile ? -2 : 3),
+                                topOffset + barHeight - 8
+                            )}%`}
+                            textAnchor={mobile ? '' : 'middle'}
+                            writingMode={mobile ? 'tb' : ''}
+                        >
+                            {`$${
+                                el.amount >= 1000
+                                    ? (el.amount / 1000).toFixed(2) + 'k'
+                                    : Math.round(el.amount)
+                            }`}
+                        </text>
+                        <text
+                            key={el.month + 'label'}
+                            x={`${rightOffset + barWidth / 2 + 8 * ind}%`}
+                            y={`${topOffset + barHeight + (mobile ? 15 : 10)}%`}
+                            textAnchor="middle"
+                            writingMode={mobile ? 'tb' : ''}
+                        >
+                            {`${el.month} ${el.year}`}
+                        </text>
+                    </React.Fragment>
+                ))}
         </svg>
     );
 }
