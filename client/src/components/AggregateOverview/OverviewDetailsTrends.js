@@ -5,41 +5,9 @@ import { CircularProgress } from '@material-ui/core';
 import { getFormatedDate } from '../../utility/utility';
 import BarChartAggregate from './BarChartAggregate';
 import { months } from '../../data/data';
-
-const useStyles = makeStyles({
-    summaryItem: {
-        display: 'flex',
-        flexDirection: 'column',
-        border: '1px solid #00000020',
-        padding: '10px',
-        margin: '10px 0',
-        '& label': {
-            padding: '5px 0',
-        },
-        '& h2': {
-            padding: '5px 0',
-            margin: 0,
-        },
-    },
-    svg: {
-        alignSelf: 'center',
-        width: '80vw',
-        maxWidth: '99%',
-        height: '200px',
-        maxHeight: '300px',
-        // transform: 'rotate(-0.25turn)',
-        // background: 'yellow',
-        border: '1px solid #00000030',
-        borderRadius: '3px',
-        fontSize: '10px',
-    },
-    chartGrid: {
-        stroke: '#000000',
-    },
-});
+import SummaryItem from '../SummaryItem';
 
 function OverviewDetailsTrends({ selected, type, start, end }) {
-    const classes = useStyles();
     const [data, setData] = useState(null);
     const [max, setMax] = useState(null);
     const [startMonth, setStartMonth] = useState(null);
@@ -99,9 +67,9 @@ function OverviewDetailsTrends({ selected, type, start, end }) {
     }
 
     return (
-        <div className={classes.summaryItem}>
+        <SummaryItem>
             <h2>
-                Trends Overview:
+                Trends Overview:{' '}
                 <label>{`${selected.el[type === 'cat' ? 'category_name' : 'store_name']}`}</label>
             </h2>
             {startMonth && endMonth && (
@@ -114,7 +82,7 @@ function OverviewDetailsTrends({ selected, type, start, end }) {
             </label>
             {data ? null : <CircularProgress style={{ alignSelf: 'center', margin: '10px' }} />}
             <BarChartAggregate max={max} data={data} />
-        </div>
+        </SummaryItem>
     );
 }
 

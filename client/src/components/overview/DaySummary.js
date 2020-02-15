@@ -3,26 +3,9 @@ import { makeStyles } from '@material-ui/styles';
 import SummaryDetailsButton from './SummaryDetailsButton';
 import Details from './SummaryDetails';
 import { getCurrencyFormat } from '../../utility/utility';
-
-const useStyles = makeStyles({
-    summaryItem: {
-        display: 'flex',
-        flexDirection: 'column',
-        border: '1px solid #00000020',
-        padding: '10px',
-        margin: '10px 0',
-        '& label': {
-            padding: '5px',
-        },
-        '& h2': {
-            padding: '5px',
-            margin: 0,
-        },
-    },
-});
+import SummaryItem from '../SummaryItem';
 
 export default function DaySummary({ day }) {
-    const classes = useStyles();
     const [expanded, setExpanded] = useState(false);
     const [expenses, setExpenses] = useState(null);
 
@@ -46,11 +29,11 @@ export default function DaySummary({ day }) {
     }
 
     return (
-        <div className={classes.summaryItem}>
+        <SummaryItem>
             {day == null ? (
                 <h2>Select day to see summary</h2>
             ) : (
-                <React.Fragment>
+                <>
                     <h2>{`Summary for ${day.date}`}</h2>
                     <label>{`Expenses: $${getCurrencyFormat(day.amount)}`}</label>
                     <SummaryDetailsButton setExpanded={setExpanded} expanded={expanded} />
@@ -62,8 +45,8 @@ export default function DaySummary({ day }) {
                             return null;
                         }
                     })()}
-                </React.Fragment>
+                </>
             )}
-        </div>
+        </SummaryItem>
     );
 }
