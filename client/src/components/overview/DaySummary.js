@@ -51,7 +51,6 @@ export default function DaySummary({ day }) {
     }
 
     const expensesList = day ? expenses : todaysExpenses;
-    console.log(expensesList, expensesList && expensesList.length);
 
     return (
         <SummaryItem>
