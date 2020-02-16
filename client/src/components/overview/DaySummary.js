@@ -10,6 +10,10 @@ const useStyles = makeStyles({
     emptyList: {
         textAlign: 'center',
     },
+    selectOther: {
+        fontStyle: 'italic',
+        fontSize: '.8em',
+    },
 });
 
 export default function DaySummary({ day }) {
@@ -18,6 +22,7 @@ export default function DaySummary({ day }) {
     const [expanded, setExpanded] = useState(false);
     const [expenses, setExpenses] = useState(null);
     const [todaysExpenses, setTodaysExpenses] = useState(null);
+    const [todaysTotal, setTodaysTotal] = useState(0);
 
     useEffect(() => {
         fetchTodaysExpenses();
@@ -43,7 +48,9 @@ export default function DaySummary({ day }) {
     };
 
     async function fetchTodaysExpenses() {
-        setTodaysExpenses(await fetchExpenses(today));
+        const data = await fetchExpenses(today);
+        setTodaysTotal(data.reduce((total, el) => total + el.amount, 0));
+        setTodaysExpenses(data);
     }
 
     async function fetchExpenseSummary() {
@@ -56,9 +63,14 @@ export default function DaySummary({ day }) {
         <SummaryItem>
             {day == null ? (
                 <>
-                    <h2>Today's Expenses</h2>
+                    <div>
+                        <h2>Today's Expenses</h2>
+                        <label className={classes.selectOther}>
+                            Select any other day on the graph above to view that day's expenses
+                        </label>
+                    </div>
                     <label>{today}</label>
-                    <label>Select any other day on the graph above to view its expenses</label>
+                    <label>{`Expenses: $${getCurrencyFormat(todaysTotal)}`}</label>
                 </>
             ) : (
                 <>
