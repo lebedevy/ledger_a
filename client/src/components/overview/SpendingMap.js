@@ -1,7 +1,8 @@
 import React from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
-import { getCurrencyFormat } from '../../utility/utility';
+import { getCurrencyFormat, getFormatedDate } from '../../utility/utility';
+import { useSelector } from 'react-redux';
 
 const dayGrade = ['empty', 'first', 'second', 'third'];
 // const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -61,10 +62,14 @@ const useStyles = makeStyles({
     muted: {
         opacity: 0.55,
     },
+    today: {
+        border: '2px solid orange',
+    },
 });
 
 export default function SpendingMap({ data, step, setDay, day }) {
     const classes = useStyles();
+    const today = useSelector(state => getFormatedDate(state.date.today));
     return (
         <div className={classes.spendingMap} onClick={() => setDay(null)}>
             <div className={classes.period}>
@@ -82,6 +87,7 @@ export default function SpendingMap({ data, step, setDay, day }) {
                                 classes.day,
                                 day && el.date === day.date && classes.selected,
                                 day && el.date !== day.date && classes.muted,
+                                el.date === today && classes.today,
                                 classes[
                                     dayGrade[
                                         Math.ceil(el.amount / step) > 3
