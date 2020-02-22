@@ -1,33 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/styles';
-
 import SummaryDetailsButton from '../overview/SummaryDetailsButton';
 import ExpenseSummary from '../ExpenseSummary';
 import { getCurrencyFormat } from '../../utility/utility';
 import { Switch } from '@material-ui/core';
-import OverviewDetailsTrends from './OverviewDetailsTrends';
 import { connect } from 'react-redux';
-import WeeklySummary from './WeeklySummary';
+import SummaryItem from '../SummaryItem';
+import WeeklySummary from '../AggregateOverview/WeeklySummary';
 
-const detailsUseStyles = makeStyles({
-    summaryItem: {
-        display: 'flex',
-        flexDirection: 'column',
-        border: '1px solid #00000020',
-        padding: '10px',
-        margin: '10px 0',
-        '& label': {
-            padding: '5px 0',
-        },
-        '& h2': {
-            padding: '5px 0',
-            margin: 0,
-        },
-    },
-});
-
-function AggregateDetails({ selected, type, start, end, mobile }) {
-    const classes = detailsUseStyles();
+function AggregateDetails({ selected, type, start, end }) {
     const [total, setTotal] = useState(0);
     const [expanded, setExpanded] = useState(false);
     const [checked, setChecked] = useState(false);
@@ -58,12 +38,12 @@ function AggregateDetails({ selected, type, start, end, mobile }) {
     }
 
     return (
-        <div className={classes.summaryItem}>
+        <SummaryItem>
             <h2>Period Details</h2>
             <label>{`${start} to ${end}`}</label>
-            <label>{`Total ${type === 'category' ? 'category' : 'store'} expense: $${getCurrencyFormat(
-                total
-            )}`}</label>
+            <label>{`Total ${
+                type === 'category' ? 'category' : 'store'
+            } expense: $${getCurrencyFormat(total)}`}</label>
             <h3>Period Overview</h3>
             <h4>Period expenses by week</h4>
 
@@ -86,7 +66,7 @@ function AggregateDetails({ selected, type, start, end, mobile }) {
                     })}
                 </table>
             ) : null}
-        </div>
+        </SummaryItem>
     );
 }
 

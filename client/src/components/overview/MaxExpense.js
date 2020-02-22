@@ -1,28 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/styles';
 import { getCurrencyFormat } from '../../utility/utility';
 import SummaryDetailsButton from './SummaryDetailsButton';
 import Details from './SummaryDetails';
-
-const useStyles = makeStyles({
-    summaryItem: {
-        display: 'flex',
-        flexDirection: 'column',
-        border: '1px solid #00000020',
-        padding: '10px',
-        margin: '10px 0',
-        '& label': {
-            padding: '5px',
-        },
-        '& h2': {
-            padding: '5px',
-            margin: 0,
-        },
-    },
-});
+import SummaryItem from '../SummaryItem';
 
 export default function MaxExpense({ max }) {
-    const classes = useStyles();
     const [expanded, setExpanded] = useState(false);
     const [expenses, setExpenses] = useState(null);
 
@@ -38,15 +20,14 @@ export default function MaxExpense({ max }) {
         if (res.status === 200) {
             const data = await res.json();
             if (data.expenses) {
-                setExpenses(data.expenses);
-                return;
+                return setExpenses(data.expenses);
             }
         }
         console.error('Error fetching results');
     }
 
     return (
-        <div className={classes.summaryItem}>
+        <SummaryItem>
             <h2>Max Daily Expense</h2>
             <label>{max ? max.date : 'loading...'}</label>
             <label>{max ? `$${getCurrencyFormat(max.amount)}` : ''}</label>
@@ -59,6 +40,6 @@ export default function MaxExpense({ max }) {
                     return null;
                 }
             })()}
-        </div>
+        </SummaryItem>
     );
 }

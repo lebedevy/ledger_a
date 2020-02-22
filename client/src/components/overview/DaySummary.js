@@ -1,69 +1,89 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/styles';
 import SummaryDetailsButton from './SummaryDetailsButton';
 import Details from './SummaryDetails';
-import { getCurrencyFormat } from '../../utility/utility';
+import { getCurrencyFormat, getFormatedDate } from '../../utility/utility';
+import SummaryItem from '../SummaryItem';
+import { useSelector } from 'react-redux';
+import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles({
-    summaryItem: {
-        display: 'flex',
-        flexDirection: 'column',
-        border: '1px solid #00000020',
-        padding: '10px',
-        margin: '10px 0',
-        '& label': {
-            padding: '5px',
-        },
-        '& h2': {
-            padding: '5px',
-            margin: 0,
-        },
+    emptyList: {
+        textAlign: 'center',
+    },
+    selectOther: {
+        fontStyle: 'italic',
+        fontSize: '.8em',
     },
 });
 
 export default function DaySummary({ day }) {
     const classes = useStyles();
+    const today = getFormatedDate(useSelector(state => state.date.today));
     const [expanded, setExpanded] = useState(false);
     const [expenses, setExpenses] = useState(null);
+    const [todaysExpenses, setTodaysExpenses] = useState(null);
+    const [todaysTotal, setTodaysTotal] = useState(0);
 
     useEffect(() => {
-        if (day) fetchExpenseSummary();
+        fetchTodaysExpenses();
+    }, []);
+
+    useEffect(() => {
+        if (day !== null) fetchExpenseSummary();
     }, [day]);
 
-    async function fetchExpenseSummary() {
-        console.log('Fetching day summary');
+    const fetchExpenses = async date => {
+        console.log(`Fetching day summary ${date}`);
         const res = await fetch(
-            `/api/users/expenses/summary?start=${day.date}&end=${day.date}&sort=amount&order=desc`
+            `/api/users/expenses/summary?start=${date}&end=${date}&sort=amount&order=desc`
         );
         if (res.status === 200) {
             const data = await res.json();
             if (data.expenses) {
-                setExpenses(data.expenses);
-                return;
+                return data.expenses;
             }
         }
         console.error('Error fetching results');
+        return null;
+    };
+
+    async function fetchTodaysExpenses() {
+        const data = await fetchExpenses(today);
+        setTodaysTotal(data.reduce((total, el) => total + el.amount, 0));
+        setTodaysExpenses(data);
     }
 
+    async function fetchExpenseSummary() {
+        setExpenses(await fetchExpenses(day.date));
+    }
+
+    const expensesList = day ? expenses : todaysExpenses;
+
     return (
-        <div className={classes.summaryItem}>
+        <SummaryItem>
             {day == null ? (
-                <h2>Select day to see summary</h2>
+                <>
+                    <div>
+                        <h2>Today's Expenses</h2>
+                        <label className={classes.selectOther}>
+                            Select any other day on the graph above to view that day's expenses
+                        </label>
+                    </div>
+                    <label>{today}</label>
+                    <label>{`Expenses: $${getCurrencyFormat(todaysTotal)}`}</label>
+                </>
             ) : (
-                <React.Fragment>
+                <>
                     <h2>{`Summary for ${day.date}`}</h2>
                     <label>{`Expenses: $${getCurrencyFormat(day.amount)}`}</label>
-                    <SummaryDetailsButton setExpanded={setExpanded} expanded={expanded} />
-                    {(() => {
-                        if (expanded) {
-                            if (expenses == null) fetchExpenseSummary();
-                            return <Details expenses={expenses} />;
-                        } else {
-                            return null;
-                        }
-                    })()}
-                </React.Fragment>
+                </>
             )}
-        </div>
+            {expensesList && expensesList.length > 0 ? (
+                <SummaryDetailsButton setExpanded={setExpanded} expanded={expanded} />
+            ) : (
+                <label className={classes.emptyList}>No expenses for selected date</label>
+            )}
+            {expanded && <Details expenses={expensesList} />}
+        </SummaryItem>
     );
 }

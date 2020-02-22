@@ -6,6 +6,7 @@ import SpendingMap from '../components/overview/SpendingMap';
 import MaxExpense from '../components/overview/MaxExpense';
 import AddExpenseButton from '../components/AddExpenseButton';
 import DaySummary from '../components/overview/DaySummary';
+import SummaryItem from '../components/SummaryItem';
 
 class EmptyCell {
     constructor(date) {
@@ -34,7 +35,6 @@ const useStyles = makeStyles({
         padding: '10px',
         maxWidth: '1200px',
         overflow: 'hidden',
-        // borderRight: '1px solid #00000010',
         '& h1': {
             margin: '10px 0',
             padding: '10px 0',
@@ -46,20 +46,6 @@ const useStyles = makeStyles({
         fontSize: '1.5em',
         display: 'block',
         padding: '10px 0',
-    },
-    summaryItem: {
-        display: 'flex',
-        flexDirection: 'column',
-        border: '1px solid #00000020',
-        padding: '10px',
-        margin: '10px 0',
-        '& label': {
-            padding: '5px',
-        },
-        '& h2': {
-            padding: '5px',
-            margin: 0,
-        },
     },
 });
 
@@ -154,12 +140,12 @@ function DailySummary({ start, end, history }) {
                 <div>
                     <DaySummary day={day} />
                     <MaxExpense max={max} />
-                    <div className={classes.summaryItem}>
+                    <SummaryItem>
                         <h2>Daily Average</h2>
                         <label>{`${average.length} days`}</label>
                         <label>{`$${getCurrencyFormat(average.average)}/day`}</label>
                         <label>{`$${getCurrencyFormat(average.total)} total`}</label>
-                    </div>
+                    </SummaryItem>
                 </div>
             </div>
             <AddExpenseButton history={history} />

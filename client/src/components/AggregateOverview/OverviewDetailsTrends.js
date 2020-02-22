@@ -1,30 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/styles';
 import { connect } from 'react-redux';
 import { CircularProgress } from '@material-ui/core';
 import { getFormatedDate } from '../../utility/utility';
 import BarChartAggregate from './BarChartAggregate';
 import { months } from '../../data/data';
-
-const useStyles = makeStyles({
-    summaryItem: {
-        display: 'flex',
-        flexDirection: 'column',
-        border: '1px solid #00000020',
-        padding: '10px',
-        margin: '10px 0',
-        '& label': {
-            padding: '5px 0',
-        },
-        '& h2': {
-            padding: '5px 0',
-            margin: 0,
-        },
-    },
-});
+import SummaryItem from '../SummaryItem';
 
 function OverviewDetailsTrends({ selected, type, start, end }) {
-    const classes = useStyles();
     const [data, setData] = useState(null);
     const [max, setMax] = useState(null);
     const [startMonth, setStartMonth] = useState(null);
@@ -84,7 +66,7 @@ function OverviewDetailsTrends({ selected, type, start, end }) {
     }
 
     return (
-        <div className={classes.summaryItem}>
+        <SummaryItem>
             <h2>
                 Trends Overview:
                 <label>{`${
@@ -101,7 +83,7 @@ function OverviewDetailsTrends({ selected, type, start, end }) {
             </label>
             {data ? null : <CircularProgress style={{ alignSelf: 'center', margin: '10px' }} />}
             <BarChartAggregate max={max} data={data} />
-        </div>
+        </SummaryItem>
     );
 }
 

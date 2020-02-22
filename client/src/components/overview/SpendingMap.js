@@ -1,7 +1,8 @@
 import React from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
-import { getCurrencyFormat } from '../../utility/utility';
+import { getCurrencyFormat, getFormatedDate } from '../../utility/utility';
+import { useSelector } from 'react-redux';
 
 const weekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const dayGrade = ['empty', 'first', 'second', 'third'];
@@ -68,10 +69,14 @@ const useStyles = makeStyles({
     muted: {
         opacity: 0.55,
     },
+    today: {
+        border: '2px solid orange',
+    },
 });
 
 export default function SpendingMap({ data, step, setDay, day }) {
     const classes = useStyles();
+    const today = useSelector(state => getFormatedDate(state.date.today));
     return (
         <div className={classes.spendingMap} onClick={() => setDay(null)}>
             <div className={classes.periodContainer}>
@@ -97,6 +102,7 @@ export default function SpendingMap({ data, step, setDay, day }) {
                                     classes.day,
                                     day && el.date === day.date && classes.selected,
                                     day && el.date !== day.date && classes.muted,
+                                    el.date === today && classes.today,
                                     classes[
                                         dayGrade[
                                             Math.ceil(el.amount / step) > 3
@@ -112,22 +118,16 @@ export default function SpendingMap({ data, step, setDay, day }) {
                 </div>
             </div>
             <div className={classes.legend}>
-                {/* <label>less</label> */}
-                <div className={clsx(classes.day, classes.empty)} title={0} />
-                <div
-                    className={clsx(classes.day, classes.first)}
-                    title={`upto $${getCurrencyFormat(step)}`}
-                />
-                <div
-                    className={clsx(classes.day, classes.second)}
-                    title={`upto $${getCurrencyFormat(step * 2)}`}
-                />
-                <div
-                    className={clsx(classes.day, classes.third)}
-                    title={`over $${getCurrencyFormat(step * 3)}`}
-                />
-                {/* <label>more</label> */}
+                <LegendItem cssClass="empty" label="$0" />
+                <LegendItem cssClass="first" label={`upto $${getCurrencyFormat(step)}`} />
+                <LegendItem cssClass="second" label={`upto $${getCurrencyFormat(step * 2)}`} />
+                <LegendItem cssClass="third" label={`over $${getCurrencyFormat(step * 2)}`} />
             </div>
         </div>
     );
+}
+
+function LegendItem({ cssClass, label }) {
+    const classes = useStyles();
+    return <div className={clsx(classes.day, classes[cssClass])} title={label} />;
 }
