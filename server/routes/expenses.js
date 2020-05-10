@@ -11,37 +11,33 @@ router.post('/add', checkAuth, validateExpense, async (req, res, next) => {
     console.info('Adding expense...');
     const { expense } = req;
     const { amount, date, store, category } = expense;
-    let store_id = null,
-        category_id = null;
 
-    // Create store
-    if (store) {
-        const [storeObj, storeCreated] = await db.stores.findOrCreate({
-            where: { store_name: store },
-        });
-        store_id = storeObj.id;
+    const transaction = await db.sequelize.transaction();
+
+    try {
+        const store_id = store ? await insertStore(store, transaction) : null;
+        const category_id = category ? await insertCategory(category, transaction) : null;
+        // Create expense record
+        const record = await db.expenses.create(
+            {
+                user_id: req.user.id,
+                category_id,
+                date,
+                amount,
+                store_id,
+            },
+            { transaction }
+        );
+
+        console.log(record.dataValues);
+
+        await transaction.commit();
+        res.status(200).send({ message: 'Expense added ok.' });
+    } catch (e) {
+        console.log('Error adding single expense: ', e);
+        await transaction.rollback();
+        return res.status(500).send({ message: 'Error while adding expense' });
     }
-
-    if (category) {
-        // Create category
-        const [categoryObj, catCreated] = await db.categories.findOrCreate({
-            where: { category_name: category },
-        });
-        category_id = categoryObj.id;
-    }
-
-    // Create expense record
-    const record = await db.expenses.create({
-        user_id: req.user.id,
-        category_id,
-        date,
-        amount,
-        store_id,
-    });
-
-    console.log(record.dataValues);
-
-    res.status(200).send({ message: 'Expense added ok.' });
 });
 
 // Method for uploading csv expenses
