@@ -33,16 +33,83 @@ router.post('/add', checkAuth, validateExpense, async (req, res, next) => {
     // Create expense record
     const record = await db.expenses.create({
         user_id: req.user.id,
-        category_id: category_id,
+        category_id,
         date,
         amount,
-        store_id: store_id,
+        store_id,
     });
 
     console.log(record.dataValues);
 
     res.status(200).send({ message: 'Expense added ok.' });
 });
+
+// Method for uploading csv expenses
+// This + insertForeignAndGetIds needs to be converted into a bulk insert
+router.post('/upload', checkAuth, async (req, res, next) => {
+    const { expenses } = req.body;
+    if (!expenses || expenses.length === 0)
+        return res.status(200).send({ message: 'No expenses were sent for upload' });
+    const transaction = await db.sequelize.transaction();
+
+    let query = `INSERT INTO expenses (user_id, amount, date, store_id, category_id, "createdAt", "updatedAt")
+        VALUES `;
+
+    try {
+        console.info('Adding expense...');
+
+        const expensesData = await insertForeignAndGetIds(expenses, transaction);
+        expensesData.forEach((exp, ind) => {
+            console.log(exp);
+            query += `${ind > 0 ? ',' : ''} (${req.user.id}, ${db.sequelize.escape(
+                exp.amount
+            )}, ${db.sequelize.escape(exp.date)}, ${exp.store_id}, ${
+                exp.category_id
+            }, now(), now())`;
+        });
+        query += ';';
+        console.log(query);
+
+        await db.sequelize.query(query, { transaction });
+
+        await transaction.commit();
+        return res.status(200).send({ message: 'Upload complete' });
+    } catch (e) {
+        console.log('Error inserting csv expenses: ', e);
+        await transaction.rollback();
+        return res.status(500).send({ message: 'Upload Error' });
+    }
+});
+
+// Insert stores and categories and get their ids
+function insertForeignAndGetIds(expenses, transaction) {
+    return Promise.all(
+        expenses.map(async (expense) => {
+            const { amount, date, store, category } = expense;
+
+            const store_id = store ? await insertStore(store, transaction) : null;
+            const category_id = category ? await insertCategory(category, transaction) : null;
+
+            return { amount, date, store_id, category_id };
+        })
+    );
+}
+
+async function insertStore(store_name, transaction) {
+    const [storeObj, storeCreated] = await db.stores.findOrCreate({
+        where: { store_name },
+        transaction,
+    });
+    return storeObj.id;
+}
+
+async function insertCategory(category_name, transaction) {
+    const [categoryObj, catCreated] = await db.categories.findOrCreate({
+        where: { category_name },
+        transaction,
+    });
+    return categoryObj.id;
+}
 
 // Edit Expense: GET
 router.get('/edit/:id', checkAuth, async (req, res, next) => {
@@ -235,7 +302,7 @@ router.get('/summary/:type', checkAuth, getSortAggregate, async (req, res, next)
             group: resources.group,
             order: db.sequelize.literal(req.sortOption),
         })
-        .catch(e => {
+        .catch((e) => {
             console.log(e);
             return res
                 .status(500)
@@ -304,7 +371,7 @@ router.get('/categories', checkAuth, async (req, res, next) => {
         },
     });
 
-    const categories = result.map(item => item.category_name);
+    const categories = result.map((item) => item.category_name);
 
     res.status(200).send({ categories });
 });
@@ -323,7 +390,7 @@ router.get('/stores', checkAuth, async (req, res, next) => {
         },
     });
 
-    const stores = result.map(item => item.store_name);
+    const stores = result.map((item) => item.store_name);
 
     res.status(200).send({ stores });
 });
