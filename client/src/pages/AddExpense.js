@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { getFormatedDate } from '../utility/utility';
 import ExpenseManager from '../components/ExpenseManager';
 
-const styles = theme => ({
+const styles = (theme) => ({
     container: {
         position: 'fixed',
         top: 0,
@@ -59,7 +59,7 @@ class AddExpense extends Component {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                expenses: { amount, store, category, date },
+                expense: { amount, store, category, date },
             }),
         });
         const data = await res.json();
@@ -111,13 +111,13 @@ class AddExpense extends Component {
                 <h2>Add Expense</h2>
                 <ExpenseManager
                     amount={amount}
-                    setAmount={value => this.updateField('amount', value)}
+                    setAmount={(value) => this.updateField('amount', value)}
                     category={category}
-                    setCategory={value => this.updateField('category', value)}
+                    setCategory={(value) => this.updateField('category', value)}
                     store={store}
-                    setStore={value => this.updateField('store', value)}
+                    setStore={(value) => this.updateField('store', value)}
                     date={date}
-                    setDate={value => this.updateField('date', value)}
+                    setDate={(value) => this.updateField('date', value)}
                     submit={() => this.addExpense()}
                     buttonLabel="Add Expense"
                 />
@@ -128,7 +128,7 @@ class AddExpense extends Component {
 }
 
 // Get date from redux
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
     const { date } = state;
     const { height, mobile } = state.screen;
     return { date, height, mobile };

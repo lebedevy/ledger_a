@@ -1,193 +1,81 @@
-import React, { useState } from 'react';
-import { Stepper, Step, StepLabel } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
-import clsx from 'clsx';
+import React, { useState, useEffect } from 'react';
+import { isNil } from 'ramda';
+import { css } from 'emotion';
 import { getFormatedDate } from '../../utility/utility';
+import UploadStep from './UploadStepper.tsx';
 
-const useStyles = makeStyles({
-    container: {},
-    table: {
-        maxWidth: '1200px',
-        width: '100vw',
-        margin: '0 auto',
-    },
-    body: {
-        maxWidth: '1200px',
-        width: '100vw',
-        display: 'flex',
-        flexDirection: 'column',
-        '& tr': {
-            flex: 1,
-            display: 'flex',
-            '& td': {
-                flex: 1,
-                // border: '1px solid #00000020',
-            },
-        },
-    },
-    td: {
-        border: '1px solid #00000020',
-    },
-    // amountCol: {
-    //     background: '#2E9B56',
-    // },
-    // dateCol: {
-    //     background: '#E9724C',
-    // },
-    // storeCol: {
-    //     background: '#255F85',
-    // },
-    // categoryCol: {
-    //     background: '#FFC857',
-    // },
-    // unselectedCol: {
-    //     background: '#C5283D',
-    // },
-    colBorder: {
-        borderLeft: '2px solid #000000',
-    },
-    // colHover: {
-    //     background: 'white',
-    // },
-    colButton: {
-        height: '2em',
-        width: '100px',
-    },
-});
+const rowStyle = css`
+    border: 1px solid black;
+    display: flex;
+`;
 
-// amount, store, category, date, unselected
-const backgrounds = ['2E9B56', '255F85', 'FFC857', 'E9724C', 'F25F5C'];
-const label = ['amount', 'store', 'category', 'date', 'unselect'];
-const buttons = ['Amount', 'Store', 'Category', 'Date', 'Unselect'];
+const cellStyle = css`
+    flex: 1;
+    border-right: 1px solid black;
+`;
 
-function getColumns() {
-    return [
-        { name: 'amount', hover: 'amountCol' },
-        { name: 'store', hover: 'storeCol' },
-        { name: 'category', hover: 'categoryCol' },
-        { name: 'date', hover: 'dateCol' },
-    ];
-}
-
-export default function ColumnSelect({ data, setExpenses }) {
-    const classes = useStyles();
-    const columns = getColumns();
-    const [hover, setHover] = useState(null);
-    const [select, setSelect] = useState(0);
-    const [col, setCol] = useState({});
-    const [amount, setAmount] = useState({ name: 'amount', hover: 'amountCol' });
-    const [store, setStore] = useState({ name: 'store', hover: 'storeCol' });
-    const [category, setCategory] = useState({ name: 'category', hover: 'categoryCol' });
-    const [date, setDate] = useState({ name: 'date', hover: 'dateCol' });
-
-    function setColumnType(ind, select) {
-        const temp = {};
-        // Copy all columns except the current one and the one column type being set
-        for (let c in col) {
-            if (col[c] !== select && c != ind) temp[c] = col[c];
-        }
-        // If not unselecting column, set the new column type
-        if (select < 4) temp[ind] = select;
-        setCol(temp);
-    }
-
-    function processData() {
-        const expenses = data.map(mapExpense);
+export default function ColumnSelect({ setExpenses, data, setTypes, types, step, setStep }) {
+    const processData = () => {
+        const expenses = data.map((row) => ({
+            category: isNil(row[types[3]]) ? null : capitalize(row[types[3]].toLowerCase()),
+            store: isNil(row[types[2]]) ? null : capitalize(row[types[2]].toLowerCase()),
+            amount: isNil(row[types[1]]) || row[types[1]] === '' ? 0 : parseFloat(row[types[1]]),
+            date: isNil(row[types[4]]) ? null : getFormatedDate(new Date(row[types[4]])),
+        }));
+        console.log(expenses);
         setExpenses(expenses);
-        function mapExpense(row, ind) {
-            const expense = { category: null, store: null, amount: null, date: null };
-            for (let i = 0; i < row.length; i++) {
-                console.log(i, col[i]);
-                console.log(row);
-                if (col[i] != null) {
-                    if (col[i] === 0) expense[label[col[i]]] = parseFloat(row[i]);
-                    if (col[i] === 1 || col[i] === 2) {
-                        expense[label[col[i]]] = capitalize(row[i].toLowerCase());
-                        // row[i].toLowerCase();
-                    }
-                    if (col[i] === 3) {
-                        console.log(row[i]);
-                        console.log(getFormatedDate(new Date(row[i])));
-                        expense[label[col[i]]] = getFormatedDate(new Date(row[i]));
-                    }
-                }
-            }
-            console.log(expense);
-            return expense;
-        }
+        setStep(2);
+    };
 
-        function capitalize(item) {
-            return item.replace(/(?:^|\s|-)\S/g, a => a.toUpperCase());
-        }
-    }
+    const capitalize = (item) => {
+        return item.replace(/(?:^|\s|-)\S/g, (a) => a.toUpperCase());
+    };
 
     return (
-        <div>
-            <button onClick={processData}>Next</button>
-            <p>Set the upload columns</p>
-            <p style={{ background: `#${backgrounds[4]}` }}>
-                Columns in this color will be deleted
-            </p>
-            <SetColumns select={select} setSelect={setSelect} />
-            <table className={classes.table} onMouseLeave={() => setHover(null)}>
-                <tbody className={classes.body}>
-                    {data &&
-                        data.map((row, i) => (
-                            <tr>
-                                {row.map((item, ind) => {
-                                    let bk = backgrounds[4];
-                                    if (col[ind] != null) bk = backgrounds[col[ind]] + '99';
-                                    if (ind === hover) bk = backgrounds[select];
-                                    // if (i === 0) console.log(bk);
-                                    return (
-                                        <td
-                                            onClick={() => setColumnType(ind, select)}
-                                            onMouseEnter={() => {
-                                                if (ind !== hover) setHover(ind);
-                                            }}
-                                            // onMouseLeave={() => setHover(null)}
-                                            className={clsx(
-                                                ind > 0 && classes.colBorder,
-                                                classes.td
-                                            )}
-                                            style={{ background: `#${bk}` }}
-                                        >
-                                            {item}
-                                        </td>
-                                    );
-                                })}
-                            </tr>
-                        ))}
-                </tbody>
-            </table>
-        </div>
-    );
-}
-
-function SetColumns({ select, setSelect }) {
-    const classes = useStyles();
-    return (
-        <div>
-            {buttons.map((label, ind) => (
-                <button
-                    className={classes.colButton}
-                    style={{ background: `#${backgrounds[ind]}99` }}
-                    onClick={() => setSelect(ind)}
-                >
-                    {label}
-                </button>
+        <UploadStep step={step} setStep={setStep} action={processData}>
+            <div className={rowStyle}>
+                {data &&
+                    data[0] &&
+                    data[0].map((_row, ind) => (
+                        <ColumnTypeSelect types={types} setTypes={setTypes} index={ind} />
+                    ))}
+            </div>
+            {data?.map((row) => (
+                <div className={rowStyle}>
+                    {row.map((cell) => (
+                        <div className={cellStyle}>{cell}</div>
+                    ))}
+                </div>
             ))}
-        </div>
+        </UploadStep>
     );
 }
 
-function ColumnTypes() {
+function ColumnTypeSelect({ index, setTypes, types }) {
+    const [value, setValue] = useState(0);
+
+    useEffect(() => {
+        // If current column has a type set already, find it and update state
+        const res = Object.entries(types).find(([key, value]) => value === index);
+        if (!isNil(res)) setValue(res[0]);
+        else setValue(0);
+    }, [types]);
+
+    const updateTypes = (e) => {
+        // Filter out all entries that reference the current column
+        const update = {};
+        const res = Object.entries(types).filter(([key, value]) => value !== index);
+        res.forEach(([key, val]) => (update[key] = val));
+        setTypes({ ...update, [e.target.value]: index });
+    };
+
     return (
-        <select>
-            <option>Amount</option>
-            <option>Store</option>
-            <option>Category</option>
-            <option>Date</option>
+        <select value={value} className={cellStyle} onChange={updateTypes}>
+            <option value={0}></option>
+            <option value={1}>Amount</option>
+            <option value={2}>Store</option>
+            <option value={3}>Category</option>
+            <option value={4}>Date</option>
         </select>
     );
 }
