@@ -9,7 +9,14 @@ const flexCss = css`
     overflow: auto;
 `;
 
-export default function UploadStep({ step, setStep, action, children }) {
+interface IProps {
+    step: number;
+    setStep: any;
+    action: any;
+    children: JSX.Element;
+}
+
+export default function UploadStep({ step, setStep, action, children }: IProps) {
     const steps = ['Upload CSV', 'Select Columns', 'Verify Data'];
     return (
         <div className={flexCss}>
