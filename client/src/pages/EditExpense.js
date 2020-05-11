@@ -42,7 +42,7 @@ function EditExpense({ match, history, height, mobile }) {
         const res = await fetch(`/api/users/expenses/edit/${match.params.id}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ expenses: { amount, store, category, date } }),
+            body: JSON.stringify({ expense: { amount, store, category, date } }),
         });
         const data = await res.json();
         if (res.status === 200) history.push('/users/expenses/get/summary');
@@ -53,13 +53,13 @@ function EditExpense({ match, history, height, mobile }) {
             <h2>Edit Expense</h2>
             <ExpenseManager
                 amount={amount}
-                setAmount={value => setAmount(value)}
+                setAmount={(value) => setAmount(value)}
                 category={category}
-                setCategory={value => setCategory(value)}
+                setCategory={(value) => setCategory(value)}
                 store={store}
-                setStore={value => setStore(value)}
+                setStore={(value) => setStore(value)}
                 date={date}
-                setDate={value => setDate(value)}
+                setDate={(value) => setDate(value)}
                 submit={edit}
                 buttonLabel="save"
             />
@@ -67,7 +67,7 @@ function EditExpense({ match, history, height, mobile }) {
     );
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
     const { height, mobile } = state.screen;
     return { height, mobile };
 };

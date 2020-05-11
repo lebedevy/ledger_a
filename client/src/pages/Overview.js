@@ -96,9 +96,9 @@ function DailySummary({ start, end, history }) {
                 startDate.getUTCMonth(),
                 startDate.getUTCDate() + i
             );
-            let dateStr = `${date.getUTCFullYear()}-${(date.getUTCMonth() < 9 ? '0' : '') +
-                (date.getUTCMonth() + 1)}-${(date.getUTCDate() < 10 ? '0' : '') +
-                date.getUTCDate()}`;
+            let dateStr = `${date.getUTCFullYear()}-${
+                (date.getUTCMonth() < 9 ? '0' : '') + (date.getUTCMonth() + 1)
+            }-${(date.getUTCDate() < 10 ? '0' : '') + date.getUTCDate()}`;
             if (data[j] && data[j]['date'] === dateStr) {
                 result.push(data[j]);
                 max = data[j]['amount'] > max.amount ? data[j] : max;
@@ -153,7 +153,7 @@ function DailySummary({ start, end, history }) {
     );
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
     const { date } = state;
     const { start, end } = date.period;
     return { date, start, end };
