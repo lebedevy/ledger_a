@@ -49,7 +49,7 @@ const useStyles = makeStyles({
     },
 });
 
-function DailySummary({ start, end, history }) {
+function DailySummary({ start, end }) {
     const classes = useStyles();
     const [data, setData] = useState([]);
     const [step, setStep] = useState(0);
@@ -72,8 +72,7 @@ function DailySummary({ start, end, history }) {
         if (res.ok) {
             const data = await res.json();
             if (data.expenses) {
-                formatData(data.expenses);
-                return;
+                return formatData(data.expenses);
             }
         }
         console.error('Error fetching data');
@@ -148,7 +147,7 @@ function DailySummary({ start, end, history }) {
                     </SummaryItem>
                 </div>
             </div>
-            <AddExpenseButton history={history} />
+            <AddExpenseButton />
         </div>
     );
 }

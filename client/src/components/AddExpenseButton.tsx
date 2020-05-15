@@ -1,34 +1,29 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Fab } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import { makeStyles } from '@material-ui/styles';
+import { css } from 'emotion';
+import { useHistory } from 'react-router-dom';
 
-const useStyles = makeStyles({
-    addExpense: {
-        position: 'fixed',
-        right: '10px',
-    },
-});
+export default function AddExpenseButton() {
+    const { mobile } = useSelector((state: any) => state.screen);
+    const history = useHistory();
 
-function AddExpenseButton({ history, mobile }) {
-    const classes = useStyles();
+    const addExpense = css`
+        position: fixed;
+        right: 10px;
+        bottom: ${mobile ? '9vh' : '10px'};
+    `;
+
     return (
-        <Fab
-            className={classes.addExpense}
-            style={{ bottom: mobile ? '9vh' : '10px' }}
-            size="medium"
-            color="secondary"
-            onClick={() => history.push('/users/expenses/add')}
-        >
-            <AddIcon />
-        </Fab>
+        <div className={addExpense}>
+            <Fab
+                size="medium"
+                color="secondary"
+                onClick={() => history.push('/users/expenses/add')}
+            >
+                <AddIcon />
+            </Fab>
+        </div>
     );
 }
-
-const mapStateToProps = state => {
-    const { mobile } = state.screen;
-    return { mobile };
-};
-
-export default connect(mapStateToProps)(AddExpenseButton);

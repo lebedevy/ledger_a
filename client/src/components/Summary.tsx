@@ -1,48 +1,54 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { getCurrencyFormat } from '../utility/utility';
-import { makeStyles } from '@material-ui/styles';
 import AddExpenseButton from './AddExpenseButton';
 import clsx from 'clsx';
+import { css } from 'emotion';
 
-const useStyles = makeStyles({
-    summary: {
-        padding: '10px',
-        height: '70px',
-        background: '#EBF2FA',
-        borderTop: '1px solid #00000050',
-    },
-    desktop: {
-        border: 'solid 1px #00000020',
-    },
-    total: {
-        fontWeight: 'bold',
-    },
-    dates: {
-        display: 'block',
-        padding: '10px 0',
-        fontSize: '0.9em',
-        fontStyle: 'italic',
-    },
-});
+const datesCss = css`
+    display: block;
+    padding: 10px 0;
+    fontsize: 0.9em;
+    fontstyle: italic;
+`;
 
-function Summary({ total, start, end, history, mobile, width }) {
-    const classes = useStyles();
+const summaryCss = css`
+    padding: 10px;
+    height: 70px;
+    background: #ebf2fa;
+    border-top: 1px solid #00000050;
+`;
+
+const desktopCss = css`
+    border: 1px solid #00000020;
+`;
+
+const totalCss = css`
+    font-weight: bold;
+`;
+
+interface IProps {
+    total: number;
+}
+
+export default function Summary({ total }: IProps) {
+    const { start, end, mobile, width } = useSelector((state: any) => {
+        const {
+            screen: { mobile, width },
+            date: {
+                period: { start, end },
+            },
+        } = state;
+        return { start, end, mobile, width };
+    });
+
     return (
-        <div className={clsx(classes.summary, width >= 1200 && classes.desktop)}>
+        <div className={clsx(summaryCss, width >= 1200 && desktopCss)}>
             <label>Total: </label>
-            <label className={classes.total}>${getCurrencyFormat(total)}</label>
+            <label className={totalCss}>${getCurrencyFormat(total)}</label>
             <br />
-            <label className={classes.dates}>{`${start} to ${end}`}</label>
-            <AddExpenseButton history={history} />
+            <label className={datesCss}>{`${start} to ${end}`}</label>
+            <AddExpenseButton />
         </div>
     );
 }
-
-const mapStateToProps = state => {
-    const { start, end } = state.date.period;
-    const { mobile, width } = state.screen;
-    return { start, end, mobile, width };
-};
-
-export default connect(mapStateToProps)(Summary);
