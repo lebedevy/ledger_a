@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
-import ExpenseSummary from '../components/ExpenseSummary';
+import ExpenseRow from '../components/ExpenseRow';
 import { Button } from '@material-ui/core';
 
 const useStyles = makeStyles({
@@ -25,7 +25,7 @@ export default function ExpenseFull(props) {
 
     return (
         <div className={classes.expense}>
-            <ExpenseSummary {...props} />
+            <ExpenseRow {...props} />
             <div className={classes.details}>
                 <Button
                     variant="outlined"

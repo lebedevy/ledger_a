@@ -3,13 +3,13 @@ import clsx from 'clsx';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/styles';
 import Summary from '../components/Summary';
-import ExpenseSummary from '../components/ExpenseSummary';
+import ExpenseRow from '../components/ExpenseRow';
 import ExpenseFull from '../components/ExpenseFull';
 import Header from '../components/Header';
 import { getSort, getSortIndexes } from '../utility/utility';
 import LoadingComponent from '../components/LoadingComponent';
 
-const styles = theme => ({
+const styles = (theme) => ({
     container: {
         margin: '0 auto',
         width: '100vw',
@@ -39,7 +39,7 @@ const styles = theme => ({
 });
 
 const options = ['Date', 'Amount', 'Store', 'Category'];
-const optionsLower = options.map(el => el.toLowerCase());
+const optionsLower = options.map((el) => el.toLowerCase());
 const orderDir = ['asc', 'desc'];
 
 class Expenses extends Component {
@@ -130,8 +130,8 @@ class Expenses extends Component {
                     setOpen={() => this.setState({ openSort: !openSort })}
                     title="Expenses"
                     dashboard={{
-                        setSort: val => this.setState({ sort: val }, this.updateFilters),
-                        setOrder: val => this.setState({ order: val }, this.updateFilters),
+                        setSort: (val) => this.setState({ sort: val }, this.updateFilters),
+                        setOrder: (val) => this.setState({ order: val }, this.updateFilters),
                         sort,
                         order,
                         options,
@@ -153,7 +153,7 @@ class Expenses extends Component {
                                         deleteExpense={() => this.deleteExpense(el.id, ind)}
                                     />
                                 ) : (
-                                    <ExpenseSummary
+                                    <ExpenseRow
                                         key={el.id}
                                         el={el}
                                         ind={ind}
@@ -171,7 +171,7 @@ class Expenses extends Component {
     }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
     const { width, height } = state.screen;
     const { start, end } = state.date.period;
     return { height, width, start, end };

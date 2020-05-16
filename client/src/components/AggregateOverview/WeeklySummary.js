@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
 
-import { getCurrencyFormat, getDateObj, compareDates } from '../../utility/utility';
+import { getDateObj } from '../../utility/utility';
 import { connect } from 'react-redux';
 
 const useStyles = makeStyles({
@@ -119,7 +119,7 @@ function WeeklySummary({ expenses, start, end, mobile }) {
     );
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
     const { start, end } = state.date.period;
     const { mobile } = state.screen;
     return { start, end, mobile };

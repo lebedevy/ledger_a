@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
-import ExpenseSummary from '../ExpenseSummary';
+import ExpenseRow from '../ExpenseRow';
 import { CircularProgress } from '@material-ui/core';
 
 const useStylesDetails = makeStyles({
@@ -14,8 +14,8 @@ export default function Details({ expenses }) {
     const classes = useStylesDetails();
     return expenses ? (
         <table style={{ width: '100%' }}>
-            {expenses.map(el => (
-                <ExpenseSummary key={el.id} el={el} exclude={{ date: 1 }} />
+            {expenses.map((el) => (
+                <ExpenseRow key={el.id} el={el} exclude={{ date: 1 }} />
             ))}
         </table>
     ) : (
