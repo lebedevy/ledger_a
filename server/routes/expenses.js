@@ -130,43 +130,57 @@ router.get('/edit/:id', checkAuth, async (req, res, next) => {
 });
 
 // Edit Expense: POST
-router.post('/edit/:id', checkAuth, validateExpense, async (req, res, next) => {
+router.put('/edit/:id', checkAuth, async (req, res, next) => {
+    await new Promise((resolve, reject) => setTimeout(() => resolve(), 1000));
     console.info('Updating expense...');
-    const { amount, date, store, category } = req.expense;
+    let { amount, date, store, category } = req.body.expense;
     const { id } = req.params;
+
+    // Do some basic data cleaning
+    [store, category] = [store, category].map((el) => (el ? el.trim() : ''));
+    store = store === '' ? null : store;
+    category = category === '' ? null : category;
+
+    const transaction = await db.sequelize.transaction();
+
+    // Get expense
     const expense = await db.expenses.findOne({
         where: { id, user_id: req.user.id },
         include: [{ model: db.categories }, { model: db.stores }],
+        transaction,
     });
+
     if (expense) {
         if (expense.user_id === req.user.id) {
-            let category_id = null,
-                store_id = null;
+            const updatedExpense = {};
 
-            // Create or get store
-            if (store) {
-                const [storeObj, storeCreated] = await db.stores.findOrCreate({
-                    where: { store_name: store },
-                });
-                console.info(`Store created?: ${storeCreated}`);
-                store_id = storeObj.id;
+            try {
+                if (store) {
+                    updatedExpense.store_id = await insertStore(store, transaction);
+                }
+
+                if (category) {
+                    updatedExpense.category_id = await insertCategory(category, transaction);
+                }
+
+                if (date) {
+                    updatedExpense.date = date;
+                }
+
+                if (amount != null && !isNaN(amount)) {
+                    updatedExpense.amount = amount;
+                }
+
+                console.log(req.body.expense);
+                console.log(updatedExpense);
+                // Update fields
+                await expense.update(updatedExpense, { transaction });
+                transaction.commit();
+                return res.status(200).send({ message: 'Expense updated ok' });
+            } catch (e) {
+                transaction.rollback();
+                return res.status(500).send({ message: 'There was an error updating the expense' });
             }
-
-            // Create or get category
-            if (category) {
-                const [categoryObj, catCreated] = await db.categories.findOrCreate({
-                    where: {
-                        category_name: category,
-                    },
-                });
-                console.info(`Category created?: ${catCreated}`);
-                category_id = categoryObj.id;
-            }
-
-            // Update fields
-            const update = await expense.update({ category_id, store_id, amount, date });
-            // console.log(update);
-            return res.status(200).send({ message: 'Update ok' });
         }
         console.info('User attempted update unathorized expense resource.');
     }

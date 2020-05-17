@@ -14,8 +14,8 @@ export default function Details({ expenses }) {
     const classes = useStylesDetails();
     return expenses ? (
         <table style={{ width: '100%' }}>
-            {expenses.map((el) => (
-                <ExpenseRow key={el.id} el={el} exclude={{ date: 1 }} />
+            {expenses.map((expense) => (
+                <ExpenseRow key={expense.id} expense={expense} exclude={{ date: 1 }} />
             ))}
         </table>
     ) : (

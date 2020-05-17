@@ -1,6 +1,8 @@
 import React from 'react';
 import { css } from 'emotion';
 import EditableCell from './expense_select/EditableCell';
+import { IExpense, IExclude } from './typescript/general_interfaces';
+import BasicCell from './expense_select/BasicCell';
 
 const expenseEntry = css`
     padding: 0 1px;
@@ -13,26 +15,56 @@ const expenseEntry = css`
     }
 `;
 
-interface IExpense {
-    store: any;
-    category: any;
-    amount: number;
-    date: string;
+export default function ExpenseRow({
+    expense,
+    exclude,
+    editable,
+}: {
+    expense: IExpense;
+    exclude: IExclude;
+    editable?: boolean;
+}) {
+    return editable ? (
+        <EditableRow expense={expense} exclude={exclude} />
+    ) : (
+        <NonEditableRow expense={expense} exclude={exclude} />
+    );
 }
 
-interface IExclude {
-    store?: string;
-    category?: string;
-    date?: string;
-}
-
-export default function ExpenseRow({ el, exclude }: { el: IExpense; exclude: IExclude }) {
+function EditableRow({ expense, exclude }: { expense: IExpense; exclude: IExclude }) {
     return (
         <tr className={expenseEntry}>
-            <EditableCell content={el.amount} type="currency" />
-            {!exclude?.store && <EditableCell content={el?.store?.store_name ?? ''} />}
-            {!exclude?.category && <EditableCell content={el?.category?.category_name ?? ''} />}
-            {!exclude?.date && <EditableCell content={el.date} type="date" />}
+            <EditableCell content={expense.amount} type="amount" id={expense.id} />
+            {!exclude?.store && (
+                <EditableCell
+                    type="store"
+                    content={expense?.store?.store_name ?? ''}
+                    id={expense.id}
+                />
+            )}
+            {!exclude?.category && (
+                <EditableCell
+                    content={expense?.category?.category_name ?? ''}
+                    type="category"
+                    id={expense.id}
+                />
+            )}
+            {!exclude?.date && <EditableCell content={expense.date} type="date" id={expense.id} />}
+        </tr>
+    );
+}
+
+function NonEditableRow({ expense, exclude }: { expense: IExpense; exclude: IExclude }) {
+    return (
+        <tr className={expenseEntry}>
+            <BasicCell content={expense.amount} type="amount" />
+            {!exclude?.store && (
+                <BasicCell type="store" content={expense?.store?.store_name ?? ''} />
+            )}
+            {!exclude?.category && (
+                <BasicCell content={expense?.category?.category_name ?? ''} type="category" />
+            )}
+            {!exclude?.date && <BasicCell content={expense.date} type="date" />}
         </tr>
     );
 }

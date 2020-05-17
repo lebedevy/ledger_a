@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect, useSelector } from 'react-redux';
-import { AppBar, Toolbar, IconButton, Menu, MenuItem } from '@material-ui/core';
+import { IconButton, Menu, MenuItem } from '@material-ui/core';
 import PublishIcon from '@material-ui/icons/Publish';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import { openDrawer, logout } from '../../redux/actions';
@@ -55,7 +55,7 @@ const options = css`
     align-items: center;
 `;
 
-function Navbar({ logout, openDrawer, history }) {
+function Navbar({ logout, history }) {
     const { screen } = useSelector((state) => state.screenSelect);
     const [targetEl, setTargetEl] = useState(null);
     const [showSetting, setShowSetting] = useState(false);
@@ -71,7 +71,7 @@ function Navbar({ logout, openDrawer, history }) {
 
     const openProfile = (e) => setTargetEl(e.currentTarget);
 
-    const closeProfile = (e) => setTargetEl(null);
+    const closeProfile = () => setTargetEl(null);
 
     async function logoutUser() {
         logout();

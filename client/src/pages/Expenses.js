@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/styles';
 import Summary from '../components/Summary';
 import ExpenseRow from '../components/ExpenseRow';
-import ExpenseFull from '../components/ExpenseFull';
 import Header from '../components/Header';
 import { getSort, getSortIndexes } from '../utility/utility';
 import LoadingComponent from '../components/LoadingComponent';
@@ -43,7 +42,7 @@ const optionsLower = options.map((el) => el.toLowerCase());
 const orderDir = ['asc', 'desc'];
 
 class Expenses extends Component {
-    state = { expenses: null, openSort: false, expand: null, sort: 0, order: 0 };
+    state = { expenses: null, openSort: false, sort: 0, order: 0 };
 
     componentDidMount() {
         const [sort, order] = getSortIndexes(optionsLower, ...getSort(this.props.location.search));
@@ -109,7 +108,7 @@ class Expenses extends Component {
                 update.splice(ind, 1);
                 this.setState({ expenses: update });
             } else {
-                //    Show error message
+                // Show error message
                 const data = await res.json();
                 console.error(data);
             }
@@ -118,7 +117,7 @@ class Expenses extends Component {
 
     render() {
         const { classes, width, height, history } = this.props;
-        const { expenses, expand, openSort, sort, order } = this.state;
+        const { expenses, openSort, sort, order } = this.state;
         let total = 0;
         return (
             <div
@@ -138,32 +137,16 @@ class Expenses extends Component {
                     }}
                 />
                 <div className={classes.expenseList}>
-                    {expenses && expenses.length === 0 ? <label>No recorded expenses</label> : null}
-                    {expenses ? (
+                    {expenses?.length === 0 && <label>No recorded expenses</label>}
+                    {expenses && (
                         <table style={{ width: '100%' }}>
                             {expenses.map((el, ind) => {
                                 total += el.amount;
-                                return el.id === expand ? (
-                                    <ExpenseFull
-                                        key={el.id}
-                                        history={history}
-                                        el={el}
-                                        ind={ind}
-                                        expand={() => this.setState({ expand: null })}
-                                        deleteExpense={() => this.deleteExpense(el.id, ind)}
-                                    />
-                                ) : (
-                                    <ExpenseRow
-                                        key={el.id}
-                                        el={el}
-                                        ind={ind}
-                                        expand={() => this.setState({ expand: el.id })}
-                                    />
-                                );
+                                return <ExpenseRow key={el.id} expense={el} ind={ind} editable />;
                             })}
                         </table>
-                    ) : null}
-                    {!expenses ? <LoadingComponent /> : null}
+                    )}
+                    {!expenses && <LoadingComponent />}
                 </div>
                 <Summary total={total} history={history} />
             </div>

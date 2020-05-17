@@ -59,10 +59,10 @@ function AggregateDetails({ selected, type, start, end }) {
             ) : null}
             {expanded ? (
                 <table style={{ width: '100%' }}>
-                    {(() => (checked ? grouped : selected.data))().map((el) => {
+                    {(() => (checked ? grouped : selected.data))().map((expense) => {
                         const exclude = { [type === 'category' ? 'category' : 'store']: true };
                         if (checked) exclude['date'] = true;
-                        return <ExpenseRow key={el.id} el={el} exclude={exclude} />;
+                        return <ExpenseRow key={expense.id} expense={expense} exclude={exclude} />;
                     })}
                 </table>
             ) : null}

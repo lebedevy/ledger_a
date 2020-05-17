@@ -40,11 +40,10 @@ function EditExpense({ match, history, height, mobile }) {
 
     async function edit() {
         const res = await fetch(`/api/users/expenses/edit/${match.params.id}`, {
-            method: 'POST',
+            method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ expense: { amount, store, category, date } }),
         });
-        const data = await res.json();
         if (res.status === 200) history.push('/users/expenses/get/summary');
     }
 
