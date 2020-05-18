@@ -26,17 +26,32 @@ const cancelCss = css`
     max-height: 100%;
 `;
 
+const backdropCss = css`
+    z-index: 100;
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background: #00000060;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+
 interface IProps {
     type: string;
     content: string | number;
+    refetch: () => any;
     id?: number;
 }
 
-export default function EditableCell({ content, type, id }: IProps) {
+export default function EditableCell({ content, type, id, refetch }: IProps) {
     const dispatch = useDispatch();
     const { cellEdit } = useSelector((state: RootState) => state);
     const [value, setValue] = useState<number | string>('');
     const [loading, setLoading] = useState(false);
+    const [updated, setUpdated] = useState(false);
 
     const cellId = useMemo(() => `${id}${type}`, [id, type]);
     const editing = useMemo(() => cellEdit === cellId, [cellId, cellEdit]);
@@ -44,6 +59,14 @@ export default function EditableCell({ content, type, id }: IProps) {
     useEffect(() => {
         setValue(content);
     }, []);
+
+    useEffect(() => {
+        if (updated) {
+            if (editing) setEditing(false);
+            setUpdated(false);
+            setLoading(false);
+        }
+    }, [updated, editing]);
 
     useEffect(() => {
         if (!loading && !editing && value !== content) setValue(content);
@@ -69,6 +92,7 @@ export default function EditableCell({ content, type, id }: IProps) {
         // Stop onclick from triggering on parent
         e.stopPropagation();
 
+        console.log('Sending request...');
         setLoading(true);
         const res = await fetch(`/api/users/expenses/edit/${id}`, {
             method: 'PUT',
@@ -76,10 +100,9 @@ export default function EditableCell({ content, type, id }: IProps) {
             body: JSON.stringify({ expense: { [type]: value } }),
         });
 
-        setLoading(false);
-        if (res.status === 200 && editing) {
-            console.log('Update success');
-            setEditing(false);
+        if (res.status === 200) {
+            setUpdated(true);
+            refetch();
         }
     };
 
@@ -97,8 +120,8 @@ export default function EditableCell({ content, type, id }: IProps) {
             className={clsx(cellBaseCss, !editing && cellPaddingCss)}
         >
             {loading && (
-                <div>
-                    <CircularProgress />
+                <div className={backdropCss}>
+                    <CircularProgress size={10} />
                 </div>
             )}
             {editing ? (

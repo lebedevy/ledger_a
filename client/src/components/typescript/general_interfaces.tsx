@@ -14,4 +14,6 @@ export interface IExclude {
 
 export interface RootState {
     cellEdit: string | null;
+    screen: { width: number; height: number };
+    date: { period: { start: string; end: string } };
 }

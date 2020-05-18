@@ -10,6 +10,7 @@ import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import SettingsApplicationsIcon from '@material-ui/icons/SettingsApplications';
 import DateRange from '../DateRange';
 import { css } from 'emotion';
+import { useHistory } from 'react-router-dom';
 
 const container = css`
     position: fixed;
@@ -55,7 +56,8 @@ const options = css`
     align-items: center;
 `;
 
-function Navbar({ logout, history }) {
+function Navbar({ logout }) {
+    const history = useHistory();
     const { screen } = useSelector((state) => state.screenSelect);
     const [targetEl, setTargetEl] = useState(null);
     const [showSetting, setShowSetting] = useState(false);

@@ -1,98 +1,101 @@
-import React, { Component } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
-import { connect } from 'react-redux';
-import { withStyles } from '@material-ui/styles';
+import { useSelector } from 'react-redux';
 import Summary from '../components/Summary';
 import ExpenseRow from '../components/ExpenseRow';
 import Header from '../components/Header';
 import { getSort, getSortIndexes } from '../utility/utility';
 import LoadingComponent from '../components/LoadingComponent';
+import { useLocation, useHistory } from 'react-router-dom';
+import { css } from 'emotion';
+import { RootState, IExpense } from '../components/typescript/general_interfaces';
 
-const styles = (theme) => ({
-    container: {
-        margin: '0 auto',
-        width: '100vw',
-        // width: '100vh',
-        maxWidth: '1200px',
-        display: 'flex',
-        flexDirection: 'column',
-        // background: '#00000020',
-        overflow: 'hidden',
-    },
-    mobile: {
-        // height: '84vh',
-        // maxHeight: '100%',
-    },
-    desktop: {
-        height: 'calc(100vh - 130px)',
-    },
-    expenseList: {
-        'overflow-y': 'auto',
-        'overflow-x': 'hidden',
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        background: '#ffffff',
-        borderRadius: '5px',
-    },
-});
+// background: '#00000020',
+// width: '100vh',
+const containerCss = css`
+    margin: 0 auto;
+    width: 100vw;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+`;
+
+const desktopCss = css`
+    height: calc(100vh - 130px);
+`;
+
+const expenseListCss = css`
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-radius: 5px;
+`;
 
 const options = ['Date', 'Amount', 'Store', 'Category'];
 const optionsLower = options.map((el) => el.toLowerCase());
 const orderDir = ['asc', 'desc'];
 
-class Expenses extends Component {
-    state = { expenses: null, openSort: false, sort: 0, order: 0 };
+function useUrlSearch() {
+    const location = useLocation();
+    const [sort, order] = useMemo(() => getSortIndexes(optionsLower, ...getSort(location.search)), [
+        location,
+    ]);
+    return [sort, order];
+}
 
-    componentDidMount() {
-        const [sort, order] = getSortIndexes(optionsLower, ...getSort(this.props.location.search));
-        if (sort || order) {
-            this.setState({ sort: sort == null ? 0 : sort, order: order == null ? 0 : order }, () =>
-                this.fetchExpenses()
-            );
-        } else {
-            this.fetchExpenses();
-        }
-    }
+export default function Expenses() {
+    const location = useLocation();
+    const history = useHistory();
+    const [sort, order] = useUrlSearch();
+    const [expenses, setExpenses] = useState<Array<IExpense>>([]);
+    const [openSort, setOpenSort] = useState(false);
 
-    componentDidUpdate(props) {
-        if (this.props.start !== props.start || this.props.end !== props.end) {
-            this.fetchExpenses();
-        }
-    }
+    const { width, height, start, end } = useSelector((state: RootState) => {
+        const { width, height } = state.screen;
+        const { start, end } = state.date.period;
+        return { height, width, start, end };
+    });
 
-    updateFilters() {
-        this.fetchExpenses();
-        this.updateURL();
-    }
+    // Fetch expenses on change
+    useEffect(() => {
+        fetchExpenses();
+    }, [start, end, sort, order]);
 
-    updateURL() {
-        const { sort, order } = this.state;
+    const updateURL = ({ sort, order }: { sort: number; order: number }) => {
         const search = new URLSearchParams();
         search.set('sort', optionsLower[sort].toLowerCase());
         search.set('order', order === 1 ? 'desc' : 'asc');
-        let path = this.props.location.pathname;
-        if (path.slice(-1) === '/') path = this.props.history.location.pathname.slice(0, -1);
-        this.props.history.push(path + '?' + search.toString());
-    }
+        let path = location.pathname;
+        if (path.slice(-1) === '/') path = history.location.pathname.slice(0, -1);
+        history.push(path + '?' + search.toString());
+    };
 
-    async fetchExpenses() {
+    const updateSort = (sort: number) => {
+        updateURL({ sort, order });
+    };
+
+    const updateOrder = (order: number) => {
+        updateURL({ sort, order });
+    };
+
+    const fetchExpenses = async () => {
         console.info('Getting expenses');
-        const { start, end } = this.props;
-        const { sort, order } = this.state;
         const res = await fetch(
             `/api/users/expenses/summary?start=${start}&end=${end}&sort=${optionsLower[sort]}&order=${orderDir[order]}`
         );
         if (res.status === 200) {
             const data = await res.json();
-            this.setState({ expenses: data.expenses });
+            setExpenses(data.expenses);
         } else {
             console.error('Error fetching results');
         }
-    }
+    };
 
-    async deleteExpense(id, ind) {
-        const { expenses } = this.state;
+    const deleteExpense = async (id: number, ind: number) => {
         // Make sure the correct expense is being deleted
         if (expenses[ind].id === id) {
             // call api to remove
@@ -106,58 +109,53 @@ class Expenses extends Component {
                 // Remove from array
                 let update = expenses.slice();
                 update.splice(ind, 1);
-                this.setState({ expenses: update });
+                setExpenses(update);
             } else {
                 // Show error message
                 const data = await res.json();
                 console.error(data);
             }
         }
-    }
+    };
 
-    render() {
-        const { classes, width, height, history } = this.props;
-        const { expenses, openSort, sort, order } = this.state;
-        let total = 0;
-        return (
-            <div
-                className={clsx(width > 600 ? classes.desktop : classes.mobile, classes.container)}
-                style={width <= 600 ? { height: `calc(${height}px - 16vh)` } : {}}
-            >
-                <Header
-                    open={openSort}
-                    setOpen={() => this.setState({ openSort: !openSort })}
-                    title="Expenses"
-                    dashboard={{
-                        setSort: (val) => this.setState({ sort: val }, this.updateFilters),
-                        setOrder: (val) => this.setState({ order: val }, this.updateFilters),
-                        sort,
-                        order,
-                        options,
-                    }}
-                />
-                <div className={classes.expenseList}>
-                    {expenses?.length === 0 && <label>No recorded expenses</label>}
-                    {expenses && (
-                        <table style={{ width: '100%' }}>
-                            {expenses.map((el, ind) => {
-                                total += el.amount;
-                                return <ExpenseRow key={el.id} expense={el} ind={ind} editable />;
-                            })}
-                        </table>
-                    )}
-                    {!expenses && <LoadingComponent />}
-                </div>
-                <Summary total={total} history={history} />
+    let total = 0;
+    return (
+        <div
+            className={clsx(width > 600 && desktopCss, containerCss)}
+            style={width <= 600 ? { height: `calc(${height}px - 16vh)` } : {}}
+        >
+            <Header
+                open={openSort}
+                setOpen={() => setOpenSort(!openSort)}
+                title="Expenses"
+                dashboard={{
+                    setSort: updateSort,
+                    setOrder: updateOrder,
+                    sort,
+                    order,
+                    options,
+                }}
+            />
+            <div className={expenseListCss}>
+                {expenses?.length === 0 && <label>No recorded expenses</label>}
+                {expenses && (
+                    <table style={{ width: '100%' }}>
+                        {expenses.map((el: IExpense) => {
+                            total += el.amount;
+                            return (
+                                <ExpenseRow
+                                    key={el.id}
+                                    expense={el}
+                                    editable
+                                    refetch={fetchExpenses}
+                                />
+                            );
+                        })}
+                    </table>
+                )}
+                {!expenses && <LoadingComponent />}
             </div>
-        );
-    }
+            <Summary total={total} />
+        </div>
+    );
 }
-
-const mapStateToProps = (state) => {
-    const { width, height } = state.screen;
-    const { start, end } = state.date.period;
-    return { height, width, start, end };
-};
-
-export default connect(mapStateToProps)(withStyles(styles)(Expenses));

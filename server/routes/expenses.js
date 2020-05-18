@@ -131,7 +131,6 @@ router.get('/edit/:id', checkAuth, async (req, res, next) => {
 
 // Edit Expense: POST
 router.put('/edit/:id', checkAuth, async (req, res, next) => {
-    await new Promise((resolve, reject) => setTimeout(() => resolve(), 1000));
     console.info('Updating expense...');
     let { amount, date, store, category } = req.body.expense;
     const { id } = req.params;

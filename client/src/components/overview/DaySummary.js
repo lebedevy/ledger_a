@@ -18,7 +18,7 @@ const useStyles = makeStyles({
 
 export default function DaySummary({ day }) {
     const classes = useStyles();
-    const today = getFormatedDate(useSelector(state => state.date.today));
+    const today = getFormatedDate(useSelector((state) => state.date.today));
     const [expanded, setExpanded] = useState(false);
     const [expenses, setExpenses] = useState(null);
     const [todaysExpenses, setTodaysExpenses] = useState(null);
@@ -32,7 +32,7 @@ export default function DaySummary({ day }) {
         if (day !== null) fetchExpenseSummary();
     }, [day]);
 
-    const fetchExpenses = async date => {
+    const fetchExpenses = async (date) => {
         console.log(`Fetching day summary ${date}`);
         const res = await fetch(
             `/api/users/expenses/summary?start=${date}&end=${date}&sort=amount&order=desc`
@@ -83,7 +83,7 @@ export default function DaySummary({ day }) {
             ) : (
                 <label className={classes.emptyList}>No expenses for selected date</label>
             )}
-            {expanded && <Details expenses={expensesList} />}
+            {expanded && <Details expenses={expensesList} refetch={fetchExpenseSummary} />}
         </SummaryItem>
     );
 }

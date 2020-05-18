@@ -1,6 +1,7 @@
 import { css } from 'emotion';
 
 export const cellBaseCss = css`
+    position: relative;
     min-height: 1em;
     flex: 1 1 0;
     border: 1px solid #00000020;
