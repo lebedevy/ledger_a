@@ -33,8 +33,14 @@ const useStyles = makeStyles({
 });
 
 const options = ['Amount', 'Name'];
-const optionsLowerCase = options.map(el => el.toLowerCase());
+const optionsLowerCase = options.map((el) => el.toLowerCase());
 const orderDir = ['asc', 'desc'];
+
+/*
+ * Should seperate the logic for expense type into a wrapper, and just have this as a dumb
+ * component that renders an expense list it's given
+ *
+ */
 
 function ExpensesAggregates({
     aggregateExpenses,
@@ -69,17 +75,22 @@ function ExpensesAggregates({
 
     // update type param
     useEffect(() => {
+        console.log(match.params.type, type);
         if (match.params.type !== type) {
             setType(getType());
             getFilters();
-            fetchData();
         }
-    }, [match]);
+    }, [match, type]);
 
+    // Update url on sort/order change
     useEffect(() => {
-        fetchData();
         updateURL();
     }, [order, sort]);
+
+    // Refetch expenses if any parameter changes
+    useEffect(() => {
+        fetchData();
+    }, [type, start, end, sort, order]);
 
     const updateSortParams = (field, val) => {
         if (field === 'sort') setSort(val);
@@ -110,12 +121,17 @@ function ExpensesAggregates({
     }
 
     function fetchData() {
+        console.log('Calling redux fetch');
         const params = `?start=${start}&end=${end}&sort=${optionsLowerCase[sort]}&order=${orderDir[order]}`;
+        console.log(type, params);
         fetchDataIfNeeded([type, params]);
     }
 
     let total = 0;
+    console.log(aggregateExpenses);
     const expenses = aggregateExpenses[type] ? aggregateExpenses[type].items : null;
+
+    console.log(expenses);
 
     return (
         <div
@@ -127,8 +143,8 @@ function ExpensesAggregates({
                 open={sortOpen}
                 title={`Expenses by ${type === 'category' ? 'Category' : 'Store'}`}
                 dashboard={{
-                    setSort: val => updateSortParams('sort', val),
-                    setOrder: val => updateSortParams('order', val),
+                    setSort: (val) => updateSortParams('sort', val),
+                    setOrder: (val) => updateSortParams('order', val),
                     sort,
                     order,
                     options,
@@ -141,28 +157,28 @@ function ExpensesAggregates({
                     }`}</label>
                 ) : null}
                 {expenses &&
-                    expenses.map(el => {
+                    expenses.map((el) => {
                         total += el.amount;
                         return <AggregateSummary key={el.id} type={type} el={el} />;
                     })}
                 {!expenses && <LoadingComponent />}
             </div>
-            <Summary total={total} history={history} />
+            <Summary total={total} />
         </div>
     );
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
     const { aggregateExpenses } = state;
     const { width, height } = state.screen;
     const { start, end } = state.date.period;
     return { aggregateExpenses, height, width, start, end };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
     return {
-        fetchDataIfNeeded: args => dispatch(fetchAggregateExpensesIfNeeded(args)),
-        invalidateExpenses: args => dispatch(invalidateExpenses(args)),
+        fetchDataIfNeeded: (args) => dispatch(fetchAggregateExpensesIfNeeded(args)),
+        invalidateExpenses: (args) => dispatch(invalidateExpenses(args)),
     };
 };
 
