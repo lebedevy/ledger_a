@@ -10,7 +10,6 @@ import Expenses from './pages/Expenses';
 import ExpensesAggregates from './pages/ExpensesAggregates';
 import Merge from './pages/Merge';
 import Navbar from './components/desktop/Navbar';
-import AppDrawer from './components/AppDrawer';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import LandingPage from './pages/LandingPage';

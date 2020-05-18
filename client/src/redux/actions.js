@@ -1,7 +1,5 @@
 import {
     SET_DATE,
-    OPEN_DRAWER,
-    CLOSE_DRAWER,
     SET_USER,
     LOGOUT,
     SET_PERIOD,
@@ -64,8 +62,6 @@ export function fetchAggregateExpensesIfNeeded([aggregateType, params]) {
     };
 }
 
-const requestTemplateList = listType => ({
-
 const requestTemplateList = (listType) => ({
     type: REQUEST_TEMPLATE_LIST,
     listType,
@@ -116,20 +112,6 @@ export function fetchTemplateListIfNeeded(listType) {
 
 export const setDate = (content) => ({
     type: SET_DATE,
-    payload: {
-        content,
-    },
-});
-
-export const openDrawer = (content) => ({
-    type: OPEN_DRAWER,
-    payload: {
-        content,
-    },
-});
-
-export const closeDrawer = (content) => ({
-    type: CLOSE_DRAWER,
     payload: {
         content,
     },
