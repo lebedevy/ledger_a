@@ -374,17 +374,15 @@ router.get('/manage/merge/:type', checkAuth, async (req, res, next) => {
 
 router.post('/delete', checkAuth, async (req, res, next) => {
     const ids = req.body;
-
-    if (ids == null || req.user.id == null)
+    const user_id = req.user.id;
+    if (ids == null || user_id == null)
         return res.status(400).send({ message: 'Please verify request data.' });
-
-    console.log(ids);
 
     const transaction = await db.sequelize.transaction();
 
     try {
         // Ensure user owns resource by checking that their id matches
-        await db.expenses.destroy({ where: { id: ids, user_id: req.user.id }, transaction });
+        await db.expenses.destroy({ where: { id: ids, user_id }, transaction });
         transaction.commit();
         return res.status(200).send({ message: 'ok' });
     } catch (e) {
