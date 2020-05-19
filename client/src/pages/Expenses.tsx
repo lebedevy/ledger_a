@@ -9,6 +9,7 @@ import LoadingComponent from '../components/LoadingComponent';
 import { useLocation, useHistory } from 'react-router-dom';
 import { css } from 'emotion';
 import { RootState, IExpense } from '../components/typescript/general_interfaces';
+import TableWrapper from '../components/expense_select/TableWrapper';
 
 // background: '#00000020',
 // width: '100vh',
@@ -23,16 +24,6 @@ const containerCss = css`
 
 const desktopCss = css`
     height: calc(100vh - 130px);
-`;
-
-const expenseListCss = css`
-    overflow-y: auto;
-    overflow-x: hidden;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    background: #ffffff;
-    border-radius: 5px;
 `;
 
 const options = ['Date', 'Amount', 'Store', 'Category'];
@@ -136,25 +127,17 @@ export default function Expenses() {
                     options,
                 }}
             />
-            <div className={expenseListCss}>
+            <TableWrapper>
                 {expenses?.length === 0 && <label>No recorded expenses</label>}
-                {expenses && (
-                    <table style={{ width: '100%' }}>
-                        {expenses.map((el: IExpense) => {
-                            total += el.amount;
-                            return (
-                                <ExpenseRow
-                                    key={el.id}
-                                    expense={el}
-                                    editable
-                                    refetch={fetchExpenses}
-                                />
-                            );
-                        })}
-                    </table>
-                )}
+                {expenses &&
+                    expenses.map((el: IExpense) => {
+                        total += el.amount;
+                        return (
+                            <ExpenseRow key={el.id} expense={el} editable refetch={fetchExpenses} />
+                        );
+                    })}
                 {!expenses && <LoadingComponent />}
-            </div>
+            </TableWrapper>
             <Summary total={total} />
         </div>
     );

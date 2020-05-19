@@ -198,10 +198,21 @@ router.get('/summary', checkAuth, getSortSummary, async (req, res, next) => {
     }
     const expenses = await db.expenses.findAll({
         where,
+        attributes: [
+            'id',
+            'amount',
+            'date',
+            [db.Sequelize.col('category.category_name'), 'category'],
+            [db.Sequelize.col('store.store_name'), 'store'],
+        ],
         order: db.sequelize.literal(req.sortOption),
-        include: [db.categories, db.stores],
+        include: [
+            { model: db.categories, attributes: [] },
+            { model: db.stores, attributes: [] },
+        ],
+        raw: true,
     });
-    res.status(200).send({ expenses: expenses });
+    res.status(200).send({ expenses });
 });
 
 // Summary for all expenses for a period
@@ -258,6 +269,7 @@ router.get('/overview/:type/trends', checkAuth, async (req, res, next) => {
 });
 
 router.get('/overview/:type/details', checkAuth, async (req, res, next) => {
+    if (req.user.id == null) throw Error('No user id provided');
     const { type } = req.params;
     console.info('Serving details for ' + type);
     const include = [];
@@ -289,17 +301,24 @@ router.get('/summary/:type', checkAuth, getSortAggregate, async (req, res, next)
         where.date = { [db.Sequelize.Op.between]: [req.query.start, req.query.end] };
     }
 
-    const resources =
-        type === 'category'
-            ? { table: 'categories', column: 'category_name', group: 'categories.id' }
-            : { table: 'stores', column: 'store_name', group: 'stores.id' };
+    class Resources {
+        constructor(table, column, group, alais) {
+            return { table, column, group, alais };
+        }
+    }
+
+    const resources = new Resources(
+        ...(type === 'category'
+            ? ['categories', 'category_name', 'categories.id', 'category']
+            : ['stores', 'store_name', 'stores.id', 'store'])
+    );
 
     const expenses = await db[resources.table]
         .findAll({
             attributes: [
                 'id',
-                resources.column,
                 [db.sequelize.fn('sum', db.sequelize.col('amount')), 'amount'],
+                [db.Sequelize.col(`${resources.table}.${resources.column}`), resources.alais],
             ],
             include: [
                 {
@@ -310,6 +329,7 @@ router.get('/summary/:type', checkAuth, getSortAggregate, async (req, res, next)
             ],
             group: resources.group,
             order: db.sequelize.literal(req.sortOption),
+            raw: true,
         })
         .catch((e) => {
             console.log(e);

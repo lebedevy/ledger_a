@@ -1,6 +1,6 @@
 export interface IExpense {
-    store: { store_name: string };
-    category: { category_name: string };
+    store: string;
+    category: string;
     amount: number;
     date: string;
     id: number;

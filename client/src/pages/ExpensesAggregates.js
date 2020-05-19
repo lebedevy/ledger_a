@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import clsx from 'clsx';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 import Summary from '../components/Summary';
-import AggregateSummary from '../components/AggregateSummary';
 import Header from '../components/Header';
 import { getSort, getSortIndexes } from '../utility/utility';
 import LoadingComponent from '../components/LoadingComponent';
 import { fetchAggregateExpensesIfNeeded, invalidateExpenses } from '../redux/actions';
+import TableRow from '../components/ExpenseRow';
+import TableWrapper from '../components/expense_select/TableWrapper.tsx';
 
 const useStyles = makeStyles({
     container: {
@@ -20,15 +21,6 @@ const useStyles = makeStyles({
     },
     desktop: {
         height: 'calc(100vh - 130px)',
-    },
-    expenseList: {
-        'overflow-y': 'auto',
-        'overflow-x': 'hidden',
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        background: '#ffffff',
-        borderRadius: '5px',
     },
 });
 
@@ -59,6 +51,11 @@ function ExpensesAggregates({
     const [order, setOrder] = useState(1);
     const [type, setType] = useState(getType());
     const [sortOpen, setSortOpen] = useState(false);
+    const expenses = useMemo(() => aggregateExpenses?.[type]?.items, [aggregateExpenses, type]);
+    const total = useMemo(
+        () => (expenses ? expenses.reduce((acc, curr) => acc + curr.amount, 0) : 0),
+        [expenses]
+    );
 
     useEffect(() => {
         getFilters();
@@ -127,12 +124,6 @@ function ExpensesAggregates({
         fetchDataIfNeeded([type, params]);
     }
 
-    let total = 0;
-    console.log(aggregateExpenses);
-    const expenses = aggregateExpenses[type] ? aggregateExpenses[type].items : null;
-
-    console.log(expenses);
-
     return (
         <div
             className={clsx(width > 600 ? classes.desktop : classes.mobile, classes.container)}
@@ -150,19 +141,29 @@ function ExpensesAggregates({
                     options,
                 }}
             />
-            <div className={classes.expenseList}>
-                {expenses && expenses.length === 0 ? (
+            <TableWrapper>
+                {expenses?.length === 0 && (
                     <label>{`No expenses for ${
                         type === 'category' ? 'categories' : 'stores'
                     }`}</label>
-                ) : null}
-                {expenses &&
-                    expenses.map((el) => {
-                        total += el.amount;
-                        return <AggregateSummary key={el.id} type={type} el={el} />;
-                    })}
-                {!expenses && <LoadingComponent />}
-            </div>
+                )}
+                {expenses ? (
+                    expenses.map((expense) => (
+                        <TableRow
+                            key={expenses.id}
+                            expense={expense}
+                            exclude={{
+                                [type === 'category' ? 'store' : 'category']: 1,
+                                date: 1,
+                            }}
+                        />
+                    ))
+                ) : (
+                    <LoadingComponent />
+                )}
+            </TableWrapper>
+
+            {/* </div> */}
             <Summary total={total} />
         </div>
     );

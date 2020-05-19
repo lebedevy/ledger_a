@@ -53,14 +53,14 @@ function EditableRow({
             {!exclude?.store && (
                 <EditableCell
                     type="store"
-                    content={expense?.store?.store_name ?? ''}
+                    content={expense.store ?? ''}
                     id={expense.id}
                     refetch={refetch}
                 />
             )}
             {!exclude?.category && (
                 <EditableCell
-                    content={expense?.category?.category_name ?? ''}
+                    content={expense.category ?? ''}
                     type="category"
                     id={expense.id}
                     refetch={refetch}
@@ -82,12 +82,8 @@ function NonEditableRow({ expense, exclude }: { expense: IExpense; exclude?: IEx
     return (
         <tr className={expenseEntry}>
             <BasicCell content={expense.amount} type="amount" />
-            {!exclude?.store && (
-                <BasicCell type="store" content={expense?.store?.store_name ?? ''} />
-            )}
-            {!exclude?.category && (
-                <BasicCell content={expense?.category?.category_name ?? ''} type="category" />
-            )}
+            {!exclude?.store && <BasicCell type="store" content={expense.store ?? ''} />}
+            {!exclude?.category && <BasicCell content={expense.category ?? ''} type="category" />}
             {!exclude?.date && <BasicCell content={expense.date} type="date" />}
         </tr>
     );
