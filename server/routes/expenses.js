@@ -130,43 +130,56 @@ router.get('/edit/:id', checkAuth, async (req, res, next) => {
 });
 
 // Edit Expense: POST
-router.post('/edit/:id', checkAuth, validateExpense, async (req, res, next) => {
+router.put('/edit/:id', checkAuth, async (req, res, next) => {
     console.info('Updating expense...');
-    const { amount, date, store, category } = req.expense;
+    let { amount, date, store, category } = req.body.expense;
     const { id } = req.params;
+
+    // Do some basic data cleaning
+    [store, category] = [store, category].map((el) => (el ? el.trim() : ''));
+    store = store === '' ? null : store;
+    category = category === '' ? null : category;
+
+    const transaction = await db.sequelize.transaction();
+
+    // Get expense
     const expense = await db.expenses.findOne({
         where: { id, user_id: req.user.id },
         include: [{ model: db.categories }, { model: db.stores }],
+        transaction,
     });
+
     if (expense) {
         if (expense.user_id === req.user.id) {
-            let category_id = null,
-                store_id = null;
+            const updatedExpense = {};
 
-            // Create or get store
-            if (store) {
-                const [storeObj, storeCreated] = await db.stores.findOrCreate({
-                    where: { store_name: store },
-                });
-                console.info(`Store created?: ${storeCreated}`);
-                store_id = storeObj.id;
+            try {
+                if (store) {
+                    updatedExpense.store_id = await insertStore(store, transaction);
+                }
+
+                if (category) {
+                    updatedExpense.category_id = await insertCategory(category, transaction);
+                }
+
+                if (date) {
+                    updatedExpense.date = date;
+                }
+
+                if (amount != null && !isNaN(amount)) {
+                    updatedExpense.amount = amount;
+                }
+
+                console.log(req.body.expense);
+                console.log(updatedExpense);
+                // Update fields
+                await expense.update(updatedExpense, { transaction });
+                transaction.commit();
+                return res.status(200).send({ message: 'Expense updated ok' });
+            } catch (e) {
+                transaction.rollback();
+                return res.status(500).send({ message: 'There was an error updating the expense' });
             }
-
-            // Create or get category
-            if (category) {
-                const [categoryObj, catCreated] = await db.categories.findOrCreate({
-                    where: {
-                        category_name: category,
-                    },
-                });
-                console.info(`Category created?: ${catCreated}`);
-                category_id = categoryObj.id;
-            }
-
-            // Update fields
-            const update = await expense.update({ category_id, store_id, amount, date });
-            // console.log(update);
-            return res.status(200).send({ message: 'Update ok' });
         }
         console.info('User attempted update unathorized expense resource.');
     }
@@ -185,10 +198,21 @@ router.get('/summary', checkAuth, getSortSummary, async (req, res, next) => {
     }
     const expenses = await db.expenses.findAll({
         where,
+        attributes: [
+            'id',
+            'amount',
+            'date',
+            [db.Sequelize.col('category.category_name'), 'category'],
+            [db.Sequelize.col('store.store_name'), 'store'],
+        ],
         order: db.sequelize.literal(req.sortOption),
-        include: [db.categories, db.stores],
+        include: [
+            { model: db.categories, attributes: [] },
+            { model: db.stores, attributes: [] },
+        ],
+        raw: true,
     });
-    res.status(200).send({ expenses: expenses });
+    res.status(200).send({ expenses });
 });
 
 // Summary for all expenses for a period
@@ -245,6 +269,7 @@ router.get('/overview/:type/trends', checkAuth, async (req, res, next) => {
 });
 
 router.get('/overview/:type/details', checkAuth, async (req, res, next) => {
+    if (req.user.id == null) throw Error('No user id provided');
     const { type } = req.params;
     console.info('Serving details for ' + type);
     const include = [];
@@ -276,17 +301,24 @@ router.get('/summary/:type', checkAuth, getSortAggregate, async (req, res, next)
         where.date = { [db.Sequelize.Op.between]: [req.query.start, req.query.end] };
     }
 
-    const resources =
-        type === 'category'
-            ? { table: 'categories', column: 'category_name', group: 'categories.id' }
-            : { table: 'stores', column: 'store_name', group: 'stores.id' };
+    class Resources {
+        constructor(table, column, group, alais) {
+            return { table, column, group, alais };
+        }
+    }
+
+    const resources = new Resources(
+        ...(type === 'category'
+            ? ['categories', 'category_name', 'categories.id', 'category']
+            : ['stores', 'store_name', 'stores.id', 'store'])
+    );
 
     const expenses = await db[resources.table]
         .findAll({
             attributes: [
                 'id',
-                resources.column,
                 [db.sequelize.fn('sum', db.sequelize.col('amount')), 'amount'],
+                [db.Sequelize.col(`${resources.table}.${resources.column}`), resources.alais],
             ],
             include: [
                 {
@@ -297,6 +329,7 @@ router.get('/summary/:type', checkAuth, getSortAggregate, async (req, res, next)
             ],
             group: resources.group,
             order: db.sequelize.literal(req.sortOption),
+            raw: true,
         })
         .catch((e) => {
             console.log(e);
@@ -340,17 +373,23 @@ router.get('/manage/merge/:type', checkAuth, async (req, res, next) => {
 });
 
 router.post('/delete', checkAuth, async (req, res, next) => {
-    console.log(req.body);
-    const { id } = req.body;
-    if (id == null) return res.status(400).send({ message: 'Please verify request data.' });
-    // Ensure user owns resource, and delete if so
-    const expense = await db.expenses.findOne({ where: { id, user_id: req.user.id } });
-    console.log(expense);
-    if (expense) {
-        const result = await expense.destroy();
-        console.log(result);
-    } else return res.status(400).send({ message: 'Please verify request data.' });
-    return res.status(200).send({ message: 'ok' });
+    const ids = req.body;
+    const user_id = req.user.id;
+    if (ids == null || user_id == null)
+        return res.status(400).send({ message: 'Please verify request data.' });
+
+    const transaction = await db.sequelize.transaction();
+
+    try {
+        // Ensure user owns resource by checking that their id matches
+        await db.expenses.destroy({ where: { id: ids, user_id }, transaction });
+        transaction.commit();
+        return res.status(200).send({ message: 'ok' });
+    } catch (e) {
+        transaction.rollback();
+        console.log(e);
+        return res.status(500).send({ message: 'There was an error processing your request.' });
+    }
 });
 
 router.get('/categories', checkAuth, async (req, res, next) => {

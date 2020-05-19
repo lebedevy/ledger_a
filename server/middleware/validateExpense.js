@@ -13,7 +13,7 @@ function cleanInput(req, res, next) {
                 return next();
             }
         }
-        return res.status(400).send({ message: 'Please ensure verify your inputs.' });
+        return res.status(400).send({ message: 'Please verify your inputs.' });
     } catch (err) {
         console.log(err);
         return res.status(500).send({ message: 'There was an error processing your request.' });

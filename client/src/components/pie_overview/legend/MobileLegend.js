@@ -72,7 +72,7 @@ export default function MobileLegend({ open, setLegendOpen, data, common, setSel
                     <React.Fragment>
                         <PieLegendDisplayOptions totals={totals} setTotals={setTotals} />
                         <div>
-                            {data.map((el, ind) => (
+                            {data.map((el) => (
                                 <div
                                     key={el.id}
                                     className={common.legendItem}

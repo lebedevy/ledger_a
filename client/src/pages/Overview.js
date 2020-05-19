@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
-import { makeStyles } from '@material-ui/styles';
+import { useSelector } from 'react-redux';
 import { getCurrencyFormat } from '../utility/utility';
 import SpendingMap from '../components/overview/SpendingMap';
 import MaxExpense from '../components/overview/MaxExpense';
 import AddExpenseButton from '../components/AddExpenseButton';
 import DaySummary from '../components/overview/DaySummary';
 import SummaryItem from '../components/SummaryItem';
+import { css } from 'emotion';
 
 class EmptyCell {
     constructor(date) {
@@ -24,33 +24,33 @@ class PaddingCell {
 
 // const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-const useStyles = makeStyles({
-    container: {
-        display: 'flex',
-        justifyContent: 'center',
-    },
-    page: {
-        boxSizing: 'border-box',
-        flex: 1,
-        padding: '10px',
-        maxWidth: '1200px',
-        overflow: 'hidden',
-        '& h1': {
-            margin: '10px 0',
-            padding: '10px 0',
-        },
-    },
-    error: {
-        color: 'red',
-        fontWeight: 'bold',
-        fontSize: '1.5em',
-        display: 'block',
-        padding: '10px 0',
-    },
-});
+const containerCss = css`
+    display: flex;
+    justify-content: center;
+`;
 
-function DailySummary({ start, end, history }) {
-    const classes = useStyles();
+const pageCss = css`
+    box-sizing: border-box;
+    flex: 1;
+    padding: 10px;
+    max-width: 1200px;
+    overflow: hidden;
+    h1 & {
+        margin: 10px 0;
+        padding: 10px 0;
+    }
+`;
+const errorCss = css`
+    color: red;
+    font-weight: bold;
+    font-size: 1.5em;
+    display: block;
+    padding: 10px 0;
+`;
+
+// Daily Summary
+export default function Overview() {
+    const { start, end } = useSelector((state) => state.date.period);
     const [data, setData] = useState([]);
     const [step, setStep] = useState(0);
     const [max, setMax] = useState(null);
@@ -72,8 +72,7 @@ function DailySummary({ start, end, history }) {
         if (res.ok) {
             const data = await res.json();
             if (data.expenses) {
-                formatData(data.expenses);
-                return;
+                return formatData(data.expenses);
             }
         }
         console.error('Error fetching data');
@@ -131,11 +130,11 @@ function DailySummary({ start, end, history }) {
     }
 
     return (
-        <div className={classes.container}>
-            <div className={classes.page}>
+        <div className={containerCss}>
+            <div className={pageCss}>
                 <h1>Period Summary</h1>
                 <label>{`From ${start} to  ${end}`}</label>
-                {error ? <label className={classes.error}>{error}</label> : null}
+                {error ? <label className={errorCss}>{error}</label> : null}
                 <SpendingMap data={data} step={step} setDay={setDay} day={day} />
                 <div>
                     <DaySummary day={day} />
@@ -148,15 +147,7 @@ function DailySummary({ start, end, history }) {
                     </SummaryItem>
                 </div>
             </div>
-            <AddExpenseButton history={history} />
+            <AddExpenseButton />
         </div>
     );
 }
-
-const mapStateToProps = (state) => {
-    const { date } = state;
-    const { start, end } = date.period;
-    return { date, start, end };
-};
-
-export default connect(mapStateToProps)(DailySummary);

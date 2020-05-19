@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import { setPeriod, closeDrawer, logout } from '../../redux/actions';
+import { setPeriod } from '../../redux/actions';
 
 const useStyles = makeStyles({
     container: {
@@ -31,8 +31,10 @@ const useStyles = makeStyles({
     },
 });
 
-function DateRange({ start, end, setPeriod }) {
+export default function DateRange() {
     const classes = useStyles();
+    const dispatch = useDispatch();
+    const { start, end } = useSelector((state) => state.date.period);
     const [startStr, setStartStr] = useState(start);
     const [endStr, setEndStr] = useState(end);
     const [error, setError] = useState(null);
@@ -68,7 +70,7 @@ function DateRange({ start, end, setPeriod }) {
         }
         // Else clear errors and set the periods in redux
         clearErrors();
-        setPeriod({ start, end });
+        dispatch(setPeriod({ start, end }));
     }
 
     function clearErrors() {
@@ -85,7 +87,7 @@ function DateRange({ start, end, setPeriod }) {
                     margin="dense"
                     variant="outlined"
                     value={startStr}
-                    onChange={e => setDates(e.target.value, endStr)}
+                    onChange={(e) => setDates(e.target.value, endStr)}
                 />
             </div>
             {startError ? <label className={classes.error}>{startError}</label> : null}
@@ -96,20 +98,10 @@ function DateRange({ start, end, setPeriod }) {
                     margin="dense"
                     variant="outlined"
                     value={endStr}
-                    onChange={e => setDates(startStr, e.target.value)}
+                    onChange={(e) => setDates(startStr, e.target.value)}
                 />
             </div>
             {error ? <label className={classes.error}>{error}</label> : null}
         </div>
     );
 }
-
-const mapStateToProps = state => {
-    const { date } = state;
-    const { start, end } = date.period;
-    return { start, end };
-};
-
-const mapDispatchToProps = { closeDrawer, logout, setPeriod };
-
-export default connect(mapStateToProps, mapDispatchToProps)(DateRange);
