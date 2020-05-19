@@ -13,7 +13,10 @@ export interface IExclude {
 }
 
 export interface RootState {
-    cellEdit: string | null;
+    editing: {
+        cellEdit: null | string;
+        deletingMode: { deleting: false; deleteIds: Array<number>; inProgress: false };
+    };
     screen: { width: number; height: number };
     date: { period: { start: string; end: string } };
 }

@@ -13,6 +13,9 @@ import {
     REQUEST_TEMPLATE_LIST,
     RECIEVE_TEMPLATE_LIST,
     SET_EDITING_CELL,
+    SET_DELETING_MODE,
+    ADD_DELETE_ID,
+    REMOVE_DELETE_ID,
 } from './actionTypes';
 
 const requestExpenses = (aggregateType) => ({
@@ -163,5 +166,26 @@ export const setEditingExpense = (cell) => ({
     type: SET_EDITING_CELL,
     payload: {
         cell,
+    },
+});
+
+export const setDeletingMode = (deleting) => ({
+    type: SET_DELETING_MODE,
+    payload: {
+        deleting,
+    },
+});
+
+export const addDeleteId = (id) => ({
+    type: ADD_DELETE_ID,
+    payload: {
+        id,
+    },
+});
+
+export const removeDeleteId = (id) => ({
+    type: REMOVE_DELETE_ID,
+    payload: {
+        id,
     },
 });

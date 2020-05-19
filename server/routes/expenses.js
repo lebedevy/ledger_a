@@ -373,17 +373,25 @@ router.get('/manage/merge/:type', checkAuth, async (req, res, next) => {
 });
 
 router.post('/delete', checkAuth, async (req, res, next) => {
-    console.log(req.body);
-    const { id } = req.body;
-    if (id == null) return res.status(400).send({ message: 'Please verify request data.' });
-    // Ensure user owns resource, and delete if so
-    const expense = await db.expenses.findOne({ where: { id, user_id: req.user.id } });
-    console.log(expense);
-    if (expense) {
-        const result = await expense.destroy();
-        console.log(result);
-    } else return res.status(400).send({ message: 'Please verify request data.' });
-    return res.status(200).send({ message: 'ok' });
+    const ids = req.body;
+
+    if (ids == null || req.user.id == null)
+        return res.status(400).send({ message: 'Please verify request data.' });
+
+    console.log(ids);
+
+    const transaction = await db.sequelize.transaction();
+
+    try {
+        // Ensure user owns resource by checking that their id matches
+        await db.expenses.destroy({ where: { id: ids, user_id: req.user.id }, transaction });
+        transaction.commit();
+        return res.status(200).send({ message: 'ok' });
+    } catch (e) {
+        transaction.rollback();
+        console.log(e);
+        return res.status(500).send({ message: 'There was an error processing your request.' });
+    }
 });
 
 router.get('/categories', checkAuth, async (req, res, next) => {

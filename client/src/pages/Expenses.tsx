@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Summary from '../components/Summary';
 import ExpenseRow from '../components/ExpenseRow';
 import Header from '../components/Header';
@@ -10,6 +10,7 @@ import { useLocation, useHistory } from 'react-router-dom';
 import { css } from 'emotion';
 import { RootState, IExpense } from '../components/typescript/general_interfaces';
 import TableWrapper from '../components/expense_select/TableWrapper';
+import { setDeletingMode } from '../redux/actions';
 
 // background: '#00000020',
 // width: '100vh',
@@ -45,10 +46,11 @@ export default function Expenses() {
     const [expenses, setExpenses] = useState<Array<IExpense>>([]);
     const [openSort, setOpenSort] = useState(false);
 
-    const { width, height, start, end } = useSelector((state: RootState) => {
+    const { width, height, start, end, deleteIds } = useSelector((state: RootState) => {
         const { width, height } = state.screen;
         const { start, end } = state.date.period;
-        return { height, width, start, end };
+        const { deleteIds } = state.editing.deletingMode;
+        return { height, width, start, end, deleteIds };
     });
 
     // Fetch expenses on change
@@ -86,26 +88,21 @@ export default function Expenses() {
         }
     };
 
-    const deleteExpense = async (id: number, ind: number) => {
+    const deleteExpenses = async () => {
         // Make sure the correct expense is being deleted
-        if (expenses[ind].id === id) {
-            // call api to remove
-            const res = await fetch(`/api/users/expenses/delete`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id }),
-            });
+        // call api to remove
+        const res = await fetch(`/api/users/expenses/delete`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(deleteIds),
+        });
 
-            if (res.ok) {
-                // Remove from array
-                let update = expenses.slice();
-                update.splice(ind, 1);
-                setExpenses(update);
-            } else {
-                // Show error message
-                const data = await res.json();
-                console.error(data);
-            }
+        if (res.ok) {
+            fetchExpenses();
+        } else {
+            // Show error message
+            const data = await res.json();
+            console.error(data);
         }
     };
 
@@ -116,6 +113,8 @@ export default function Expenses() {
             style={width <= 600 ? { height: `calc(${height}px - 16vh)` } : {}}
         >
             <Header
+                deleteAllowed
+                deleteExpenses={deleteExpenses}
                 open={openSort}
                 setOpen={() => setOpenSort(!openSort)}
                 title="Expenses"

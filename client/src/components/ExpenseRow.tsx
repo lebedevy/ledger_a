@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { css } from 'emotion';
 import EditableCell from './expense_select/EditableCell';
-import { IExpense, IExclude } from './typescript/general_interfaces';
+import { IExpense, IExclude, RootState } from './typescript/general_interfaces';
 import BasicCell from './expense_select/BasicCell';
+import { useSelector, useDispatch } from 'react-redux';
+import { addDeleteId, removeDeleteId } from '../redux/actions';
 
 const expenseEntry = css`
     padding: 0 1px;
@@ -42,8 +44,18 @@ function EditableRow({
     exclude?: IExclude;
     refetch: () => any;
 }) {
+    const dispatch = useDispatch();
+    const { deleting, deleteIds } = useSelector((state: RootState) => state.editing.deletingMode);
+    const checked = useMemo(() => deleteIds.includes(expense.id), [deleteIds, expense]);
+
+    const updateDeleteState = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (deleteIds.includes(expense.id)) dispatch(removeDeleteId(expense.id));
+        else dispatch(addDeleteId(expense.id));
+    };
+
     return (
         <tr className={expenseEntry}>
+            {deleting && <input checked={checked} type="checkbox" onChange={updateDeleteState} />}
             <EditableCell
                 content={expense.amount}
                 type="amount"

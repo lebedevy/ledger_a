@@ -7,7 +7,7 @@ import Header from '../components/Header';
 import { getSort, getSortIndexes } from '../utility/utility';
 import LoadingComponent from '../components/LoadingComponent';
 import { fetchAggregateExpensesIfNeeded, invalidateExpenses } from '../redux/actions';
-import TableRow from '../components/ExpenseRow';
+import ExpenseRow from '../components/ExpenseRow';
 import TableWrapper from '../components/expense_select/TableWrapper.tsx';
 
 const useStyles = makeStyles({
@@ -149,7 +149,7 @@ function ExpensesAggregates({
                 )}
                 {expenses ? (
                     expenses.map((expense) => (
-                        <TableRow
+                        <ExpenseRow
                             key={expenses.id}
                             expense={expense}
                             exclude={{
@@ -162,8 +162,6 @@ function ExpensesAggregates({
                     <LoadingComponent />
                 )}
             </TableWrapper>
-
-            {/* </div> */}
             <Summary total={total} />
         </div>
     );

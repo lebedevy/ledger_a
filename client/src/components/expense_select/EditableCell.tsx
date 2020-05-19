@@ -48,7 +48,7 @@ interface IProps {
 
 export default function EditableCell({ content, type, id, refetch }: IProps) {
     const dispatch = useDispatch();
-    const { cellEdit } = useSelector((state: RootState) => state);
+    const { cellEdit } = useSelector((state: RootState) => state.editing);
     const [value, setValue] = useState<number | string>('');
     const [loading, setLoading] = useState(false);
     const [updated, setUpdated] = useState(false);
