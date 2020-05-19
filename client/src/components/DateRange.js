@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import clsx from 'clsx';
-import { connect } from 'react-redux';
-import { closeDrawer, logout } from '../redux/actions';
 import { makeStyles } from '@material-ui/styles';
-import { setPeriod } from '../redux/actions';
 import DateSelectMonth from './date_select/DateSelectMonth';
 import DateSelectDates from './date_select/DateSelectDates';
 
@@ -36,7 +33,7 @@ const useStyles = makeStyles({
     },
 });
 
-function DateRange({ start, end, setPeriod }) {
+export default function DateRange() {
     const classes = useStyles();
     const [selectType, setSelectType] = useState(0);
 
@@ -63,13 +60,3 @@ function DateRange({ start, end, setPeriod }) {
         </div>
     );
 }
-
-const mapStateToProps = state => {
-    const { date } = state;
-    const { start, end } = date.period;
-    return { start, end };
-};
-
-const mapDispatchToProps = { closeDrawer, logout, setPeriod };
-
-export default connect(mapStateToProps, mapDispatchToProps)(DateRange);

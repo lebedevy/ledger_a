@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { connect, useSelector } from 'react-redux';
-import { AppBar, Toolbar, IconButton, Menu, MenuItem } from '@material-ui/core';
+import { connect, useSelector, useDispatch } from 'react-redux';
+import { IconButton, Menu, MenuItem } from '@material-ui/core';
 import PublishIcon from '@material-ui/icons/Publish';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import { openDrawer, logout } from '../../redux/actions';
+import { logout } from '../../redux/actions';
 import CategoryIcon from '@material-ui/icons/Category';
 import StoreIcon from '@material-ui/icons/Store';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import SettingsApplicationsIcon from '@material-ui/icons/SettingsApplications';
 import DateRange from '../DateRange';
 import { css } from 'emotion';
+import { useHistory } from 'react-router-dom';
 
 const container = css`
     position: fixed;
@@ -55,7 +56,9 @@ const options = css`
     align-items: center;
 `;
 
-function Navbar({ logout, openDrawer, history }) {
+export default function Navbar() {
+    const history = useHistory();
+    const dispatch = useDispatch();
     const { screen } = useSelector((state) => state.screenSelect);
     const [targetEl, setTargetEl] = useState(null);
     const [showSetting, setShowSetting] = useState(false);
@@ -71,10 +74,10 @@ function Navbar({ logout, openDrawer, history }) {
 
     const openProfile = (e) => setTargetEl(e.currentTarget);
 
-    const closeProfile = (e) => setTargetEl(null);
+    const closeProfile = () => setTargetEl(null);
 
     async function logoutUser() {
-        logout();
+        dispatch(logout());
         const res = await fetch('/api/users/logout', { method: 'POST' });
         if (res.status === 200) history.go('/users/login');
         closeProfile();
@@ -121,8 +124,6 @@ function Navbar({ logout, openDrawer, history }) {
         </>
     );
 }
-
-export default connect(null, { openDrawer, logout })(Navbar);
 
 const containerCss = css`
     z-index: 1300;

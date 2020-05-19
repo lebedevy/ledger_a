@@ -35,7 +35,7 @@ export default function MaxExpense({ max }) {
             {(() => {
                 if (expanded) {
                     if (expenses == null) fetchExpenseSummary();
-                    return <Details expenses={expenses} />;
+                    return <Details expenses={expenses} refetch={fetchExpenseSummary} />;
                 } else {
                     return null;
                 }

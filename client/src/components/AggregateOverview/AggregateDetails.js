@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import SummaryDetailsButton from '../overview/SummaryDetailsButton';
-import ExpenseSummary from '../ExpenseSummary';
+import ExpenseRow from '../ExpenseRow';
 import { getCurrencyFormat } from '../../utility/utility';
 import { Switch } from '@material-ui/core';
 import { connect } from 'react-redux';
@@ -21,7 +21,7 @@ function AggregateDetails({ selected, type, start, end }) {
         let total = 0;
         let grouped = {};
         let t = type === 'category' ? 'store_id' : 'category_id';
-        selected.data.forEach(el => {
+        selected.data.forEach((el) => {
             if (grouped[el[t]]) grouped[el[t]]['amount'] += el['amount'];
             else {
                 const { id, user_id, category_id, store_id, amount } = el;
@@ -59,10 +59,10 @@ function AggregateDetails({ selected, type, start, end }) {
             ) : null}
             {expanded ? (
                 <table style={{ width: '100%' }}>
-                    {(() => (checked ? grouped : selected.data))().map(el => {
+                    {(() => (checked ? grouped : selected.data))().map((expense) => {
                         const exclude = { [type === 'category' ? 'category' : 'store']: true };
                         if (checked) exclude['date'] = true;
-                        return <ExpenseSummary key={el.id} el={el} exclude={exclude} />;
+                        return <ExpenseRow key={expense.id} expense={expense} exclude={exclude} />;
                     })}
                 </table>
             ) : null}
@@ -70,7 +70,7 @@ function AggregateDetails({ selected, type, start, end }) {
     );
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
     const { start, end } = state.date.period;
     const { mobile } = state.screen;
     return { start, end, mobile };

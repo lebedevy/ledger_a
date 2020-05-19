@@ -59,7 +59,7 @@ function MobileSubNav({ screen, setScreen, history, location }) {
         changeScreen(screen);
     }, []);
 
-    const changeScreen = option => {
+    const changeScreen = (option) => {
         if (option !== screen) {
             let path = location.pathname;
             console.log(path);
@@ -67,7 +67,6 @@ function MobileSubNav({ screen, setScreen, history, location }) {
                 screen === 0 ? 'overview' : 'summary',
                 option === 0 ? 'overview' : 'summary'
             );
-            console.log(path);
             history.push(path);
             // set the right screen for mobile
             setScreen(option);
@@ -96,7 +95,7 @@ function MobileSubNav({ screen, setScreen, history, location }) {
     );
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
     const { screen } = state.screenSelect;
     const { mobile } = state.screen;
     return { screen, mobile };

@@ -1,7 +1,5 @@
 import {
     SET_DATE,
-    OPEN_DRAWER,
-    CLOSE_DRAWER,
     SET_USER,
     LOGOUT,
     SET_PERIOD,
@@ -14,14 +12,18 @@ import {
     INVALIDATE_TEMPLATE_LIST,
     REQUEST_TEMPLATE_LIST,
     RECIEVE_TEMPLATE_LIST,
+    SET_EDITING_CELL,
+    SET_DELETING_MODE,
+    ADD_DELETE_ID,
+    REMOVE_DELETE_ID,
 } from './actionTypes';
 
-const requestExpenses = aggregateType => ({
+const requestExpenses = (aggregateType) => ({
     type: REQUEST_EXPENSES,
     aggregateType,
 });
 
-export const invalidateExpenses = aggregateType => ({
+export const invalidateExpenses = (aggregateType) => ({
     type: INVALIDATE_EXPENSES,
     aggregateType,
 });
@@ -33,11 +35,11 @@ const recieveExpenses = (aggregateType, data) => ({
     recievedAt: Date.now(),
 });
 
-const fetchAggregateExpenses = (aggregateType, params) => dispatch => {
+const fetchAggregateExpenses = (aggregateType, params) => (dispatch) => {
     dispatch(requestExpenses(aggregateType));
     fetch(`/api/users/expenses/summary/${aggregateType}${params}`)
-        .then(data => data.json())
-        .then(data => {
+        .then((data) => data.json())
+        .then((data) => {
             dispatch(recieveExpenses(aggregateType, data));
         });
 };
@@ -63,12 +65,12 @@ export function fetchAggregateExpensesIfNeeded([aggregateType, params]) {
     };
 }
 
-const requestTemplateList = listType => ({
+const requestTemplateList = (listType) => ({
     type: REQUEST_TEMPLATE_LIST,
     listType,
 });
 
-export const invalidateTemplateList = listType => ({
+export const invalidateTemplateList = (listType) => ({
     type: INVALIDATE_TEMPLATE_LIST,
     listType,
 });
@@ -80,11 +82,11 @@ const recieveTemplateList = (listType, data) => ({
     recievedAt: Date.now(),
 });
 
-const fetchTemplateList = listType => dispatch => {
+const fetchTemplateList = (listType) => (dispatch) => {
     dispatch(requestTemplateList(listType));
     fetch(`/api/users/expenses/${listType}`)
-        .then(data => data.json())
-        .then(data => {
+        .then((data) => data.json())
+        .then((data) => {
             console.log(data);
             dispatch(recieveTemplateList(listType, data[listType]));
         });
@@ -111,65 +113,79 @@ export function fetchTemplateListIfNeeded(listType) {
     };
 }
 
-export const setDate = content => ({
+export const setDate = (content) => ({
     type: SET_DATE,
     payload: {
         content,
     },
 });
 
-export const openDrawer = content => ({
-    type: OPEN_DRAWER,
-    payload: {
-        content,
-    },
-});
-
-export const closeDrawer = content => ({
-    type: CLOSE_DRAWER,
-    payload: {
-        content,
-    },
-});
-
-export const setUser = content => ({
+export const setUser = (content) => ({
     type: SET_USER,
     payload: {
         content,
     },
 });
 
-export const logout = content => ({
+export const logout = (content) => ({
     type: LOGOUT,
     payload: {
         content: null,
     },
 });
 
-export const setPeriod = content => ({
+export const setPeriod = (content) => ({
     type: SET_PERIOD,
     payload: {
         content,
     },
 });
 
-export const setScreenDimensions = content => ({
+export const setScreenDimensions = (content) => ({
     type: SET_SCREEN_SIZE,
     payload: {
         content,
     },
 });
 
-export const setScreen = content => ({
+export const setScreen = (content) => ({
     type: SET_SCREEN,
     payload: {
         content,
     },
 });
 
-export const setSettingsScreen = content => ({
+export const setSettingsScreen = (content) => ({
     type: SET_SETTINGS_SCREEN,
     payload: {
         content,
+    },
+});
+
+export const setEditingExpense = (cell) => ({
+    type: SET_EDITING_CELL,
+    payload: {
+        cell,
+    },
+});
+
+export const setDeletingMode = (deleting) => ({
+    type: SET_DELETING_MODE,
+    payload: {
+        deleting,
+    },
+});
+
+export const addDeleteId = (id) => ({
+    type: ADD_DELETE_ID,
+    payload: {
+        id,
+    },
+});
+
+export const removeDeleteId = (id) => ({
+    type: REMOVE_DELETE_ID,
+    payload: {
+        id,
     },
 });
