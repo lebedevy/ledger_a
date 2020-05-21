@@ -268,12 +268,26 @@ router.get('/overview/:type/trends', checkAuth, async (req, res, next) => {
     return res.status(200).send({ expenses: expenses });
 });
 
+class Resources {
+    constructor(type) {
+        const cat = this.createObject(
+            ...['categories', 'category_name', 'categories.id', 'category']
+        );
+        const store = this.createObject(...['stores', 'store_name', 'stores.id', 'store']);
+        const main = type === 'category' ? cat : store;
+        const secondary = type === 'category' ? store : cat;
+        return { main, secondary };
+    }
+
+    createObject(table, column, group, alais) {
+        return { table, column, group, alais };
+    }
+}
+
 router.get('/overview/:type/details', checkAuth, async (req, res, next) => {
     if (req.user.id == null) throw Error('No user id provided');
     const { type } = req.params;
     console.info('Serving details for ' + type);
-    const include = [];
-    include.push(type === 'category' ? db.stores : db.categories);
     const where = { user_id: req.user.id };
 
     if (req.query.id == null)
@@ -281,16 +295,41 @@ router.get('/overview/:type/details', checkAuth, async (req, res, next) => {
             .status(400)
             .send({ message: 'Please ensure the request specifies the source for details' });
     where[type === 'category' ? 'category_id' : 'store_id'] = req.query.id;
-    if (req.query.start && req.query.end) {
-        where.date = { [db.Sequelize.Op.between]: [req.query.start, req.query.end] };
-    }
 
-    const expenses = await db.expenses.findAll({
-        where,
-        order: ['date'],
-        include,
-    });
-    return res.status(200).send({ expenses: expenses });
+    const resources = new Resources(type);
+
+    let query = `SELECT expenses.id, amount, date, ${resources.secondary.table}.${
+        resources.secondary.column
+    } AS ${resources.secondary.alais}
+     FROM expenses INNER JOIN ${resources.secondary.table} ON ${
+        resources.secondary.table
+    }.id = expenses.${type === 'category' ? 'store_id' : 'category_id'}
+     WHERE user_id = ${db.sequelize.escape(req.user.id)} AND 
+     expenses.${type === 'category' ? 'store_id' : 'category_id'} = ${db.sequelize.escape(
+        req.query.id
+    )} `;
+
+    if (req.query.start && req.query.end)
+        query += `AND expenses.date BETWEEN ${db.sequelize.escape(
+            req.query.start
+        )} AND ${db.sequelize.escape(req.query.end)}`;
+
+    query += ` ORDER BY amount DESC;`;
+
+    console.log(query);
+
+    const expenses = (await db.sequelize.query(query, { raw: true }))[0];
+
+    // const expenses = await db.expenses.findAll({
+    //     attributes: ['id', 'amount', 'date', [db.Sequelize.col(``), ,]],
+    //     where,
+    //     order: ['date'],
+    //     include: [{ model: type === 'category' ? db.stores : db.categories, attributes: [] }],
+    //     raw: true,
+    // });
+
+    console.log(expenses);
+    return res.status(200).send({ expenses });
 });
 
 router.get('/summary/:type', checkAuth, getSortAggregate, async (req, res, next) => {
@@ -301,24 +340,17 @@ router.get('/summary/:type', checkAuth, getSortAggregate, async (req, res, next)
         where.date = { [db.Sequelize.Op.between]: [req.query.start, req.query.end] };
     }
 
-    class Resources {
-        constructor(table, column, group, alais) {
-            return { table, column, group, alais };
-        }
-    }
+    const resources = new Resources(type);
 
-    const resources = new Resources(
-        ...(type === 'category'
-            ? ['categories', 'category_name', 'categories.id', 'category']
-            : ['stores', 'store_name', 'stores.id', 'store'])
-    );
-
-    const expenses = await db[resources.table]
+    const expenses = await db[resources.main.table]
         .findAll({
             attributes: [
                 'id',
                 [db.sequelize.fn('sum', db.sequelize.col('amount')), 'amount'],
-                [db.Sequelize.col(`${resources.table}.${resources.column}`), resources.alais],
+                [
+                    db.Sequelize.col(`${resources.main.table}.${resources.main.column}`),
+                    resources.main.alais,
+                ],
             ],
             include: [
                 {
@@ -327,7 +359,7 @@ router.get('/summary/:type', checkAuth, getSortAggregate, async (req, res, next)
                     where,
                 },
             ],
-            group: resources.group,
+            group: resources.main.group,
             order: db.sequelize.literal(req.sortOption),
             raw: true,
         })

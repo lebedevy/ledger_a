@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import SummaryDetailsButton from '../overview/SummaryDetailsButton';
-import ExpenseRow from '../ExpenseRow';
+import { NonEditableRow } from '../ExpenseRow';
 import { getCurrencyFormat } from '../../utility/utility';
 import { Switch } from '@material-ui/core';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import SummaryItem from '../SummaryItem';
 import WeeklySummary from '../AggregateOverview/WeeklySummary';
+import { IExpense, IAggregate, RootState, IAggregated } from '../typescript/general_interfaces';
 
-function AggregateDetails({ selected, type, start, end }) {
+interface IProps {
+    selected: { data: Array<IExpense>; el: IAggregate };
+    type: string;
+}
+
+export default function AggregateDetails({ selected, type }: IProps) {
+    const { start, end } = useSelector((state: RootState) => state.date.period);
     const [total, setTotal] = useState(0);
     const [expanded, setExpanded] = useState(false);
     const [checked, setChecked] = useState(false);
-    const [grouped, setGrouped] = useState(null);
+    const [grouped, setGrouped] = useState<Array<IAggregated>>([]);
 
     useEffect(() => {
         groupExpenses();
@@ -19,18 +26,18 @@ function AggregateDetails({ selected, type, start, end }) {
 
     function groupExpenses() {
         let total = 0;
-        let grouped = {};
-        let t = type === 'category' ? 'store_id' : 'category_id';
+        let grouped = {} as { [key: string]: IAggregated };
+        let t = type === 'category' ? 'store' : 'category';
         selected.data.forEach((el) => {
             if (grouped[el[t]]) grouped[el[t]]['amount'] += el['amount'];
             else {
-                const { id, user_id, category_id, store_id, amount } = el;
-                const expense = { id, user_id, category_id, store_id, amount };
+                const { id, user_id, category, store, amount } = el;
+                const expense = { id, user_id, category, store, amount };
                 expense[type === 'category' ? 'store' : 'category'] =
                     el[type === 'category' ? 'store' : 'category'];
                 grouped[el[t]] = expense;
             }
-            return (total += el.amount);
+            total += el.amount;
         });
         const sorted = Object.values(grouped).sort((a, b) => b['amount'] - a['amount']);
         setGrouped(sorted);
@@ -59,32 +66,37 @@ function AggregateDetails({ selected, type, start, end }) {
             ) : null}
             {expanded ? (
                 <table style={{ width: '100%' }}>
-                    {(() => (checked ? grouped : selected.data))().map((expense) => {
-                        const exclude = { [type === 'category' ? 'category' : 'store']: true };
-                        if (checked) exclude['date'] = true;
-                        return <ExpenseRow key={expense.id} expense={expense} exclude={exclude} />;
-                    })}
+                    {checked
+                        ? grouped.map((expense) => (
+                              <NonEditableRow
+                                  key={expense.id}
+                                  expense={expense}
+                                  exclude={{
+                                      [type === 'category' ? 'category' : 'store']: true,
+                                      date: true,
+                                  }}
+                              />
+                          ))
+                        : selected.data.map((expense) => (
+                              <NonEditableRow
+                                  key={expense.id}
+                                  expense={expense}
+                                  exclude={{ [type === 'category' ? 'category' : 'store']: true }}
+                              />
+                          ))}
                 </table>
             ) : null}
         </SummaryItem>
     );
 }
 
-const mapStateToProps = (state) => {
-    const { start, end } = state.date.period;
-    const { mobile } = state.screen;
-    return { start, end, mobile };
-};
+interface IPropsGroup {
+    checked: boolean;
+    setChecked: (chk: boolean) => void;
+    type: string;
+}
 
-export default connect(mapStateToProps)(AggregateDetails);
-
-function GroupDetailsSwitch({ checked, setChecked, type }) {
-    const classes = {
-        contianer: {
-            display: 'flex',
-            alignItems: 'center',
-        },
-    };
+function GroupDetailsSwitch({ checked, setChecked, type }: IPropsGroup) {
     return (
         <div>
             <label>Group by {type}</label>

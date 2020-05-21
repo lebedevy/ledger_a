@@ -88,7 +88,7 @@ export default function ApproveData({ expensesProp, setStep, step }) {
                 let r = `Possible duplicate of:\n`;
                 duplicates.forEach(
                     (dup) =>
-                        (r += `${dup.store?.store_name}, ${dup.category?.category_name}, ${dup.amount}, ${dup.date}\n`)
+                        (r += `${dup.store?.store}, ${dup.category?.category}, ${dup.amount}, ${dup.date}\n`)
                 );
                 reason.push(r);
                 return false;

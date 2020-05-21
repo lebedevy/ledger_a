@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { css } from 'emotion';
 import EditableCell from './expense_select/EditableCell';
-import { IExpense, IExclude, RootState } from './typescript/general_interfaces';
+import { IExpense, IExclude, RootState, IAggregated } from './typescript/general_interfaces';
 import BasicCell from './expense_select/BasicCell';
 import { useSelector, useDispatch } from 'react-redux';
 import { addDeleteId, removeDeleteId } from '../redux/actions';
@@ -17,30 +17,12 @@ const expenseEntry = css`
     }
 `;
 
-export default function ExpenseRow({
-    expense,
-    exclude,
-    editable,
-    refetch,
-}: {
-    expense: IExpense;
-    exclude?: IExclude;
-    editable?: boolean;
-    refetch: () => any;
-}) {
-    return editable ? (
-        <EditableRow expense={expense} exclude={exclude} refetch={refetch} />
-    ) : (
-        <NonEditableRow expense={expense} exclude={exclude} />
-    );
-}
-
-function EditableRow({
+export function EditableRow({
     expense,
     exclude,
     refetch,
 }: {
-    expense: IExpense;
+    expense: IExpense | IAggregated;
     exclude?: IExclude;
     refetch: () => any;
 }) {
@@ -80,7 +62,7 @@ function EditableRow({
             )}
             {!exclude?.date && (
                 <EditableCell
-                    content={expense.date}
+                    content={(expense as IExpense).date}
                     type="date"
                     id={expense.id}
                     refetch={refetch}
@@ -90,13 +72,19 @@ function EditableRow({
     );
 }
 
-function NonEditableRow({ expense, exclude }: { expense: IExpense; exclude?: IExclude }) {
+export function NonEditableRow({
+    expense,
+    exclude,
+}: {
+    expense: IExpense | IAggregated;
+    exclude?: IExclude;
+}) {
     return (
         <tr className={expenseEntry}>
             <BasicCell content={expense.amount} type="amount" />
             {!exclude?.store && <BasicCell type="store" content={expense.store ?? ''} />}
             {!exclude?.category && <BasicCell content={expense.category ?? ''} type="category" />}
-            {!exclude?.date && <BasicCell content={expense.date} type="date" />}
+            {!exclude?.date && <BasicCell content={(expense as IExpense).date} type="date" />}
         </tr>
     );
 }
