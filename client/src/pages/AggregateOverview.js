@@ -54,7 +54,7 @@ const useStyles = makeStyles({
     },
 });
 
-function AggregateOverview({ start, end, match, width, aggregateExpenses, fetchDataIfNeeded }) {
+function AggregateOverview({ start, end, match, aggregateExpenses, fetchDataIfNeeded }) {
     const classes = useStyles();
     const [expenses, setExpenses] = useState({});
     const [type, setType] = useState(getType());
@@ -104,7 +104,7 @@ function AggregateOverview({ start, end, match, width, aggregateExpenses, fetchD
         setData(data);
     }
 
-    const getDetails = async el => {
+    const getDetails = async (el) => {
         if (el) {
             setLoadingSelected(true);
             console.info(`Getting ${type} details`);
@@ -115,8 +115,7 @@ function AggregateOverview({ start, end, match, width, aggregateExpenses, fetchD
                 const data = await res.json();
                 const selected = { data: data.expenses, el };
                 setSelected(selected);
-                setLoadingSelected(false);
-                return;
+                return setLoadingSelected(false);
             }
             console.error('Error fetching data');
             console.log(await res.json());
@@ -124,55 +123,56 @@ function AggregateOverview({ start, end, match, width, aggregateExpenses, fetchD
         setLoadingSelected(false);
     };
 
+    console.log('Selected');
+    console.log(selected);
+
     return (
         <div className={classes.container}>
             <div className={classes.page}>
                 <h1>{`${type === 'category' ? 'Category' : 'Store'} Overview`}</h1>
                 <div className={classes.graph}>
                     {expenses.isFetching ? (
-                        <React.Fragment>
+                        <>
                             <div style={{ height: '80vw', maxHeight: '500px' }} />
                             <LoadingComponent />
-                        </React.Fragment>
+                        </>
                     ) : (
                         data && (
-                            <React.Fragment>
+                            <>
                                 <PieChart data={data} total={total} setSelected={getDetails} />
                                 <PieLegend
                                     open={legendOpen}
                                     setLegendOpen={setLegendOpen}
-                                    width={width}
                                     data={data}
                                     setSelected={getDetails}
                                 />
-                            </React.Fragment>
+                            </>
                         )
                     )}
                 </div>
                 <DetailsHeader selected={selected} type={type} />
                 {!selected ? (
-                    <React.Fragment>{loadingSelected ? <LoadingComponent /> : null}</React.Fragment>
+                    <>{loadingSelected && <LoadingComponent />}</>
                 ) : (
-                    <React.Fragment>
+                    <>
                         <AggregateDetails selected={selected} type={type} />
                         <OverviewDetailsTrends selected={selected} type={type} />
-                    </React.Fragment>
+                    </>
                 )}
             </div>
         </div>
     );
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
     const { aggregateExpenses } = state;
     const { start, end } = state.date.period;
-    const { width } = state.screen;
-    return { start, end, width, aggregateExpenses };
+    return { start, end, aggregateExpenses };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
     return {
-        fetchDataIfNeeded: args => dispatch(fetchAggregateExpensesIfNeeded(args)),
+        fetchDataIfNeeded: (args) => dispatch(fetchAggregateExpensesIfNeeded(args)),
     };
 };
 

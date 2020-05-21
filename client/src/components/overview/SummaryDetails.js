@@ -1,6 +1,5 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/styles';
-import ExpenseRow from '../ExpenseRow';
+import { EditableRow } from '../ExpenseRow';
 import { CircularProgress } from '@material-ui/core';
 import { css } from 'emotion';
 
@@ -13,11 +12,10 @@ export default function Details({ expenses, refetch }) {
     return expenses ? (
         <table style={{ width: '100%' }}>
             {expenses.map((expense) => (
-                <ExpenseRow
+                <EditableRow
                     key={expense.id}
                     expense={expense}
                     exclude={{ date: 1 }}
-                    editable
                     refetch={refetch}
                 />
             ))}
