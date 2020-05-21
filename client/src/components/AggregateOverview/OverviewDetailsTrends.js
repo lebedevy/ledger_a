@@ -69,16 +69,14 @@ function OverviewDetailsTrends({ selected, type, start, end }) {
         <SummaryItem>
             <h2>
                 Trends Overview:
-                <label>{`${
-                    selected.el[type === 'category' ? 'category_name' : 'store_name']
-                }`}</label>
+                <label>{`${selected.el[type === 'category' ? 'category' : 'store']}`}</label>
             </h2>
             {startMonth && endMonth && (
                 <label>{`${startMonth[0]} ${startMonth[1]} to ${endMonth[0]} ${endMonth[1]}`}</label>
             )}
             <label>
                 {`${
-                    selected.el[type === 'category' ? 'category_name' : 'store_name']
+                    selected.el[type === 'category' ? 'category' : 'store']
                 } spending overview over the last year`}
             </label>
             {data ? null : <CircularProgress style={{ alignSelf: 'center', margin: '10px' }} />}
@@ -87,7 +85,7 @@ function OverviewDetailsTrends({ selected, type, start, end }) {
     );
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
     const { start, end } = state.date.period;
     const { mobile } = state.screen;
     return { start, end, mobile };

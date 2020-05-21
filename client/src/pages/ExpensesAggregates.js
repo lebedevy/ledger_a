@@ -7,8 +7,9 @@ import Header from '../components/Header';
 import { getSort, getSortIndexes } from '../utility/utility';
 import LoadingComponent from '../components/LoadingComponent';
 import { fetchAggregateExpensesIfNeeded, invalidateExpenses } from '../redux/actions';
-import ExpenseRow from '../components/ExpenseRow';
+import { NonEditableRow } from '../components/ExpenseRow';
 import TableWrapper from '../components/expense_select/TableWrapper.tsx';
+import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 
 const useStyles = makeStyles({
     container: {
@@ -40,13 +41,13 @@ function ExpensesAggregates({
     width,
     start,
     end,
-    location,
-    match,
-    history,
     fetchDataIfNeeded,
     invalidateExpenses,
 }) {
     const classes = useStyles();
+    const history = useHistory();
+    const location = useLocation();
+    const match = useRouteMatch();
     const [sort, setSort] = useState(0);
     const [order, setOrder] = useState(1);
     const [type, setType] = useState(getType());
@@ -149,7 +150,7 @@ function ExpensesAggregates({
                 )}
                 {expenses ? (
                     expenses.map((expense) => (
-                        <ExpenseRow
+                        <NonEditableRow
                             key={expenses.id}
                             expense={expense}
                             exclude={{

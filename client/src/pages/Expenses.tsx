@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Summary from '../components/Summary';
-import ExpenseRow from '../components/ExpenseRow';
+import { EditableRow } from '../components/ExpenseRow';
 import Header from '../components/Header';
 import { getSort, getSortIndexes } from '../utility/utility';
 import LoadingComponent from '../components/LoadingComponent';
@@ -10,7 +10,6 @@ import { useLocation, useHistory } from 'react-router-dom';
 import { css } from 'emotion';
 import { RootState, IExpense } from '../components/typescript/general_interfaces';
 import TableWrapper from '../components/expense_select/TableWrapper';
-import { setDeletingMode } from '../redux/actions';
 
 // background: '#00000020',
 // width: '100vh',
@@ -131,9 +130,7 @@ export default function Expenses() {
                 {expenses &&
                     expenses.map((el: IExpense) => {
                         total += el.amount;
-                        return (
-                            <ExpenseRow key={el.id} expense={el} editable refetch={fetchExpenses} />
-                        );
+                        return <EditableRow key={el.id} expense={el} refetch={fetchExpenses} />;
                     })}
                 {!expenses && <LoadingComponent />}
             </TableWrapper>

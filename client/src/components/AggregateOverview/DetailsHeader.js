@@ -46,7 +46,7 @@ export default function DetailsHeader({ selected, type }) {
                     <h2>
                         Details:
                         <label>{`${
-                            selected.el[type === 'category' ? 'category_name' : 'store_name']
+                            selected.el[type === 'category' ? 'category' : 'store']
                         }`}</label>
                     </h2>
                 ) : (
