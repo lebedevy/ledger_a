@@ -96,20 +96,20 @@ function WeeklySummary({ expenses, start, end, mobile }) {
                     weekly.map((el, ind) => {
                         console.log(el, maxWeekly);
                         return (
-                            <React.Fragment>
+                            <>
                                 <circle
-                                    cx={`${10 + (80 / weekly.length) * ind}%`}
+                                    cx={`${12 + (80 / weekly.length) * ind}%`}
                                     cy={`${10 + (maxWeekly - el) * (80 / maxWeekly)}%`}
                                     r={3}
                                 />
                                 <text
                                     className={classes.weekLabel}
-                                    x={`${10 + (80 / weekly.length) * ind}%`}
+                                    x={`${12 + (80 / weekly.length) * ind}%`}
                                     y="97%"
                                     textAnchor={mobile ? '' : 'middle'}
                                     writingMode={mobile ? 'tb' : ''}
                                 >{`Week ${ind + 1}`}</text>
-                            </React.Fragment>
+                            </>
                         );
                     })}
                 <line x1="10%" x2="10%" y1="90%" y2="10%" stroke="#00000090" />

@@ -6,10 +6,12 @@ import UploadStep from '../components/expenses_upload/UploadStepper.tsx';
 
 const uploadCss = css`
     width: 100%;
+    max-width: 1200px;
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    margin: 0 auto;
 `;
 
 export default function UploadExpenses() {
@@ -48,11 +50,47 @@ export default function UploadExpenses() {
         setStep(2);
     }
 
+    const uploadWrapper = css`
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    `;
+
+    const uploadInputCss = css`
+        border: 1px solid black;
+        width: 90%;
+        max-width: 800px;
+        height: 120px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.7em;
+        font-weight: 600;
+        border-radius: 5px;
+        &:hover {
+            box-shadow: 0 0 0 2pt lightblue;
+        }
+    `;
+
     return (
         <div className={uploadCss}>
             {step === 0 && (
                 <UploadStep step={step} setStep={setStep}>
-                    <input type="file" onChange={handleUpload} accept={'.csv'} />
+                    <div className={uploadWrapper}>
+                        <label className={uploadInputCss} for="fileUpload">
+                            Upload File
+                        </label>
+                        <input
+                            className={css`
+                                display: none;
+                            `}
+                            id="fileUpload"
+                            type="file"
+                            onChange={handleUpload}
+                            accept={'.csv'}
+                        />
+                    </div>
                 </UploadStep>
             )}
             {step === 1 && (
