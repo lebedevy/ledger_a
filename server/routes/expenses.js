@@ -301,11 +301,11 @@ router.get('/overview/:type/details', checkAuth, async (req, res, next) => {
     let query = `SELECT expenses.id, amount, date, ${resources.secondary.table}.${
         resources.secondary.column
     } AS ${resources.secondary.alais}
-     FROM expenses INNER JOIN ${resources.secondary.table} ON ${
+     FROM expenses LEFT JOIN ${resources.secondary.table} ON ${
         resources.secondary.table
     }.id = expenses.${type === 'category' ? 'store_id' : 'category_id'}
      WHERE user_id = ${db.sequelize.escape(req.user.id)} AND 
-     expenses.${type === 'category' ? 'store_id' : 'category_id'} = ${db.sequelize.escape(
+     expenses.${type === 'category' ? 'category_id' : 'store_id'} = ${db.sequelize.escape(
         req.query.id
     )} `;
 
