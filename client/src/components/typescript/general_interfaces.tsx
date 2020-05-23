@@ -19,7 +19,7 @@ export interface RootState {
         cellEdit: null | string;
         deletingMode: { deleting: false; deleteIds: Array<number>; inProgress: false };
     };
-    screen: { width: number; height: number };
+    screen: { width: number; height: number; mobile: boolean };
     date: { period: { start: string; end: string } };
 }
 

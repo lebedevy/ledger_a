@@ -24,27 +24,37 @@ export function EditableRow({
 }: {
     expense: IExpense | IAggregated;
     exclude?: IExclude;
-    refetch: () => any;
+    refetch: () => void;
 }) {
     const dispatch = useDispatch();
-    const { deleting, deleteIds } = useSelector((state: RootState) => state.editing.deletingMode);
+    const {
+        cellEdit,
+        deletingMode: { deleting, deleteIds },
+    } = useSelector((state: RootState) => state.editing);
+    const { mobile } = useSelector((state: RootState) => state.screen);
     const checked = useMemo(() => deleteIds.includes(expense.id), [deleteIds, expense]);
+    const [editingExpId, type] = useMemo(() => (cellEdit ? cellEdit.split('.') : []), [cellEdit]);
 
     const updateDeleteState = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (deleteIds.includes(expense.id)) dispatch(removeDeleteId(expense.id));
         else dispatch(addDeleteId(expense.id));
     };
 
+    // Display expense sub-component if (always if not mobile) or (if mobile and the current exepnse is not being edited)
+    const display = !mobile || expense.id !== parseInt(editingExpId);
+
     return (
         <tr className={expenseEntry}>
             {deleting && <input checked={checked} type="checkbox" onChange={updateDeleteState} />}
-            <EditableCell
-                content={expense.amount}
-                type="amount"
-                id={expense.id}
-                refetch={refetch}
-            />
-            {!exclude?.store && (
+            {(display || type === 'amount') && (
+                <EditableCell
+                    content={expense.amount}
+                    type="amount"
+                    id={expense.id}
+                    refetch={refetch}
+                />
+            )}
+            {!exclude?.store && (display || type === 'store') && (
                 <EditableCell
                     type="store"
                     content={expense.store ?? ''}
@@ -52,7 +62,7 @@ export function EditableRow({
                     refetch={refetch}
                 />
             )}
-            {!exclude?.category && (
+            {!exclude?.category && (display || type === 'category') && (
                 <EditableCell
                     content={expense.category ?? ''}
                     type="category"
@@ -60,7 +70,7 @@ export function EditableRow({
                     refetch={refetch}
                 />
             )}
-            {!exclude?.date && (
+            {!exclude?.date && (display || type === 'date') && (
                 <EditableCell
                     content={(expense as IExpense).date}
                     type="date"

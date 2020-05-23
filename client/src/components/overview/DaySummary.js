@@ -44,7 +44,7 @@ export default function DaySummary({ day }) {
             }
         }
         console.error('Error fetching results');
-        return null;
+        return [];
     };
 
     async function fetchTodaysExpenses() {
