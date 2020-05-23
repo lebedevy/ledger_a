@@ -53,7 +53,7 @@ export default function EditableCell({ content, type, id, refetch }: IProps) {
     const [loading, setLoading] = useState(false);
     const [updated, setUpdated] = useState(false);
 
-    const cellId = useMemo(() => `${id}${type}`, [id, type]);
+    const cellId = useMemo(() => `${id}.${type}`, [id, type]);
     const editing = useMemo(() => cellEdit === cellId, [cellId, cellEdit]);
 
     useEffect(() => {
