@@ -1,3 +1,4 @@
+const { spawn } = require('child_process');
 const express = require('express');
 const router = express.Router();
 const db = require('../models');
@@ -461,5 +462,162 @@ router.get('/stores', checkAuth, async (req, res, next) => {
 
     res.status(200).send({ stores });
 });
+
+router.get('/category_suggestions/:id', checkAuth, async (req, res, next) => {
+    console.log('Getting category suggestions');
+
+    const user_id = req.user.id;
+    const { id } = req.params;
+    let session_id;
+
+    if (user_id == null) return res.status(400).send({ message: 'Bad request' });
+
+    // Create a new model for a user
+    // const python = spawn('python3', ['prediction/create_prediction_model.py', req.user.id]);
+
+    const transaction = await db.sequelize.transaction();
+
+    // Begin session and load in the required data
+    try {
+        // generate session id
+        session_id = await startPredictionSession(user_id, transaction);
+        // Get expense
+        const exp = await db.expenses.findOne({ where: { id, user_id }, raw: true, transaction });
+        // Load expenses to predict cat for
+        await loadPredictionSessionData(exp, session_id, transaction);
+        transaction.commit();
+    } catch (e) {
+        console.log('There was an error getting category suggestions', e);
+        transaction.rollback();
+        return res.status(500).send({ message: 'There was an error getting category suggestions' });
+    }
+
+    try {
+        await spawnPredictor(session_id);
+    } catch (e) {
+        console.log('Python prediction failed', e);
+        return res.status(500).send({ message: 'There was an error getting category suggestions' });
+    }
+
+    const classes = await db.sequelize.query(
+        `SELECT classes FROM prediction_session WHERE id=${escape(session_id)};`,
+        { raw: true }
+    );
+    const classList = await getClassList(classes[0][0].classes);
+    console.log(classList);
+
+    const predictions = await db.sequelize.query(
+        `SELECT expense_id, predictions FROM cat_classifier_predictions WHERE session_id=${escape(
+            session_id
+        )};`,
+        { raw: true }
+    );
+    // console.log(predictions[0]);
+
+    // End session and clean up
+    const transactionCleanup = await db.sequelize.transaction();
+    try {
+        await removeSessionExpenses(session_id, transactionCleanup);
+        await removeSession(session_id, transactionCleanup);
+        transactionCleanup.commit();
+    } catch (e) {
+        console.log('There was an error during category suggestions cleanup', e);
+        transactionCleanup.rollback();
+        return res.status(500).send({ message: 'There was an error getting category suggestions' });
+    }
+
+    return res.status(200).send({ predictions: predictions[0], classList });
+});
+
+async function getClassList(ids) {
+    // Have to preserve the order of ids
+    const list = await db.categories.findAll({
+        attributes: ['id', 'category_name'],
+        where: { id: ids },
+        raw: true,
+    });
+
+    const classes = {};
+    for (l in list) {
+        const cl = list[l];
+        classes[cl.id] = cl.category_name;
+    }
+
+    return ids.map((id) => classes[id]);
+}
+
+async function startPredictionSession(user_id, transaction) {
+    const id = await db.sequelize.query(
+        `INSERT INTO prediction_session (user_id, "createdAt", "updatedAt") VALUES (${db.sequelize.escape(
+            user_id
+        )}, now(), now()) RETURNING id;`,
+        { transaction, raw: true }
+    );
+
+    if (id[0][0].id == null) throw new Error('No session id generated');
+
+    return id[0][0].id;
+}
+
+function loadPredictionSessionData(exp, session_id, transaction) {
+    return db.sequelize.query(
+        `INSERT INTO cat_classifier_predictions (
+        session_id,
+        expense_id,
+        amount,
+        store_id,
+        date,
+        "createdAt",
+        "updatedAt") VALUES (
+        ${escape(session_id)},
+        ${escape(exp.id)},
+        ${escape(exp.amount != null ? exp.amount : 0)},
+        ${escape(exp.store_id != null ? exp.store_id : -1)},
+        ${escape(exp.date)},
+        now(),
+        now()
+        );`,
+        { transaction }
+    );
+}
+
+function removeSession(session_id, transaction) {
+    return db.sequelize.query(`DELETE FROM prediction_session WHERE id=${escape(session_id)};`, {
+        transaction,
+        raw: true,
+    });
+}
+
+function removeSessionExpenses(session_id, transaction) {
+    return db.sequelize.query(
+        `DELETE FROM cat_classifier_predictions WHERE session_id=${escape(session_id)};`,
+        { transaction, raw: true }
+    );
+}
+
+function spawnPredictor(session_id) {
+    // Get predictions using model
+    const python = spawn('python3', ['prediction/get_predictions.py', session_id]);
+
+    return new Promise((resolve, reject) => {
+        python.stdout.on('data', (data) => {
+            console.log(`stdout: ${data}`);
+        });
+
+        python.stderr.on('data', (data) => {
+            console.error(`stderr: ${data}`);
+        });
+
+        python.on('close', (code) => {
+            console.log(`child process exited with code ${code}`);
+            if (code === 0) resolve();
+            else reject();
+        });
+    });
+}
+
+function escape(val) {
+    return db.sequelize.escape(val);
+}
 
 module.exports = router;
