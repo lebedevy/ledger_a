@@ -98,7 +98,7 @@ export default function ApproveData({ expensesProp, setStep, step, predictions }
     const getDateRange = () => {
         let earliest = null,
             latest = null;
-        expenses.forEach((exp) => {
+        expensesProp.forEach((exp) => {
             if (exp?.date) {
                 if (isNil(latest) || latest < exp.date) latest = exp.date;
                 if (isNil(earliest) || earliest > exp.date) earliest = exp.date;
@@ -135,10 +135,12 @@ export default function ApproveData({ expensesProp, setStep, step, predictions }
     };
 
     useEffect(() => {
-        console.log(expenses);
         getDateRange();
+    }, [expensesProp]);
+
+    useEffect(() => {
         updateUpload();
-    }, [expenses, currentExpenses]);
+    }, [currentExpenses]);
 
     const getCurrentExpenseData = async () => {
         const res = await fetch(

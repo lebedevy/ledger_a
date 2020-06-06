@@ -3,6 +3,7 @@ import { isNil } from 'ramda';
 import { css } from 'emotion';
 import { getFormatedDate } from '../../utility/utility';
 import UploadStep from './UploadStepper.tsx';
+import { NestedLoading } from '../common_components/CommonComponents';
 
 const rowStyle = css`
     border: 1px solid black;
@@ -23,7 +24,10 @@ export default function ColumnSelect({
     setStep,
     setPredictions,
 }) {
+    const [loading, setLoading] = useState(false);
+
     const processData = async () => {
+        setLoading(true);
         const expenses = data.map((row, ind) => ({
             id: ind,
             category: isNil(row[types[3]]) ? null : capitalize(row[types[3]].toLowerCase()),
@@ -44,6 +48,7 @@ export default function ColumnSelect({
             setPredictions(await res.json());
         }
         setExpenses(expenses);
+        setLoading(false);
         setStep(2);
     };
 
@@ -53,20 +58,23 @@ export default function ColumnSelect({
 
     return (
         <UploadStep step={step} setStep={setStep} action={processData}>
-            <div className={rowStyle}>
-                {data &&
-                    data[0] &&
-                    data[0].map((_row, ind) => (
-                        <ColumnTypeSelect types={types} setTypes={setTypes} index={ind} />
-                    ))}
-            </div>
-            {data?.map((row) => (
+            <NestedLoading loading={loading} />
+            <div style={{ overflow: 'auto' }}>
                 <div className={rowStyle}>
-                    {row.map((cell) => (
-                        <div className={cellStyle}>{cell}</div>
-                    ))}
+                    {data &&
+                        data[0] &&
+                        data[0].map((_row, ind) => (
+                            <ColumnTypeSelect types={types} setTypes={setTypes} index={ind} />
+                        ))}
                 </div>
-            ))}
+                {data?.map((row) => (
+                    <div className={rowStyle}>
+                        {row.map((cell) => (
+                            <div className={cellStyle}>{cell}</div>
+                        ))}
+                    </div>
+                ))}
+            </div>
         </UploadStep>
     );
 }
