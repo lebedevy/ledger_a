@@ -24,7 +24,7 @@ export default function FindAndReplace({ updateExp, expenses, close }: IProps) {
     // Make the replace all option pop up on clicking a cell
     const [original, setOriginal] = useState('');
     const [update, setUpdate] = useState('');
-    const [type, setType] = useState(0);
+    const [type, setType] = useState(1);
     const [unqiue, setUnique] = useState<IUnique>({
         amount: [],
         store: [],
@@ -86,7 +86,7 @@ export default function FindAndReplace({ updateExp, expenses, close }: IProps) {
             >
                 <h2>Find and Replace in Column</h2>
                 <label>Column</label>
-                <select onChange={(e) => setType(parseInt(e.target.value))}>
+                <select value={type} onChange={(e) => setType(parseInt(e.target.value))}>
                     {types.map((t, ind) => (
                         <option value={ind}>{t}</option>
                     ))}

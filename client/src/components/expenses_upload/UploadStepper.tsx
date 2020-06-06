@@ -8,6 +8,7 @@ const flexCss = css`
     flex-direction: column;
     flex: 1;
     overflow: auto;
+    position: relative;
 `;
 
 const buttonBarCss = css`
