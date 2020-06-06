@@ -21,7 +21,7 @@ print('#node:Python Started', ENV, USER_ID)
 
 # region Database methods
 def getExpenses():
-    connection = db_manager.connect()
+    connection = db_manager.connect(ENV)
     with connection.cursor() as curs:
         curs.execute(
             'SELECT amount, date, stores.store_name, COALESCE(category_id, -1) ' +
@@ -32,7 +32,7 @@ def getExpenses():
 
 
 def save_model(model, exp_count):
-    connection = db_manager.connect()
+    connection = db_manager.connect(ENV)
     with connection.cursor() as curs:
         curs.execute(
             'INSERT INTO category_classifier (user_id, model, expense_count, "createdAt", "updatedAt") ' +
