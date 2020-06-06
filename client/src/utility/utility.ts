@@ -1,14 +1,15 @@
-export function getFormatedDate(date) {
-    return `${date.getFullYear()}-${(date.getMonth() < 9 ? '0' : '') +
-        (date.getMonth() + 1)}-${(date.getDate() < 10 ? '0' : '') + date.getDate()}`;
+export function getFormatedDate(date: Date) {
+    return `${date.getFullYear()}-${(date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1)}-${
+        (date.getDate() < 10 ? '0' : '') + date.getDate()
+    }`;
 }
 
-export function getDateObj(date) {
+export function getDateObj(date: string) {
     const [year, month, day] = date.split('-');
-    return new Date(year, parseInt(month) - 1, day);
+    return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
 }
 
-export function compareDates(date1, date2) {
+export function compareDates(date1: Date, date2: Date) {
     // Check if date 2 is larger than date 1
     if (date1.getUTCFullYear() < date2.getUTCFullYear()) return 1;
     if (date1.getUTCMonth() < date2.getUTCMonth()) return 1;
@@ -16,7 +17,7 @@ export function compareDates(date1, date2) {
     return 0;
 }
 
-export function getCurrencyFormat(number) {
+export function getCurrencyFormat(number: number) {
     let num = Math.round(number * 100) / 100; // Round to 2
     let formatted = Number(num).toLocaleString(); // Add ',' seperators
     //   Ensure exactly two decimal places in number & return
@@ -29,12 +30,12 @@ export function getCurrencyFormat(number) {
     return formatted + '.00';
 }
 
-export function getSort(URLSearch) {
+export function getSort(URLSearch: string) {
     const search = new URLSearchParams(URLSearch);
     return [search.get('sort'), search.get('order')];
 }
 
-export function getSortIndexes(options, sort, order) {
+export function getSortIndexes(options: Array<string>, sort?: any, order?: any) {
     let orderInd = null,
         sortInd = null;
     if (order) {
@@ -48,4 +49,9 @@ export function getSortIndexes(options, sort, order) {
     }
 
     return [sortInd, orderInd];
+}
+
+export function getOptions(predictions: Array<number>, classes: Array<string>) {
+    const options = predictions.map((p, ind) => [p, classes[ind]]);
+    return options.sort((a, b) => (b[0] as number) - (a[0] as number));
 }

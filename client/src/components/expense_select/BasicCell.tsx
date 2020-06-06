@@ -11,7 +11,7 @@ interface IProps {
 export default function BasicCell({ content, type }: IProps) {
     return (
         <td className={clsx(cellBaseCss, cellPaddingCss)}>
-            {type === 'amount' ? `$${getCurrencyFormat(content)}` : content}
+            {type === 'amount' ? `$${getCurrencyFormat(content as number)}` : content}
         </td>
     );
 }
