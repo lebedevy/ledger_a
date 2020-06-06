@@ -17,6 +17,7 @@ const uploadCss = css`
 export default function UploadExpenses() {
     const [data, setData] = useState(null);
     const [expenses, setExpenses] = useState(null);
+    const [predictions, setPredictions] = useState(null);
     const [step, setStep] = useState(0);
     const [types, setTypes] = useState({});
 
@@ -101,9 +102,17 @@ export default function UploadExpenses() {
                     types={types}
                     step={step}
                     setStep={setStep}
+                    setPredictions={setPredictions}
                 />
             )}
-            {step === 2 && <ApproveData expensesProp={expenses} step={step} setStep={setStep} />}
+            {step === 2 && (
+                <ApproveData
+                    expensesProp={expenses}
+                    step={step}
+                    setStep={setStep}
+                    predictions={predictions}
+                />
+            )}
         </div>
     );
 }

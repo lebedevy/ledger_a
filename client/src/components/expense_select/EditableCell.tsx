@@ -1,64 +1,27 @@
 import React, { useState, useEffect, SyntheticEvent, useMemo } from 'react';
-import { css } from 'emotion';
-import clsx from 'clsx';
-import { getCurrencyFormat } from '../../utility/utility';
-import CancelIcon from '@material-ui/icons/Cancel';
-import CheckCircleOutlinedIcon from '@material-ui/icons/CheckCircleOutlined';
-import { cellBaseCss, cellPaddingCss } from './CellClasses';
 import { useDispatch, useSelector } from 'react-redux';
 import { setEditingExpense } from '../../redux/actions';
 import { RootState } from '../typescript/general_interfaces';
-import { CircularProgress } from '@material-ui/core';
-
-const inputCell = css`
-    border: none;
-    background: #e6e8e6;
-    width: 100%;
-    height: 100%;
-    font-size: 1em;
-`;
-
-const cancelCss = css`
-    position: absolute;
-    right: 5px;
-    display: inline-block;
-    overflow: hidden;
-    max-height: 100%;
-`;
-
-const backdropCss = css`
-    z-index: 100;
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-    bottom: 0;
-    background: #00000060;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-`;
+import BasicEditableCell from './BasicEditableCell';
 
 interface IProps {
     type: string;
     content: string | number;
-    refetch: () => any;
+    refetch: () => void;
     id?: number;
 }
 
 export default function EditableCell({ content, type, id, refetch }: IProps) {
     const dispatch = useDispatch();
     const { cellEdit } = useSelector((state: RootState) => state.editing);
-    const [value, setValue] = useState<number | string>('');
     const [loading, setLoading] = useState(false);
     const [updated, setUpdated] = useState(false);
+    const [classes, setClasses] = useState<Array<string> | null>(null);
+    const [predictions, setPredictions] = useState<Array<number> | null>(null);
+    const [showDropdown, setShowDropdown] = useState(false);
 
     const cellId = useMemo(() => `${id}.${type}`, [id, type]);
     const editing = useMemo(() => cellEdit === cellId, [cellId, cellEdit]);
-
-    useEffect(() => {
-        setValue(content);
-    }, []);
 
     useEffect(() => {
         if (updated) {
@@ -68,27 +31,11 @@ export default function EditableCell({ content, type, id, refetch }: IProps) {
         }
     }, [updated, editing]);
 
-    useEffect(() => {
-        if (!loading && !editing && value !== content) setValue(content);
-    }, [editing, loading, content, value]);
-
-    // Set current cell as the cell being edited in redux
-    const update = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setValue(e.target.value);
-    };
-
     const setEditing = (start: boolean) => {
         dispatch(setEditingExpense(start ? cellId : null));
     };
 
-    const cancel = (e: SyntheticEvent) => {
-        // Stop onclick from triggering on parent
-        e.stopPropagation();
-        setValue(content);
-        if (editing) setEditing(false);
-    };
-
-    const submit = async (e: SyntheticEvent) => {
+    const submit = async (e: SyntheticEvent, value: string | number) => {
         // Stop onclick from triggering on parent
         e.stopPropagation();
 
@@ -106,55 +53,37 @@ export default function EditableCell({ content, type, id, refetch }: IProps) {
         }
     };
 
-    const colorCss = (color: string) => {
-        return css`
-            &:hover {
-                color: ${color};
-            }
-        `;
+    const getCategorySuggestions = async () => {
+        const res = await fetch(`/api/users/expenses/category_suggestions/${id}`);
+        if (res.ok) {
+            let test;
+            const { classList, predictions } = (test = await res.json());
+            console.log(test);
+            console.log(classList, predictions);
+            setClasses(classList);
+            setPredictions(predictions[0].predictions);
+            console.log(classList, predictions);
+        }
     };
 
+    const startEdit = () => {
+        setEditing(true);
+        setShowDropdown(true);
+        if (type === 'category') getCategorySuggestions();
+    };
     return (
-        <td
-            onClick={() => setEditing(true)}
-            className={clsx(cellBaseCss, !editing && cellPaddingCss)}
-        >
-            {loading && (
-                <div className={backdropCss}>
-                    <CircularProgress size={10} />
-                </div>
-            )}
-            {editing ? (
-                <div
-                    className={css`
-                        position: relative;
-                    `}
-                >
-                    <input
-                        type={type}
-                        autoFocus
-                        className={inputCell}
-                        value={value}
-                        onChange={update}
-                    />
-                    <div className={cancelCss}>
-                        <CheckCircleOutlinedIcon
-                            className={colorCss('#00CC66')}
-                            fontSize="small"
-                            onClick={submit}
-                        />
-                        <CancelIcon
-                            className={colorCss('#F71735')}
-                            fontSize="small"
-                            onClick={cancel}
-                        />
-                    </div>
-                </div>
-            ) : type === 'amount' ? (
-                `$${getCurrencyFormat(value)}`
-            ) : (
-                value
-            )}
-        </td>
+        <BasicEditableCell
+            setEditing={setEditing}
+            content={content}
+            submit={submit}
+            classes={classes}
+            predictions={predictions}
+            editing={editing}
+            startEdit={startEdit}
+            loading={loading}
+            type={type}
+            showDropdown={showDropdown}
+            setShowDropdown={setShowDropdown}
+        />
     );
 }

@@ -57,7 +57,7 @@ export default function Expenses() {
         fetchExpenses();
     }, [start, end, sort, order]);
 
-    const updateURL = ({ sort, order }: { sort: number; order: number }) => {
+    const updateURL = ({ sort, order }: { sort: any; order: any }) => {
         const search = new URLSearchParams();
         search.set('sort', optionsLower[sort].toLowerCase());
         search.set('order', order === 1 ? 'desc' : 'asc');
@@ -77,7 +77,9 @@ export default function Expenses() {
     const fetchExpenses = async () => {
         console.info('Getting expenses');
         const res = await fetch(
-            `/api/users/expenses/summary?start=${start}&end=${end}&sort=${optionsLower[sort]}&order=${orderDir[order]}`
+            `/api/users/expenses/summary?start=${start}&end=${end}&sort=${
+                optionsLower[sort as any]
+            }&order=${orderDir[order as any]}`
         );
         if (res.status === 200) {
             const data = await res.json();

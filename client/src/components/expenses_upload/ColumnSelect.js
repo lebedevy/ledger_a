@@ -14,15 +14,35 @@ const cellStyle = css`
     border-right: 1px solid black;
 `;
 
-export default function ColumnSelect({ setExpenses, data, setTypes, types, step, setStep }) {
-    const processData = () => {
-        const expenses = data.map((row) => ({
+export default function ColumnSelect({
+    setExpenses,
+    data,
+    setTypes,
+    types,
+    step,
+    setStep,
+    setPredictions,
+}) {
+    const processData = async () => {
+        const expenses = data.map((row, ind) => ({
+            id: ind,
             category: isNil(row[types[3]]) ? null : capitalize(row[types[3]].toLowerCase()),
             store: isNil(row[types[2]]) ? null : capitalize(row[types[2]].toLowerCase()),
             amount: isNil(row[types[1]]) || row[types[1]] === '' ? 0 : parseFloat(row[types[1]]),
             date: isNil(row[types[4]]) ? null : getFormatedDate(new Date(row[types[4]])),
         }));
         console.log(expenses);
+        // Category has id 3; if no col is set for 3, no category columns included
+        // In that case get predictions
+        console.log(types[3]);
+        if (isNil(types[3])) {
+            const res = await fetch(`/api/users/expenses/category_suggestions/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ expenses }),
+            });
+            setPredictions(await res.json());
+        }
         setExpenses(expenses);
         setStep(2);
     };

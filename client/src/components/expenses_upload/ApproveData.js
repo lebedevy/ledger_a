@@ -3,11 +3,19 @@ import { isNil } from 'ramda';
 import { css } from 'emotion';
 import HelpIcon from '@material-ui/icons/Help';
 import UploadStep from './UploadStepper.tsx';
+import FindReplaceIcon from '@material-ui/icons/FindReplace';
+import { getOptions } from '../../utility/utility';
+import { IconButton } from '@material-ui/core';
+import { RowFlex, flexColumnCss } from '../common_components/CommonComponents';
+import clsx from 'clsx';
+import BasicEditableCell from '../expense_select/BasicEditableCell';
+import FindAndReplace from './FindAndReplace';
 
 const tableCss = css`
     max-width: 1200px;
     width: 100vw;
     margin: 0 auto;
+    ${flexColumnCss}
 `;
 
 const bodyCss = css`
@@ -31,6 +39,7 @@ const bodyCss = css`
 
 const borderCss = css`
     border-left: 1px solid #00000030;
+    position: relative;
 `;
 
 const uploadCol = css`
@@ -44,22 +53,47 @@ const fadedRow = css`
     background-color: lightgray;
 `;
 
-export default function ApproveData({ expensesProp, setStep, step }) {
+export default function ApproveData({ expensesProp, setStep, step, predictions }) {
     const [expenses, setExpenses] = useState([]);
     const [latest, setLatest] = useState(null);
     const [earliest, setEarliest] = useState(null);
-    const [upload, setUpload] = useState([]);
     const [currentExpenses, setCurrentExpenses] = useState([]);
-    const [reason, setReason] = useState([]);
     const [edit, setEdit] = useState({ ind: null, type: null });
     const [openFR, setOpenFR] = useState(false);
     const [complete, setComplete] = useState(false);
     const [message, setMesage] = useState('');
+    const [showDropdown, setShowDropdown] = useState(false);
+    // Whether or not an expense gets uloaded, and the reason
+    const [upload, setUpload] = useState([]);
+    const [reason, setReason] = useState([]);
+
+    const addPredictions = () => {
+        // For now I will duplicate the category list suggestion for every expense
+        // In the future I should have one master list with ids and attach a list
+        // of suggestion ids ordered by likelyhood to reduce data duplication
+        console.log(predictions);
+        console.log(expensesProp);
+
+        const predictionMap = {};
+
+        predictions.predictions.forEach((p) => (predictionMap[p.expense_id] = p.predictions));
+
+        return expensesProp.map((exp) => {
+            const options = getOptions(predictionMap[exp.id], predictions.classList);
+
+            return {
+                ...exp,
+                category: options[0]?.[1] ?? '',
+                predictions: predictionMap[exp.id],
+            };
+        });
+    };
 
     useEffect(() => {
-        console.log(expensesProp);
-        setExpenses(expensesProp ? [...expensesProp] : []);
-    }, [expensesProp]);
+        console.log(expensesProp, predictions);
+        if (predictions && expensesProp) setExpenses(addPredictions());
+        else setExpenses(expensesProp ? [...expensesProp] : []);
+    }, [expensesProp, predictions]);
 
     const getDateRange = () => {
         let earliest = null,
@@ -147,13 +181,18 @@ export default function ApproveData({ expensesProp, setStep, step }) {
         setMesage(data.message);
     };
 
-    const updateExpense = (ind, type, e) => {
-        const val = e.target.value;
+    const resetEditing = () => {
+        console.log('Resetting');
+        setEdit({ ind: null, type: null });
+    };
+
+    const updateExpense = (ind, type, val) => {
         console.log(ind, type, val);
 
         const updatedExp = [...expenses];
         updatedExp[ind] = { ...updatedExp[ind], [type]: val };
         setExpenses(updatedExp);
+        resetEditing();
     };
 
     const updateAll = (original, type, update) => {
@@ -176,12 +215,21 @@ export default function ApproveData({ expensesProp, setStep, step }) {
 
     return !complete ? (
         <UploadStep step={step} setStep={setStep} action={uploadExpenses}>
-            {openFR && <FindAndReplace updateExp={updateAll} expenses={expenses} />}
-            <div>
-                <button onClick={() => setOpenFR(true)}>Find and Replace</button>
-            </div>
+            {openFR && (
+                <FindAndReplace
+                    close={() => setOpenFR(false)}
+                    updateExp={updateAll}
+                    expenses={expenses}
+                />
+            )}
+            <RowFlex>
+                <IconButton onClick={() => setOpenFR(true)}>
+                    <FindReplaceIcon />
+                </IconButton>
+            </RowFlex>
+
             <table className={tableCss}>
-                <tbody className={bodyCss}>
+                <thead className={bodyCss}>
                     <tr>
                         <th className={uploadCol}>Upload</th>
                         <th className={borderCss}>Amount</th>
@@ -189,13 +237,14 @@ export default function ApproveData({ expensesProp, setStep, step }) {
                         <th className={borderCss}>Category</th>
                         <th className={borderCss}>Date</th>
                     </tr>
+                </thead>
+                <tbody className={clsx(bodyCss, flexColumnCss)}>
                     {expenses &&
                         upload.length === expenses.length &&
                         expenses.map((el, ind) => (
                             <tr className={!upload[ind] && fadedRow}>
                                 <td className={uploadCol}>
                                     <input
-                                        title="Test"
                                         type="checkbox"
                                         checked={upload[ind]}
                                         onChange={(e) => updateUploadAtInd(ind, e.target.checked)}
@@ -207,23 +256,20 @@ export default function ApproveData({ expensesProp, setStep, step }) {
                                         </div>
                                     )}
                                 </td>
-                                {display.map((type) =>
-                                    edit.ind === ind && edit.type === type ? (
-                                        <td className={borderCss}>
-                                            <input
-                                                value={el[type]}
-                                                onChange={(e) => updateExpense(ind, type, e)}
-                                            />
-                                        </td>
-                                    ) : (
-                                        <td
-                                            className={borderCss}
-                                            onClick={() => setEdit({ ind, type })}
-                                        >
-                                            {el[type]}
-                                        </td>
-                                    )
-                                )}
+                                {display.map((type) => (
+                                    <BasicEditableCell
+                                        type={type}
+                                        content={el[type]}
+                                        editing={edit.ind === ind && edit.type === type}
+                                        startEdit={() => setEdit({ ind, type })}
+                                        classes={predictions.classList}
+                                        predictions={el.predictions}
+                                        setShowDropdown={setShowDropdown}
+                                        showDropdown={showDropdown}
+                                        setEditing={resetEditing}
+                                        submit={(e, val) => updateExpense(ind, type, val)}
+                                    />
+                                ))}
                             </tr>
                         ))}
                 </tbody>
@@ -236,95 +282,6 @@ export default function ApproveData({ expensesProp, setStep, step }) {
             `}
         >
             {message}
-        </div>
-    );
-}
-
-function FindAndReplace({ updateExp, expenses }) {
-    // Make the replace all option pop up on clicking a cell
-    const [original, setOriginal] = useState(null);
-    const [update, setUpdate] = useState(null);
-    const [type, setType] = useState(0);
-    const [unqiue, setUnique] = useState({ amount: [], store: [], category: [], date: [] });
-
-    const types = ['amount', 'store', 'category', 'date'];
-
-    useEffect(() => {
-        const am = {},
-            st = {},
-            ct = {},
-            dt = {};
-        expenses.forEach((exp) => {
-            const { amount, store, category, date } = exp;
-            am[amount] = 1;
-            st[store] = 1;
-            ct[category] = 1;
-            dt[date] = 1;
-        });
-        setUnique({
-            amount: Object.keys(am),
-            store: Object.keys(st),
-            category: Object.keys(ct),
-            date: Object.keys(dt),
-        });
-    }, [expenses]);
-
-    useEffect(() => {
-        const vals = unqiue[types[type]];
-        setOriginal(vals.length > 0 ? vals[0] : null);
-    }, [type]);
-
-    return (
-        <div
-            className={css`
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                position: fixed;
-                top: 0;
-                bottom: 0;
-                right: 0;
-                left: 0;
-                background: #00000030;
-            `}
-        >
-            <div
-                className={css`
-                    display: flex;
-                    flex-direction: column;
-                    min-height: 150px;
-                    width: 400px;
-                    background: #ffffff;
-                    align-items: center;
-                `}
-            >
-                <h2>Find and Replace in Column</h2>
-                <label>Column</label>
-                <select onChange={(e) => setType(e.target.value)}>
-                    {types.map((t, ind) => (
-                        <option value={ind}>{t}</option>
-                    ))}
-                </select>
-                <label>Find</label>
-                <select
-                    value={original}
-                    onChange={(e) => {
-                        console.log(e.target.value);
-                        setOriginal(e.target.value);
-                    }}
-                >
-                    {unqiue[types[type]].map((val) => (
-                        <option value={val}>{val}</option>
-                    ))}
-                </select>
-                <label>Replace</label>
-                <input
-                    value={update}
-                    placeholder={'New value'}
-                    onChange={(e) => setUpdate(e.target.value)}
-                />
-                <button onClick={() => updateExp(original, types[type], update)}>Update</button>
-            </div>
         </div>
     );
 }
