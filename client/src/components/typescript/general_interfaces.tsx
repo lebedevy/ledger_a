@@ -1,3 +1,7 @@
+export interface IChildren {
+    children: JSX.Element;
+}
+
 export interface IExpense {
     store: string;
     category: string;

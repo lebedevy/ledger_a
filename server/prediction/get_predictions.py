@@ -1,38 +1,19 @@
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import SGDClassifier
-from sklearn.preprocessing import StandardScaler
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.pipeline import make_pipeline
-import json
-import psycopg2
-import random
+import prediction_utility
+import db_manager
 import pickle
 import sys
-import os
 
 CLASS_SIZE = 10
 
-ENV = 'development'
-SESSION_ID = sys.argv[1]
+ENV = sys.argv[1]
+SESSION_ID = sys.argv[2]
 print('#node:Python Started', ENV, SESSION_ID)
-
-# TODO
-# Retrieve trained table for user
-# update format expenses method
-# refactor code
-
-# db methods
-
-
-def connect(env='development'):
-    with open('config/config.json') as file:
-        data = file.read()
-    conn = json.loads(data)[env]
-    conn_string = f"host='{conn['host']}' dbname='{conn['database']}' user='{conn['username']}' password='{conn['password']}'"
-    return psycopg2.connect(conn_string)
 
 
 def getModel():
-    connection = connect()
+    connection = db_manager.connect()
     with connection.cursor() as curs:
         curs.execute(
             'SELECT model FROM category_classifier WHERE category_classifier.user_id = ' +
@@ -44,16 +25,34 @@ def getModel():
 
 
 def getExpenses():
-    connection = connect()
+    connection = db_manager.connect()
     with connection.cursor() as curs:
         curs.execute(
-            'SELECT id, amount, date, store_id FROM cat_classifier_predictions WHERE session_id = %s;', [SESSION_ID])
+            'SELECT amount, date, store, id FROM cat_classifier_predictions WHERE session_id = %s;', [SESSION_ID])
         expenses = curs.fetchall()
     return expenses
 
+# region :Text vectorization
+
+
+def getLetterCombinations():
+    # generate all possible permutations of letters
+    letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
+               'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+    return [letter+letter2 for letter2 in letters for letter in letters]
+
+
+def build_vectorizer(texts):
+    vectorizer = CountVectorizer(analyzer='char', ngram_range=(2, 2))
+    # returns document-term matrix
+    X = vectorizer.fit_transform(texts)
+    print(len(X.toarray()))
+    return vectorizer
+# endregion
+
 
 def saveClassDefinitions(classes):
-    connection = connect()
+    connection = db_manager.connect()
     formatted = [int(c) for c in classes]
     with connection.cursor() as curs:
         curs.execute(
@@ -63,7 +62,7 @@ def saveClassDefinitions(classes):
 
 
 def savePredictions(ids, predictions):
-    connection = connect()
+    connection = db_manager.connect()
     formatted = []
     for prediction in predictions:
         formatted.append([float(p) for p in prediction])
@@ -77,20 +76,23 @@ def savePredictions(ids, predictions):
         connection.commit()
 
 
-def formatExpenses(expenses):
+def formatExpenses(expenses, store_vectorizer):
     ids = []
     result = []
+    print(expenses)
     for expense in expenses:
-        # 0 - id, 1 - amount, 2 - date, 3 - store_id
+        # 0: amount, 1: date, 2: store_id, 3: id
         # Date not currently used
-        ids.append(expense[0])
-        result.append([expense[1], -1 if expense[3] == None else expense[3]])
+        ids.append(expense[3])
+        result.append(prediction_utility.format_expense(
+            expense, store_vectorizer))
     return (ids, result)
 
 
 def main():
     # MAIN BODY
-    (ids, expenses) = formatExpenses(getExpenses())
+    (ids, expenses) = formatExpenses(getExpenses(),
+                                     build_vectorizer(getLetterCombinations()))
     model = getModel()
 
     # save class definitions

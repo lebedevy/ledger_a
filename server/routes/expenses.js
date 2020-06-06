@@ -7,9 +7,12 @@ const validateExpense = require('../middleware/validateExpense');
 const getSortAggregate = require('../middleware/getSortAggregate');
 const getSortSummary = require('../middleware/getSortSummary');
 
+const ENV = process.env.NODE_ENV || 'development';
+
 // Add Expense
 router.post('/add', checkAuth, validateExpense, async (req, res, next) => {
     console.info('Adding expense...');
+    const user_id = req.user.id;
     const { expense } = req;
     const { amount, date, store, category } = expense;
 
@@ -21,7 +24,7 @@ router.post('/add', checkAuth, validateExpense, async (req, res, next) => {
         // Create expense record
         const record = await db.expenses.create(
             {
-                user_id: req.user.id,
+                user_id,
                 category_id,
                 date,
                 amount,
@@ -30,9 +33,10 @@ router.post('/add', checkAuth, validateExpense, async (req, res, next) => {
             { transaction }
         );
 
-        console.log(record.dataValues);
-
         await transaction.commit();
+
+        updateUserModelIfRequired(user_id);
+
         res.status(200).send({ message: 'Expense added ok.' });
     } catch (e) {
         console.log('Error adding single expense: ', e);
@@ -45,6 +49,7 @@ router.post('/add', checkAuth, validateExpense, async (req, res, next) => {
 // This + insertForeignAndGetIds needs to be converted into a bulk insert
 router.post('/upload', checkAuth, async (req, res, next) => {
     const { expenses } = req.body;
+    const user_id = req.user.id;
     if (!expenses || expenses.length === 0)
         return res.status(200).send({ message: 'No expenses were sent for upload' });
     const transaction = await db.sequelize.transaction();
@@ -58,18 +63,18 @@ router.post('/upload', checkAuth, async (req, res, next) => {
         const expensesData = await insertForeignAndGetIds(expenses, transaction);
         expensesData.forEach((exp, ind) => {
             console.log(exp);
-            query += `${ind > 0 ? ',' : ''} (${req.user.id}, ${db.sequelize.escape(
-                exp.amount
-            )}, ${db.sequelize.escape(exp.date)}, ${exp.store_id}, ${
-                exp.category_id
-            }, now(), now())`;
+            query += `${ind > 0 ? ',' : ''} (${escape(user_id)}, ${escape(exp.amount)}, ${escape(
+                exp.date
+            )}, ${escape(exp.store_id)}, ${escape(exp.category_id)}, now(), now())`;
         });
         query += ';';
         console.log(query);
 
         await db.sequelize.query(query, { transaction });
-
         await transaction.commit();
+
+        updateUserModelIfRequired(user_id);
+
         return res.status(200).send({ message: 'Upload complete' });
     } catch (e) {
         console.log('Error inserting csv expenses: ', e);
@@ -305,15 +310,13 @@ router.get('/overview/:type/details', checkAuth, async (req, res, next) => {
      FROM expenses LEFT JOIN ${resources.secondary.table} ON ${
         resources.secondary.table
     }.id = expenses.${type === 'category' ? 'store_id' : 'category_id'}
-     WHERE user_id = ${db.sequelize.escape(req.user.id)} AND 
-     expenses.${type === 'category' ? 'category_id' : 'store_id'} = ${db.sequelize.escape(
-        req.query.id
-    )} `;
+     WHERE user_id = ${escape(req.user.id)} AND 
+     expenses.${type === 'category' ? 'category_id' : 'store_id'} = ${escape(req.query.id)} `;
 
     if (req.query.start && req.query.end)
-        query += `AND expenses.date BETWEEN ${db.sequelize.escape(
-            req.query.start
-        )} AND ${db.sequelize.escape(req.query.end)}`;
+        query += `AND expenses.date BETWEEN ${escape(req.query.start)} AND ${escape(
+            req.query.end
+        )}`;
 
     query += ` ORDER BY amount DESC;`;
 
@@ -463,14 +466,36 @@ router.get('/stores', checkAuth, async (req, res, next) => {
     res.status(200).send({ stores });
 });
 
+router.post('/category_suggestions', checkAuth, async (req, res, next) => {
+    console.log('Getting category suggestions for new expenses');
+    const { expenses } = req.body;
+    console.log(expenses);
+    if (!expenses) return res.status(400).send({ message: 'No expenses provided' });
+    getPredictions(req, res, expenses);
+});
+
 router.get('/category_suggestions/:id', checkAuth, async (req, res, next) => {
-    console.log('Getting category suggestions');
-
-    const user_id = req.user.id;
+    console.log('Getting category suggestions by id');
     const { id } = req.params;
-    let session_id;
+    const user_id = req.user.id;
+    const exp = await db.expenses.findOne({
+        attributes: ['id', 'amount', 'date', [db.Sequelize.col('store.store_name'), 'store']],
+        include: [{ model: db.stores, attributes: [] }],
+        where: { id, user_id },
+        raw: true,
+    });
+    console.log(exp);
+    getPredictions(req, res, [exp]);
+});
 
+async function getPredictions(req, res, expenses) {
+    const user_id = req.user.id;
+    let session_id;
+    // Ensure user id provided
     if (user_id == null) return res.status(400).send({ message: 'Bad request' });
+    // Check that the model exists
+    const exists = await checkModelExists(user_id);
+    if (!exists) return res.status(400).send({ message: 'No model exists' });
 
     // Create a new model for a user
     // const python = spawn('python3', ['prediction/create_prediction_model.py', req.user.id]);
@@ -481,10 +506,8 @@ router.get('/category_suggestions/:id', checkAuth, async (req, res, next) => {
     try {
         // generate session id
         session_id = await startPredictionSession(user_id, transaction);
-        // Get expense
-        const exp = await db.expenses.findOne({ where: { id, user_id }, raw: true, transaction });
         // Load expenses to predict cat for
-        await loadPredictionSessionData(exp, session_id, transaction);
+        await loadPredictionSessionData(expenses, session_id, transaction);
         transaction.commit();
     } catch (e) {
         console.log('There was an error getting category suggestions', e);
@@ -494,26 +517,31 @@ router.get('/category_suggestions/:id', checkAuth, async (req, res, next) => {
 
     try {
         await spawnPredictor(session_id);
+
+        const classes = await db.sequelize.query(
+            `SELECT classes FROM prediction_session WHERE id=${escape(session_id)};`,
+            { raw: true }
+        );
+        const classList = await getClassList(classes[0][0].classes);
+        console.log(classList);
+
+        const predictions = await db.sequelize.query(
+            `SELECT expense_id, predictions FROM cat_classifier_predictions WHERE session_id=${escape(
+                session_id
+            )};`,
+            { raw: true }
+        );
+        // console.log(predictions[0]);
+        cleanUpCatPredictionSession(session_id);
+        return res.status(200).send({ predictions: predictions[0], classList });
     } catch (e) {
         console.log('Python prediction failed', e);
+        cleanUpCatPredictionSession(session_id);
         return res.status(500).send({ message: 'There was an error getting category suggestions' });
     }
+}
 
-    const classes = await db.sequelize.query(
-        `SELECT classes FROM prediction_session WHERE id=${escape(session_id)};`,
-        { raw: true }
-    );
-    const classList = await getClassList(classes[0][0].classes);
-    console.log(classList);
-
-    const predictions = await db.sequelize.query(
-        `SELECT expense_id, predictions FROM cat_classifier_predictions WHERE session_id=${escape(
-            session_id
-        )};`,
-        { raw: true }
-    );
-    // console.log(predictions[0]);
-
+async function cleanUpCatPredictionSession(session_id) {
     // End session and clean up
     const transactionCleanup = await db.sequelize.transaction();
     try {
@@ -523,11 +551,8 @@ router.get('/category_suggestions/:id', checkAuth, async (req, res, next) => {
     } catch (e) {
         console.log('There was an error during category suggestions cleanup', e);
         transactionCleanup.rollback();
-        return res.status(500).send({ message: 'There was an error getting category suggestions' });
     }
-
-    return res.status(200).send({ predictions: predictions[0], classList });
-});
+}
 
 async function getClassList(ids) {
     // Have to preserve the order of ids
@@ -548,7 +573,7 @@ async function getClassList(ids) {
 
 async function startPredictionSession(user_id, transaction) {
     const id = await db.sequelize.query(
-        `INSERT INTO prediction_session (user_id, "createdAt", "updatedAt") VALUES (${db.sequelize.escape(
+        `INSERT INTO prediction_session (user_id, "createdAt", "updatedAt") VALUES (${escape(
             user_id
         )}, now(), now()) RETURNING id;`,
         { transaction, raw: true }
@@ -560,23 +585,28 @@ async function startPredictionSession(user_id, transaction) {
 }
 
 function loadPredictionSessionData(exp, session_id, transaction) {
+    let values = '';
+    exp.forEach((expense, ind) => {
+        values += `${ind > 0 ? ', ' : ' '}(
+            ${escape(session_id)},
+            ${escape(expense.id)},
+            ${escape(expense.amount != null ? expense.amount : 0)},
+            ${escape(expense.store)},
+            ${escape(expense.date)},
+            now(),
+            now()
+        )`;
+    });
+
     return db.sequelize.query(
         `INSERT INTO cat_classifier_predictions (
         session_id,
         expense_id,
         amount,
-        store_id,
+        store,
         date,
         "createdAt",
-        "updatedAt") VALUES (
-        ${escape(session_id)},
-        ${escape(exp.id)},
-        ${escape(exp.amount != null ? exp.amount : 0)},
-        ${escape(exp.store_id != null ? exp.store_id : -1)},
-        ${escape(exp.date)},
-        now(),
-        now()
-        );`,
+        "updatedAt") VALUES ${values};`,
         { transaction }
     );
 }
@@ -596,8 +626,12 @@ function removeSessionExpenses(session_id, transaction) {
 }
 
 function spawnPredictor(session_id) {
+    return spawnPythyon('get_predictions.py', [session_id]);
+}
+
+function spawnPythyon(process_name, args) {
     // Get predictions using model
-    const python = spawn('python3', ['prediction/get_predictions.py', session_id]);
+    const python = spawn('python3', [`prediction/${process_name}`, ENV, ...args]);
 
     return new Promise((resolve, reject) => {
         python.stdout.on('data', (data) => {
@@ -618,6 +652,45 @@ function spawnPredictor(session_id) {
 
 function escape(val) {
     return db.sequelize.escape(val);
+}
+
+async function getModelExpenseCounts(user_id) {
+    const condition = `WHERE user_id=${escape(user_id)}`;
+
+    const [current, last] = await Promise.all([
+        db.sequelize.query(`SELECT COUNT(*) FROM EXPENSES ${condition};`, { raw: true }),
+        db.sequelize.query(`SELECT expense_count FROM category_classifier ${condition};`, {
+            raw: true,
+        }),
+    ]);
+    return [current[0][0]['count'], last[0][0]['expense_count']];
+}
+
+async function checkModelExists(user_id) {
+    const [_currentCount, lastCount] = await getModelExpenseCounts(user_id);
+    return !(lastCount === 0);
+}
+
+function updateUserModelIfRequired(user_id) {
+    // Check if the current user ml model for expenses needs to be retrained
+    // Retrain every time the expense count grows by 10% since last training
+    // FUTURE GOALS:
+    // 1. More intelligent training criteria
+    // 2. instead of retraiing the model from scratch everytime, should update current model instead
+    return (async () => {
+        console.log('Checking if user model requires update');
+
+        const [currentCount, lastCount] = await getModelExpenseCounts(user_id);
+
+        // potentially dividing by zero here
+        if (
+            (lastCount === 0 && currentCount > 0) ||
+            (currentCount - lastCount) / lastCount > lastCount * (10 / 100)
+        ) {
+            console.log('Creating user model', currentCount, lastCount);
+            spawnPythyon('create_prediction_model.py', [user_id]);
+        }
+    })();
 }
 
 module.exports = router;

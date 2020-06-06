@@ -1,5 +1,6 @@
 import { css } from 'emotion';
 
+// overflow-x: auto;
 export const cellBaseCss = css`
     position: relative;
     min-height: 1em;
@@ -7,7 +8,6 @@ export const cellBaseCss = css`
     border: 1px solid #00000020;
     min-width: 0;
     word-break: break-all;
-    overflow-x: auto;
 `;
 
 export const cellPaddingCss = css`
