@@ -663,7 +663,11 @@ async function getModelExpenseCounts(user_id) {
             raw: true,
         }),
     ]);
-    return [current[0][0]['count'] ?? 0, last[0][0]['expense_count'] ?? 0];
+
+    const currentCount = current[0][0]['count'] != null ? current[0][0]['count'] : 0;
+    const lastCount = last[0][0]['expense_count'] != null ? last[0][0]['expense_count'] : 0;
+
+    return [currentCount, lastCount];
 }
 
 async function checkModelExists(user_id) {
