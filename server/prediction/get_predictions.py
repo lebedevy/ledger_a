@@ -13,7 +13,7 @@ print('#node:Python Started', ENV, SESSION_ID)
 
 
 def getModel():
-    connection = db_manager.connect()
+    connection = db_manager.connect(ENV)
     with connection.cursor() as curs:
         curs.execute(
             'SELECT model FROM category_classifier WHERE category_classifier.user_id = ' +
@@ -25,7 +25,7 @@ def getModel():
 
 
 def getExpenses():
-    connection = db_manager.connect()
+    connection = db_manager.connect(ENV)
     with connection.cursor() as curs:
         curs.execute(
             'SELECT amount, date, store, id FROM cat_classifier_predictions WHERE session_id = %s;', [SESSION_ID])
@@ -52,7 +52,7 @@ def build_vectorizer(texts):
 
 
 def saveClassDefinitions(classes):
-    connection = db_manager.connect()
+    connection = db_manager.connect(ENV)
     formatted = [int(c) for c in classes]
     with connection.cursor() as curs:
         curs.execute(
@@ -62,7 +62,7 @@ def saveClassDefinitions(classes):
 
 
 def savePredictions(ids, predictions):
-    connection = db_manager.connect()
+    connection = db_manager.connect(ENV)
     formatted = []
     for prediction in predictions:
         formatted.append([float(p) for p in prediction])
