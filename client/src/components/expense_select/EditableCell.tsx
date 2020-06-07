@@ -18,7 +18,6 @@ export default function EditableCell({ content, type, id, refetch }: IProps) {
     const [updated, setUpdated] = useState(false);
     const [classes, setClasses] = useState<Array<string> | null>(null);
     const [predictions, setPredictions] = useState<Array<number> | null>(null);
-    const [showDropdown, setShowDropdown] = useState(false);
 
     const cellId = useMemo(() => `${id}.${type}`, [id, type]);
     const editing = useMemo(() => cellEdit === cellId, [cellId, cellEdit]);
@@ -35,11 +34,8 @@ export default function EditableCell({ content, type, id, refetch }: IProps) {
         dispatch(setEditingExpense(start ? cellId : null));
     };
 
-    const submit = async (e: SyntheticEvent, value: string | number) => {
-        // Stop onclick from triggering on parent
-        e.stopPropagation();
-
-        console.log('Sending request...');
+    const submit = async (value: string | number) => {
+        // Send updated expense value to server
         setLoading(true);
         const res = await fetch(`/api/users/expenses/edit/${id}`, {
             method: 'PUT',
@@ -56,21 +52,19 @@ export default function EditableCell({ content, type, id, refetch }: IProps) {
     const getCategorySuggestions = async () => {
         const res = await fetch(`/api/users/expenses/category_suggestions/${id}`);
         if (res.ok) {
-            let test;
-            const { classList, predictions } = (test = await res.json());
-            console.log(test);
-            console.log(classList, predictions);
-            setClasses(classList);
-            setPredictions(predictions[0].predictions);
-            console.log(classList, predictions);
+            const { classList, predictions } = await res.json();
+            if (classList && predictions) {
+                setClasses(classList);
+                setPredictions(predictions[0].predictions);
+            }
         }
     };
 
     const startEdit = () => {
         setEditing(true);
-        setShowDropdown(true);
         if (type === 'category') getCategorySuggestions();
     };
+
     return (
         <BasicEditableCell
             setEditing={setEditing}
@@ -82,8 +76,6 @@ export default function EditableCell({ content, type, id, refetch }: IProps) {
             startEdit={startEdit}
             loading={loading}
             type={type}
-            showDropdown={showDropdown}
-            setShowDropdown={setShowDropdown}
         />
     );
 }

@@ -4,7 +4,7 @@ import { css } from 'emotion';
 import HelpIcon from '@material-ui/icons/Help';
 import UploadStep from './UploadStepper.tsx';
 import FindReplaceIcon from '@material-ui/icons/FindReplace';
-import { getOptions } from '../../utility/utility';
+import { getOptions, getCurrencyFormat } from '../../utility/utility';
 import { IconButton } from '@material-ui/core';
 import { RowFlex, flexColumnCss } from '../common_components/CommonComponents';
 import clsx from 'clsx';
@@ -62,7 +62,6 @@ export default function ApproveData({ expensesProp, setStep, step, predictions }
     const [openFR, setOpenFR] = useState(false);
     const [complete, setComplete] = useState(false);
     const [message, setMesage] = useState('');
-    const [showDropdown, setShowDropdown] = useState(false);
     // Whether or not an expense gets uloaded, and the reason
     const [upload, setUpload] = useState([]);
     const [reason, setReason] = useState([]);
@@ -122,7 +121,9 @@ export default function ApproveData({ expensesProp, setStep, step, predictions }
                 let r = `Possible duplicate of:\n`;
                 duplicates.forEach(
                     (dup) =>
-                        (r += `${dup.store?.store}, ${dup.category?.category}, ${dup.amount}, ${dup.date}\n`)
+                        (r += `${dup.store ?? ''}, ${dup.category ?? ''}, ${getCurrencyFormat(
+                            dup.amount
+                        )}, ${dup.date}\n`)
                 );
                 reason.push(r);
                 return false;
@@ -266,10 +267,8 @@ export default function ApproveData({ expensesProp, setStep, step, predictions }
                                         startEdit={() => setEdit({ ind, type })}
                                         classes={predictions.classList}
                                         predictions={el.predictions}
-                                        setShowDropdown={setShowDropdown}
-                                        showDropdown={showDropdown}
                                         setEditing={resetEditing}
-                                        submit={(e, val) => updateExpense(ind, type, val)}
+                                        submit={(val) => updateExpense(ind, type, val)}
                                     />
                                 ))}
                             </tr>
