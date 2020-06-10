@@ -16,6 +16,11 @@ import {
     SET_DELETING_MODE,
     ADD_DELETE_ID,
     REMOVE_DELETE_ID,
+    SET_UPLOAD_STEP,
+    SET_ORIGINAL_UPLOAD_EXP,
+    SET_UPLOAD_PREDICTIONS,
+    SET_UPLOAD_CLEANED_EXPENSES,
+    SET_UPLOAD_TYPES,
 } from './actionTypes';
 
 const requestExpenses = (aggregateType) => ({
@@ -187,5 +192,40 @@ export const removeDeleteId = (id) => ({
     type: REMOVE_DELETE_ID,
     payload: {
         id,
+    },
+});
+
+export const setStep = (step) => ({
+    type: SET_UPLOAD_STEP,
+    payload: {
+        step,
+    },
+});
+
+export const setOrignalExpenseUpload = (expenses) => ({
+    type: SET_ORIGINAL_UPLOAD_EXP,
+    payload: {
+        expenses,
+    },
+});
+
+export const setUploadPredictions = (predictions) => ({
+    type: SET_UPLOAD_PREDICTIONS,
+    payload: {
+        predictions,
+    },
+});
+
+export const setUploadCleanedExpenses = (expenses) => ({
+    type: SET_UPLOAD_CLEANED_EXPENSES,
+    payload: {
+        expenses,
+    },
+});
+
+export const setUploadTypes = (types) => ({
+    type: SET_UPLOAD_TYPES,
+    payload: {
+        types,
     },
 });

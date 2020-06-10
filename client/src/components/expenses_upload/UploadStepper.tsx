@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Stepper, Step, StepLabel } from '@material-ui/core';
 import { css } from 'emotion';
 import { bigButtonCss } from '../styling/CommonStyles';
+import { useUploadStep } from '../common_hooks/uploadStepHook';
 
 const flexCss = css`
     display: flex;
@@ -20,33 +21,33 @@ const buttonBarCss = css`
 `;
 
 interface IProps {
-    step: number;
-    setStep: any;
-    action: any;
-    children: JSX.Element;
+    action?: any;
+    children: JSX.Element | Array<JSX.Element>;
 }
 
-export default function UploadStep({ step, setStep, action, children }: IProps) {
+export default function UploadStep({ action, children }: IProps) {
+    const [step, setStep] = useUploadStep();
+
     const steps = ['Upload CSV', 'Select Columns', 'Verify Data'];
     return (
         <div className={flexCss}>
             <div className={flexCss}>{children}</div>
             <div className={buttonBarCss}>
                 {step > 0 && (
-                    <button
-                        className={bigButtonCss({ main: '688EFF', secondary: '6186F4' })}
-                        onClick={() => setStep(step - 1)}
-                    >
-                        Back
-                    </button>
-                )}
-                {step > 0 && (
-                    <button
-                        className={bigButtonCss({ main: '37509b', secondary: '4460b7' })}
-                        onClick={action}
-                    >
-                        {step < 2 ? 'Next' : 'Upload'}
-                    </button>
+                    <>
+                        <button
+                            className={bigButtonCss({ main: '688EFF', secondary: '6186F4' })}
+                            onClick={() => setStep(step - 1)}
+                        >
+                            Back
+                        </button>
+                        <button
+                            className={bigButtonCss({ main: '37509b', secondary: '4460b7' })}
+                            onClick={action}
+                        >
+                            {step < 2 ? 'Next' : 'Upload'}
+                        </button>
+                    </>
                 )}
             </div>
             <Stepper activeStep={step} alternativeLabel>

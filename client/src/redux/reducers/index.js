@@ -6,6 +6,7 @@ import screenSelect from './screenSelect';
 import aggregateExpenses from './aggregateData';
 import templateLists from './templateLists';
 import editing from './editingCell';
+import uploadExpenses from './uploadExpenses';
 
 export default combineReducers({
     date,
@@ -15,4 +16,5 @@ export default combineReducers({
     aggregateExpenses,
     templateLists,
     editing,
+    uploadExpenses,
 });

@@ -7,6 +7,7 @@ import AddExpenseButton from '../components/AddExpenseButton';
 import DaySummary from '../components/overview/DaySummary';
 import SummaryItem from '../components/SummaryItem';
 import { css } from 'emotion';
+import { flexJustifyCenterCss } from '../components/styling/CommonStyles';
 
 class EmptyCell {
     constructor(date) {
@@ -23,11 +24,6 @@ class PaddingCell {
 }
 
 // const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-const containerCss = css`
-    display: flex;
-    justify-content: center;
-`;
 
 const pageCss = css`
     box-sizing: border-box;
@@ -130,7 +126,7 @@ export default function Overview() {
     }
 
     return (
-        <div className={containerCss}>
+        <div className={flexJustifyCenterCss}>
             <div className={pageCss}>
                 <h1>Period Summary</h1>
                 <label>{`From ${start} to  ${end}`}</label>

@@ -2,11 +2,7 @@ import React from 'react';
 import { EditableRow } from '../ExpenseRow';
 import { CircularProgress } from '@material-ui/core';
 import { css } from 'emotion';
-
-const containerCss = css`
-    display: flex;
-    justify-content: center;
-`;
+import { flexJustifyCenterCss } from '../styling/CommonStyles';
 
 export default function Details({ expenses, refetch }) {
     return expenses ? (
@@ -21,7 +17,7 @@ export default function Details({ expenses, refetch }) {
             ))}
         </table>
     ) : (
-        <div className={containerCss}>
+        <div className={flexJustifyCenterCss}>
             <CircularProgress />
         </div>
     );

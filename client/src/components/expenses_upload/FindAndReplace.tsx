@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { IExpense } from '../typescript/general_interfaces';
 import { css } from 'emotion';
+import { flexCenterCss } from '../styling/CommonStyles';
 
 interface IMap {
     [key: string]: any;
@@ -62,9 +63,7 @@ export default function FindAndReplace({ updateExp, expenses, close }: IProps) {
     return (
         <div
             className={css`
-                display: flex;
-                justify-content: center;
-                align-items: center;
+                ${flexCenterCss}
                 position: fixed;
                 top: 0;
                 bottom: 0;

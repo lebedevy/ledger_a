@@ -2,6 +2,7 @@ import React from 'react';
 import { css } from 'emotion';
 import { IChildren } from '../typescript/general_interfaces';
 import { CircularProgress } from '@material-ui/core';
+import { flexCenterCss } from '../styling/CommonStyles';
 
 const commonCss = css`
     display: flex;
@@ -22,9 +23,7 @@ export function RowFlex({ children }: IChildren) {
 }
 
 const loadingCss = css`
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    ${flexCenterCss}
     position: absolute;
     top: 0;
     bottom: 0;

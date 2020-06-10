@@ -11,11 +11,11 @@ import SettingsApplicationsIcon from '@material-ui/icons/SettingsApplications';
 import DateRange from '../DateRange';
 import { css } from 'emotion';
 import { useHistory } from 'react-router-dom';
+import { flexCenterCss, flexJustifyCenterCss } from '../styling/CommonStyles';
 
 const container = css`
+    ${flexJustifyCenterCss}
     position: fixed;
-    display: flex;
-    justify-content: center;
     top: 0;
     right: 0;
     left: 0;
@@ -126,10 +126,8 @@ export default function Navbar() {
 }
 
 const containerCss = css`
+    ${flexCenterCss}
     z-index: 1300;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     position: fixed;
     top: 0;
     bottom: 0;
