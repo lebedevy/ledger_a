@@ -5,6 +5,12 @@ node_modules
 /.pnp
 .pnp.js
 
+# vscode
+.vscode/settings.json
+
+# python cache
+__pycache__/
+
 # testing
 /client/coverage
 

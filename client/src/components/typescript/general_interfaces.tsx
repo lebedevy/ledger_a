@@ -18,6 +18,15 @@ export interface IExclude {
     date?: string | number | boolean;
 }
 
+export interface IPrediction {
+    expense_id: number;
+    predictions: Array<number>;
+}
+
+export interface ITypes {
+    [id: number]: number;
+}
+
 export interface RootState {
     editing: {
         cellEdit: null | string;
@@ -25,6 +34,12 @@ export interface RootState {
     };
     screen: { width: number; height: number; mobile: boolean };
     date: { period: { start: string; end: string } };
+    uploadExpenses: {
+        step: number;
+        baseExpenses: originalExpenses;
+        predictions: { classList: Array<string>; predictions: Array<IPrediction> };
+        types: ITypes;
+    };
 }
 
 export interface IAggregate extends IExpense {
@@ -40,4 +55,8 @@ export interface IAggregated {
     // Technically not applicable to aggregated expenses
     // But grabs the id of the first expense and uses it for keys in react maps
     id: number;
+}
+
+export interface originalExpenses {
+    [id: number]: Array<string>;
 }

@@ -25,16 +25,14 @@ const cancelCss = css`
     max-height: 100%;
 `;
 
-interface IProps2 {
+interface IProps {
     setEditing: (val: boolean) => void;
-    setShowDropdown: (val: boolean) => void;
     startEdit: () => void;
-    submit: (e: SyntheticEvent, val: string | number) => void;
+    submit: (val: string | number) => void;
     classes?: Array<string> | null;
     predictions?: Array<number> | null;
     editing: boolean;
     loading: boolean;
-    showDropdown: boolean;
     type: string;
     content: string | number;
 }
@@ -47,12 +45,11 @@ export default function BasicEditableCell({
     loading,
     startEdit,
     type,
-    showDropdown,
-    setShowDropdown,
     content,
     setEditing,
-}: IProps2) {
+}: IProps) {
     const [value, setValue] = useState<number | string>(content);
+    const [showDropdown, setShowDropdown] = useState(false);
 
     useEffect(() => {
         if (!loading && !editing && value !== content) setValue(content);
@@ -66,13 +63,20 @@ export default function BasicEditableCell({
     const cancel = (e: SyntheticEvent) => {
         // Stop onclick from triggering on parent
         e.stopPropagation();
+        setShowDropdown(false);
         setValue(content);
         if (editing) setEditing(false);
     };
 
     const sendSubmit = (e: SyntheticEvent) => {
         e.stopPropagation();
-        submit(e, value);
+        setShowDropdown(false);
+        submit(value);
+    };
+
+    const selectDropdown = (val: string) => {
+        setShowDropdown(false);
+        submit(val);
     };
 
     const colorCss = (color: string) => {
@@ -102,7 +106,6 @@ export default function BasicEditableCell({
                         className={inputCell}
                         value={value}
                         onChange={(e) => update(e.target.value)}
-                        onBlur={() => setShowDropdown(false)}
                         onFocus={() => setShowDropdown(true)}
                     />
                     <div className={cancelCss}>
@@ -119,10 +122,7 @@ export default function BasicEditableCell({
                     </div>
                     {showDropdown && type === 'category' && (
                         <CategorySuggestions
-                            setCategory={(val) => {
-                                update(val);
-                                console.log(val);
-                            }}
+                            setCategory={selectDropdown}
                             classes={classes}
                             predictions={predictions?.slice() ?? null}
                         />

@@ -17,7 +17,18 @@ const getBigButtonCss = ({ main, secondary }: { main?: string; secondary?: strin
     }
 `;
 
+export const flexJustifyCenterCss = css`
+    display: flex;
+    justify-content: center;
+`;
+
+export const flexCenterCss = css`
+    ${flexJustifyCenterCss}
+    align-items: center;
+`;
+
 export const backdropCss = css`
+    ${flexCenterCss}
     z-index: 100;
     position: absolute;
     top: 0;
@@ -25,7 +36,4 @@ export const backdropCss = css`
     left: 0;
     bottom: 0;
     background: #00000060;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 `;

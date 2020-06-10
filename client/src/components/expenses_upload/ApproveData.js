@@ -4,12 +4,13 @@ import { css } from 'emotion';
 import HelpIcon from '@material-ui/icons/Help';
 import UploadStep from './UploadStepper.tsx';
 import FindReplaceIcon from '@material-ui/icons/FindReplace';
-import { getOptions } from '../../utility/utility';
+import { getOptions, getCurrencyFormat } from '../../utility/utility';
 import { IconButton } from '@material-ui/core';
 import { RowFlex, flexColumnCss } from '../common_components/CommonComponents';
 import clsx from 'clsx';
 import BasicEditableCell from '../expense_select/BasicEditableCell';
 import FindAndReplace from './FindAndReplace';
+import { useSelector } from 'react-redux';
 
 const tableCss = css`
     max-width: 1200px;
@@ -53,7 +54,10 @@ const fadedRow = css`
     background-color: lightgray;
 `;
 
-export default function ApproveData({ expensesProp, setStep, step, predictions }) {
+export default function ApproveData() {
+    const { baseExpenses, expenses: expensesProp, predictions, types } = useSelector(
+        (state) => state.uploadExpenses
+    );
     const [expenses, setExpenses] = useState([]);
     const [latest, setLatest] = useState(null);
     const [earliest, setEarliest] = useState(null);
@@ -62,7 +66,6 @@ export default function ApproveData({ expensesProp, setStep, step, predictions }
     const [openFR, setOpenFR] = useState(false);
     const [complete, setComplete] = useState(false);
     const [message, setMesage] = useState('');
-    const [showDropdown, setShowDropdown] = useState(false);
     // Whether or not an expense gets uloaded, and the reason
     const [upload, setUpload] = useState([]);
     const [reason, setReason] = useState([]);
@@ -78,7 +81,7 @@ export default function ApproveData({ expensesProp, setStep, step, predictions }
 
         predictions.predictions.forEach((p) => (predictionMap[p.expense_id] = p.predictions));
 
-        return expensesProp.map((exp) => {
+        return Object.values(expensesProp).map((exp) => {
             const options = getOptions(predictionMap[exp.id], predictions.classList);
 
             return {
@@ -92,13 +95,13 @@ export default function ApproveData({ expensesProp, setStep, step, predictions }
     useEffect(() => {
         console.log(expensesProp, predictions);
         if (predictions && expensesProp) setExpenses(addPredictions());
-        else setExpenses(expensesProp ? [...expensesProp] : []);
+        else setExpenses(expensesProp ? [...Object.values(expensesProp)] : []);
     }, [expensesProp, predictions]);
 
     const getDateRange = () => {
         let earliest = null,
             latest = null;
-        expensesProp.forEach((exp) => {
+        Object.values(expensesProp).forEach((exp) => {
             if (exp?.date) {
                 if (isNil(latest) || latest < exp.date) latest = exp.date;
                 if (isNil(earliest) || earliest > exp.date) earliest = exp.date;
@@ -122,7 +125,9 @@ export default function ApproveData({ expensesProp, setStep, step, predictions }
                 let r = `Possible duplicate of:\n`;
                 duplicates.forEach(
                     (dup) =>
-                        (r += `${dup.store?.store}, ${dup.category?.category}, ${dup.amount}, ${dup.date}\n`)
+                        (r += `${dup.store ?? ''}, ${dup.category ?? ''}, ${getCurrencyFormat(
+                            dup.amount
+                        )}, ${dup.date}\n`)
                 );
                 reason.push(r);
                 return false;
@@ -160,7 +165,6 @@ export default function ApproveData({ expensesProp, setStep, step, predictions }
     }, [earliest, latest]);
 
     const updateUploadAtInd = (ind, val) => {
-        console.log(ind, val);
         const updated = [...upload];
         updated[ind] = val;
         setUpload(updated);
@@ -184,13 +188,17 @@ export default function ApproveData({ expensesProp, setStep, step, predictions }
     };
 
     const resetEditing = () => {
-        console.log('Resetting');
         setEdit({ ind: null, type: null });
     };
 
     const updateExpense = (ind, type, val) => {
-        console.log(ind, type, val);
-
+        if (type === 'store') {
+            fetch(`/api/users/expenses/upload_store_names/add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ original: baseExpenses[expenses[ind].id][types[2]], val }),
+            });
+        }
         const updatedExp = [...expenses];
         updatedExp[ind] = { ...updatedExp[ind], [type]: val };
         setExpenses(updatedExp);
@@ -198,8 +206,6 @@ export default function ApproveData({ expensesProp, setStep, step, predictions }
     };
 
     const updateAll = (original, type, update) => {
-        console.log(original, type, update);
-
         setExpenses(
             expenses.map((exp) => {
                 console.log(exp[type], original);
@@ -216,7 +222,7 @@ export default function ApproveData({ expensesProp, setStep, step, predictions }
     const display = ['amount', 'store', 'category', 'date'];
 
     return !complete ? (
-        <UploadStep step={step} setStep={setStep} action={uploadExpenses}>
+        <UploadStep action={uploadExpenses}>
             {openFR && (
                 <FindAndReplace
                     close={() => setOpenFR(false)}
@@ -266,10 +272,8 @@ export default function ApproveData({ expensesProp, setStep, step, predictions }
                                         startEdit={() => setEdit({ ind, type })}
                                         classes={predictions.classList}
                                         predictions={el.predictions}
-                                        setShowDropdown={setShowDropdown}
-                                        showDropdown={showDropdown}
                                         setEditing={resetEditing}
-                                        submit={(e, val) => updateExpense(ind, type, val)}
+                                        submit={(val) => updateExpense(ind, type, val)}
                                     />
                                 ))}
                             </tr>
