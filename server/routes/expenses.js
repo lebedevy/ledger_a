@@ -466,10 +466,73 @@ router.get('/stores', checkAuth, async (req, res, next) => {
     res.status(200).send({ stores });
 });
 
+router.post('/upload_store_names/add', checkAuth, async (req, res, next) => {
+    // send original name, set new name
+    const { original, val } = req.body;
+
+    console.log('Upload: Adding store name mapping');
+    console.log(original, val);
+    const transaction = await db.sequelize.transaction();
+
+    try {
+        await insertStore(val, transaction);
+
+        await db.sequelize.query(
+            `INSERT INTO store_name_upload_map (user_id, upload_store_name, store_id, "createdAt", "updatedAt")` +
+                ` VALUES(${escape(req.user.id)}, ${escape(
+                    original
+                )}, (SELECT id FROM stores where store_name = ${escape(val)}), now(), now());`
+        );
+        transaction.commit();
+        res.send({ message: 'ok' });
+    } catch (e) {
+        console.log(e);
+        transaction.rollback();
+        res.status(500).send({ message: 'Error adding store name mapping' });
+    }
+});
+
+router.post('/upload_store_names', checkAuth, async (req, res, next) => {
+    // Send list of current names
+    // Send back list of mapped names
+    const { expenses, index } = req.body;
+    console.log('Upload: Gettting mapped names');
+
+    // const exp = {};
+    const queryVals = [];
+
+    // console.log(expenses);
+
+    for (const id in expenses) {
+        queryVals.push(`(${escape(id)}, ${escape(expenses[id][index])})`);
+    }
+
+    const store_names = await db.sequelize.query(
+        `SELECT u_id, original_name, stores.store_name FROM (SELECT t.id as u_id, store_name as original_name, store_id FROM (VALUES ${queryVals.join(
+            ', '
+        )}) as t(id, store_name) LEFT JOIN store_name_upload_map ON store_name = upload_store_name) AS temp JOIN stores ON stores.id = store_id;`,
+        { raw: true }
+    );
+
+    const output = {};
+
+    console.log(store_names);
+
+    if (store_names[0]) {
+        for (const s in store_names[0]) {
+            const store = store_names[0][s];
+            output[store.u_id] = { oringal: store.original_name, name: store.store_name };
+        }
+    }
+
+    // console.log(output);
+
+    res.send({ store_names: output });
+});
+
 router.post('/category_suggestions', checkAuth, async (req, res, next) => {
     console.log('Getting category suggestions for new expenses');
     const { expenses } = req.body;
-    console.log(expenses);
     if (!expenses) return res.status(400).send({ message: 'No expenses provided' });
     getPredictions(req, res, expenses);
 });

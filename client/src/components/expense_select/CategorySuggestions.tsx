@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, SyntheticEvent } from 'react';
 import { css } from 'emotion';
 import { backdropCss } from '../styling/CommonStyles';
 import { getOptions } from '../../utility/utility';
@@ -42,6 +42,12 @@ export function CategorySuggestions({
         return null;
     }, [classes, predictions]);
 
+    const handleSetCategory = (e: SyntheticEvent, option: string) => {
+        // Prevent bubbling to prevent triggering startEdit on parent cell
+        e.stopPropagation();
+        setCategory(option);
+    };
+
     console.log(options);
 
     return (
@@ -52,7 +58,10 @@ export function CategorySuggestions({
                 </div>
             ) : (
                 options.map((option) => (
-                    <div onClick={() => setCategory(option[1] as string)} className={ddOption}>
+                    <div
+                        onClick={(e) => handleSetCategory(e, option[1] as string)}
+                        className={ddOption}
+                    >
                         {option[1]}
                     </div>
                 ))
