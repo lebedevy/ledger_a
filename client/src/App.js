@@ -12,7 +12,7 @@ import Merge from './pages/Merge';
 import Navbar from './components/desktop/Navbar';
 import Register from './pages/Register';
 import Login from './pages/Login';
-import LandingPage from './pages/LandingPage';
+import LandingPage from './pages/LandingPage.tsx';
 import EditExpense from './pages/EditExpense';
 import Overview from './pages/Overview';
 import CategoryOverview from './pages/AggregateOverview';
