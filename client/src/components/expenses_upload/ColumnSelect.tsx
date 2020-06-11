@@ -75,7 +75,12 @@ export default function ColumnSelect() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ expenses: Object.values(expenses) }),
             });
-            dispatch(setUploadPredictions(await res.json()));
+            if (res.ok) {
+                const predictions = await res.json();
+                if (predictions.predictions && predictions.classList) {
+                    dispatch(setUploadPredictions(predictions));
+                }
+            }
         }
         // Stores have id 2; if stores are set, check if the store names need to be converted
         dispatch(setUploadCleanedExpenses(expenses));

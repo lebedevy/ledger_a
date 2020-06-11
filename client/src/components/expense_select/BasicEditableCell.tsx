@@ -120,7 +120,7 @@ export default function BasicEditableCell({
                             onClick={cancel}
                         />
                     </div>
-                    {showDropdown && type === 'category' && (
+                    {showDropdown && predictions && classes && type === 'category' && (
                         <CategorySuggestions
                             setCategory={selectDropdown}
                             classes={classes}
