@@ -193,11 +193,7 @@ export default function ApproveData() {
 
     const updateExpense = (ind, type, val) => {
         if (type === 'store') {
-            fetch(`/api/users/expenses/upload_store_names/add`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ original: baseExpenses[expenses[ind].id][types[2]], val }),
-            });
+            addStoreNameMapping(baseExpenses[expenses[ind].id][types[2]], val);
         }
         const updatedExp = [...expenses];
         updatedExp[ind] = { ...updatedExp[ind], [type]: val };
@@ -206,10 +202,17 @@ export default function ApproveData() {
     };
 
     const updateAll = (original, type, update) => {
+        const updated = new Set();
+
         setExpenses(
             expenses.map((exp) => {
-                console.log(exp[type], original);
                 if (exp[type] === original) {
+                    // Add store name mapping
+                    const originalName = baseExpenses[exp.id][types[2]];
+                    if (type === 'store' && !updated.has(originalName))
+                        addStoreNameMapping(originalName, update);
+                    updated.add(originalName);
+
                     return { ...exp, [type]: update };
                 } else {
                     return exp;
@@ -218,6 +221,14 @@ export default function ApproveData() {
         );
         setOpenFR(false);
     };
+
+    function addStoreNameMapping(original, val) {
+        fetch(`/api/users/expenses/upload_store_names/add`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ original, val }),
+        });
+    }
 
     const display = ['amount', 'store', 'category', 'date'];
 
@@ -270,8 +281,8 @@ export default function ApproveData() {
                                         content={el[type]}
                                         editing={edit.ind === ind && edit.type === type}
                                         startEdit={() => setEdit({ ind, type })}
-                                        classes={predictions.classList}
-                                        predictions={el.predictions}
+                                        classes={predictions?.classList}
+                                        predictions={el?.predictions}
                                         setEditing={resetEditing}
                                         submit={(val) => updateExpense(ind, type, val)}
                                     />

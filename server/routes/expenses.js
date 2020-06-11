@@ -477,12 +477,15 @@ router.post('/upload_store_names/add', checkAuth, async (req, res, next) => {
     try {
         await insertStore(val, transaction);
 
+        // Need to add handling for inserting when unique constraint is violated
         await db.sequelize.query(
             `INSERT INTO store_name_upload_map (user_id, upload_store_name, store_id, "createdAt", "updatedAt")` +
                 ` VALUES(${escape(req.user.id)}, ${escape(
                     original
-                )}, (SELECT id FROM stores where store_name = ${escape(val)}), now(), now());`
+                )}, (SELECT id FROM stores WHERE store_name = ${escape(val)}), now(), now());`,
+            { transaction }
         );
+
         transaction.commit();
         res.send({ message: 'ok' });
     } catch (e) {
@@ -496,12 +499,10 @@ router.post('/upload_store_names', checkAuth, async (req, res, next) => {
     // Send list of current names
     // Send back list of mapped names
     const { expenses, index } = req.body;
+    const user_id = req.user.id;
     console.log('Upload: Gettting mapped names');
 
-    // const exp = {};
     const queryVals = [];
-
-    // console.log(expenses);
 
     for (const id in expenses) {
         queryVals.push(`(${escape(id)}, ${escape(expenses[id][index])})`);
@@ -510,7 +511,9 @@ router.post('/upload_store_names', checkAuth, async (req, res, next) => {
     const store_names = await db.sequelize.query(
         `SELECT u_id, original_name, stores.store_name FROM (SELECT t.id as u_id, store_name as original_name, store_id FROM (VALUES ${queryVals.join(
             ', '
-        )}) as t(id, store_name) LEFT JOIN store_name_upload_map ON store_name = upload_store_name) AS temp JOIN stores ON stores.id = store_id;`,
+        )}) as t(id, store_name) LEFT JOIN store_name_upload_map ON store_name = upload_store_name WHERE user_id = ${escape(
+            user_id
+        )}) AS temp JOIN stores ON stores.id = store_id;`,
         { raw: true }
     );
 
