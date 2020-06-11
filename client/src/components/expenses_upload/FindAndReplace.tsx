@@ -26,7 +26,7 @@ export default function FindAndReplace({ updateExp, expenses, close }: IProps) {
     const [original, setOriginal] = useState('');
     const [update, setUpdate] = useState('');
     const [type, setType] = useState(1);
-    const [unqiue, setUnique] = useState<IUnique>({
+    const [unique, setUnique] = useState<IUnique>({
         amount: [],
         store: [],
         category: [],
@@ -56,9 +56,9 @@ export default function FindAndReplace({ updateExp, expenses, close }: IProps) {
     }, [expenses]);
 
     useEffect(() => {
-        const vals = unqiue[types[type]];
+        const vals = unique[types[type]];
         setOriginal(vals.length > 0 ? vals[0] : '');
-    }, [type]);
+    }, [type, unique]);
 
     return (
         <div
@@ -91,14 +91,8 @@ export default function FindAndReplace({ updateExp, expenses, close }: IProps) {
                     ))}
                 </select>
                 <label>Find</label>
-                <select
-                    value={original}
-                    onChange={(e) => {
-                        console.log(e.target.value);
-                        setOriginal(e.target.value);
-                    }}
-                >
-                    {unqiue[types[type]].map((val) => (
+                <select value={original} onChange={(e) => setOriginal(e.target.value)}>
+                    {unique[types[type]].map((val) => (
                         <option value={val}>{val}</option>
                     ))}
                 </select>

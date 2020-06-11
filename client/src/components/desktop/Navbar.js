@@ -42,7 +42,9 @@ const menuItem = css`
     border-radius: 2px;
     outline-color: #dc136c;
     user-select: none;
+    cursor: pointer;
     label {
+        cursor: inherit;
         padding-left: 5px;
     }
 `;
