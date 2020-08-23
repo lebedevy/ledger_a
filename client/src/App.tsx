@@ -1,18 +1,17 @@
 import React, { useEffect } from 'react';
 import clsx from 'clsx';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
-import { withStyles } from '@material-ui/styles';
 import { setScreenDimensions } from './redux/actions';
 
 import AddExpense from './pages/AddExpense';
 import Expenses from './pages/Expenses';
 import ExpensesAggregates from './pages/ExpensesAggregates';
-import Merge from './pages/Merge';
+// import Merge from './pages/Merge';
 import Navbar from './components/desktop/Navbar';
 import Register from './pages/Register';
 import Login from './pages/Login';
-import LandingPage from './pages/LandingPage.tsx';
+import LandingPage from './pages/LandingPage';
 import EditExpense from './pages/EditExpense';
 import Overview from './pages/Overview';
 import CategoryOverview from './pages/AggregateOverview';
@@ -23,34 +22,27 @@ import AppSettings from './components/mobile/MobileSettings';
 import MobileAccount from './components/mobile/MobileAccount';
 import DesktopSubNav from './components/desktop/DesktopSubNav';
 import UploadExpenses from './pages/UploadExpenses';
+import { css, cx } from 'emotion';
+import { RootState } from './components/typescript/general_interfaces';
 
-const styles = (theme) => ({
-    container: {
-        height: '100%',
-        width: '100%',
-        display: 'flex',
-        background: '#00000020',
-    },
-    // app: {
-    //     maxHeight: '100%',
-    //     maxWidth: '100%',
-    //     position: 'relative',
-    // },
-    desktop: {
-        height: 'calc(100vh - 130px)',
-        marginTop: '130px',
-    },
-    mobile: {
-        // height: '84vh',
-        // maxHeight: 'calc(100% - 16vh)',
-        margin: 0,
-        margin: '8vh 0',
-        overflow: 'hidden',
-    },
-});
+const desktop = css`
+    height: calc(100vh - 130px);
+    margin-top: 130px;
+`;
 
-function App(props) {
-    const { classes, user, width, height, mobile } = props;
+const mobileCss = css`
+    margin: 0;
+    margin: 8vh 0;
+    overflow: hidden;
+`;
+
+export default function App() {
+    const dispatch = useDispatch();
+    const { user, height, mobile } = useSelector((state: RootState) => {
+        const { user } = state;
+        const { height, mobile } = state.screen;
+        return { user, height, mobile };
+    });
 
     useEffect(() => {
         window.addEventListener('resize', handleResize);
@@ -58,7 +50,7 @@ function App(props) {
     }, []);
 
     const handleResize = () => {
-        props.setScreenDimensions({ height: window.innerHeight, width: window.innerWidth });
+        dispatch(setScreenDimensions({ height: window.innerHeight, width: window.innerWidth }));
     };
 
     return (
@@ -73,20 +65,20 @@ function App(props) {
                     </Route>
                 </Switch>
             ) : (
-                <React.Fragment>
+                <>
                     {!mobile ? (
-                        <React.Fragment>
+                        <>
                             <Route component={Navbar} />
                             <Route path="/users/expenses/get/:type/" component={DesktopSubNav} />
-                        </React.Fragment>
+                        </>
                     ) : (
-                        <React.Fragment>
+                        <>
                             <Route path="/users/expenses/get/:type/" component={MobileSubNav} />
                             <Route path="/users/app/settings/" component={MobileSettingsNav} />
-                        </React.Fragment>
+                        </>
                     )}
                     <div
-                        className={clsx(mobile ? classes.mobile : classes.desktop)}
+                        className={cx(mobile ? mobileCss : desktop)}
                         style={mobile ? { minHeight: `calc(${height}px - 16vh)` } : {}}
                     >
                         <Switch>
@@ -117,17 +109,9 @@ function App(props) {
                             </Route>
                         </Switch>
                     </div>
-                    {mobile ? <Route component={MobileNav} /> : null}
-                </React.Fragment>
+                    {mobile && <Route component={MobileNav} />}
+                </>
             )}
         </Router>
     );
 }
-
-const mapStateToProps = (state) => {
-    const { user } = state;
-    const { width, height, mobile } = state.screen;
-    return { user, width, height, mobile };
-};
-
-export default connect(mapStateToProps, { setScreenDimensions })(withStyles(styles)(App));
