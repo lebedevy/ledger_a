@@ -27,6 +27,8 @@ export interface ITypes {
     [id: number]: number;
 }
 
+interface IUser {}
+
 export interface RootState {
     editing: {
         cellEdit: null | string;
@@ -40,6 +42,7 @@ export interface RootState {
         predictions: { classList: Array<string>; predictions: Array<IPrediction> };
         types: ITypes;
     };
+    user: IUser;
 }
 
 export interface IAggregate extends IExpense {
