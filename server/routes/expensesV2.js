@@ -6,8 +6,16 @@ const checkAuth = require('../middleware/auth');
 const validateExpense = require('../middleware/validateExpense');
 const getSortAggregate = require('../middleware/getSortAggregate');
 const getSortSummary = require('../middleware/getSortSummary');
+const { getExpenses, OPERATIONS, EXPENSE_FIELDS } = require('./expenses_server');
 
 const ENV = process.env.NODE_ENV || 'development';
+
+// model definition
+const {
+    expenses: { properties: eProperties, fields: eFields },
+    categories: { properties: cProperties, fields: cFields },
+    stores: { properties: sProperties, fields: sFields },
+} = EXPENSE_FIELDS;
 
 // Add Expense
 router.post('/add', checkAuth, validateExpense, async (req, res, next) => {
@@ -195,30 +203,32 @@ router.put('/edit/:id', checkAuth, async (req, res, next) => {
 });
 
 // List of all expenses for a period
-router.get('/summary', checkAuth, getSortSummary, async (req, res) => {
+router.get('/get', checkAuth, getSortSummary, async (req, res) => {
     console.info('Serving expense summary');
-    console.log(req.sortOption);
+
     const where = { user_id: req.user.id };
     if (req.query.start && req.query.end) {
         where.date = { [db.Sequelize.Op.between]: [req.query.start, req.query.end] };
     }
-    const expenses = await db.expenses.findAll({
-        where,
-        attributes: [
-            'id',
-            'amount',
-            'date',
-            [db.Sequelize.col('category.category_name'), 'category'],
-            [db.Sequelize.col('store.store_name'), 'store'],
+
+    const expenses = await getExpenses(
+        eProperties.name,
+        [
+            { field: 'user_id', value: req.user.id },
+            {
+                operation: OPERATIONS.between,
+                field: 'date',
+                value: [req.query.start, req.query.end],
+            },
         ],
-        order: db.sequelize.literal(req.sortOption),
-        include: [
-            { model: db.categories, attributes: [] },
-            { model: db.stores, attributes: [] },
-        ],
-        raw: true,
-    });
-    res.status(200).send({ expenses });
+        {
+            expenses: [eFields.id, eFields.amount, eFields.date],
+            categories: [[cFields.category_name, 'category']],
+            stores: [[sFields.store_name, 'store']],
+        }
+    );
+
+    res.status(200).send(expenses);
 });
 
 // Summary for all expenses for a period

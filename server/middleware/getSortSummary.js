@@ -1,14 +1,5 @@
-function getSortSummary(req, res, next) {
-    console.log(req.query);
-    console.log(req.params);
-    // ('amount DESC');
-
-    let order = 'asc';
-    switch (req.query.order) {
-        case 'desc':
-            order = 'desc';
-            break;
-    }
+function getSortSummary(req, _res, next) {
+    const order = req.query.order === 'desc' ? 'desc' : 'asc';
 
     let column = 'date';
     switch (req.query.sort) {
@@ -24,7 +15,6 @@ function getSortSummary(req, res, next) {
     }
 
     req.sortOption = `${column} ${order}`;
-    console.log(req.sortOption);
     return next();
 }
 

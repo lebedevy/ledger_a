@@ -7,6 +7,13 @@ const logger = require('morgan');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const expensesRouter = require('./routes/expenses');
+const expensesRouterV2 = require('./routes/expensesV2');
+const { graphqlHTTP } = require('express-graphql');
+const { root, schema } = require('./routes/graphql');
+
+const checkAuth = require('./middleware/auth');
+
+const ENV = process.env.NODE_ENV || 'development';
 
 const app = express();
 
@@ -22,7 +29,10 @@ app.use(express.static(path.join(__dirname, '../client/build')));
 
 app.use('/', indexRouter);
 app.use('/api/users/expenses', expensesRouter);
+app.use('/api/users/expensesV2', expensesRouterV2);
 app.use('/api/users', usersRouter);
+app.use(checkAuth);
+app.use('/api/graphql', graphqlHTTP({ rootValue: root, schema, graphiql: ENV === 'development' }));
 
 app.use('/', express.static(path.join(__dirname, '../client/build')));
 app.use('*', express.static(path.join(__dirname, '../client/build')));

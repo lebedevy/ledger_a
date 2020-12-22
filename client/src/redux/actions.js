@@ -21,6 +21,7 @@ import {
     SET_UPLOAD_PREDICTIONS,
     SET_UPLOAD_CLEANED_EXPENSES,
     SET_UPLOAD_TYPES,
+    SET_APP_MODE,
 } from './actionTypes';
 
 const requestExpenses = (aggregateType) => ({
@@ -229,3 +230,5 @@ export const setUploadTypes = (types) => ({
         types,
     },
 });
+
+export const setAppMode = (type) => ({ type: SET_APP_MODE, payload: { type } });

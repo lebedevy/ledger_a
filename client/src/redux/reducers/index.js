@@ -7,6 +7,7 @@ import aggregateExpenses from './aggregateData';
 import templateLists from './templateLists';
 import editing from './editingCell';
 import uploadExpenses from './uploadExpenses';
+import appState from './appState';
 
 export default combineReducers({
     date,
@@ -17,4 +18,5 @@ export default combineReducers({
     templateLists,
     editing,
     uploadExpenses,
+    appState,
 });

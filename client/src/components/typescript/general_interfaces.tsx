@@ -43,6 +43,7 @@ export interface RootState {
         types: ITypes;
     };
     user: IUser;
+    appState: { groupKey: undefined | 'store' | 'category' };
 }
 
 export interface IAggregate extends IExpense {

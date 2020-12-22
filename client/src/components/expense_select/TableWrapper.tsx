@@ -1,5 +1,15 @@
 import React from 'react';
-import { tableContainer } from './ExpenseTableClasses';
+import { css } from 'emotion';
+
+export const tableContainer = css`
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-radius: 5px;
+`;
 
 export default function TableWrapper({ children }: { children: any }) {
     return (

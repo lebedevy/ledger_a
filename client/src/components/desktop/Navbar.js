@@ -3,7 +3,7 @@ import { connect, useSelector, useDispatch } from 'react-redux';
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
 import PublishIcon from '@material-ui/icons/Publish';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import { logout } from '../../redux/actions';
+import { logout, setAppMode } from '../../redux/actions';
 import CategoryIcon from '@material-ui/icons/Category';
 import StoreIcon from '@material-ui/icons/Store';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
@@ -85,12 +85,22 @@ export default function Navbar() {
         closeProfile();
     }
 
+    const setMode = (e) => {
+        const type = e.target.value;
+        dispatch(setAppMode(type === 'ungrouped' ? undefined : type));
+    };
+
     return (
         <>
             {showSetting && <PeriodSettings close={() => setShowSetting(false)} />}
             <div className={container}>
                 <div className={appbar}>
                     <div className={options}>
+                        <select onChange={setMode}>
+                            <option value="ungrouped">Ungrouped</option>
+                            <option value="store">By Store</option>
+                            <option value="category">By Category</option>
+                        </select>
                         <button className={menuItem} onClick={() => navTo(path)}>
                             <MonetizationOnIcon />
                             <label>All Expenses</label>

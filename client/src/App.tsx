@@ -24,6 +24,7 @@ import DesktopSubNav from './components/desktop/DesktopSubNav';
 import UploadExpenses from './pages/UploadExpenses';
 import { css, cx } from 'emotion';
 import { RootState } from './components/typescript/general_interfaces';
+import ExpenseList from './pages/ExpenseList';
 
 const desktop = css`
     height: calc(100vh - 130px);
@@ -83,6 +84,11 @@ export default function App() {
                     >
                         <Switch>
                             <Route exact path="/users/expenses/get/overview" component={Overview} />
+                            <Route
+                                exact
+                                path="/users/expenses/get/overview/list"
+                                component={ExpenseList}
+                            />
                             <Route
                                 exact
                                 path="/users/expenses/get/overview/:type"

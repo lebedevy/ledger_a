@@ -39,8 +39,7 @@ router.post('/register', async (req, res, next) => {
 });
 
 // Login existing user
-router.post('/login', async (req, res, next) => {
-    console.log(req.body);
+router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     const user = await db.user.findOne({
         where: { email },
@@ -58,7 +57,7 @@ router.post('/login', async (req, res, next) => {
         });
 });
 
-router.post('/logout', async (req, res, next) => {
+router.post('/logout', async (_req, res) => {
     res.clearCookie('jwt');
     res.send({ message: 'User logged out.' });
 });

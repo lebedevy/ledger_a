@@ -1,4 +1,6 @@
 import { css } from 'emotion';
+import styled from '@emotion/styled';
+import { css as css2, SerializedStyles } from '@emotion/react';
 
 export const bigButtonCss = (args?: any) => {
     return getBigButtonCss(args ?? {});
@@ -37,3 +39,51 @@ export const backdropCss = css`
     bottom: 0;
     background: #00000060;
 `;
+
+type FlexArgs = {
+    column?: boolean;
+    fillHeight?: boolean;
+    fillWidth?: boolean;
+    dontFill?: boolean;
+    center?: boolean;
+    spaceBetween?: boolean;
+    css?: SerializedStyles;
+};
+
+export const flexCss = (props: FlexArgs) => css2`
+    ${props.dontFill ? '' : 'flex: 1;'}
+    display: flex;
+    flex-direction: ${props.column ? 'column' : 'row'};
+    ${props.fillHeight ? 'height: 100%;' : ''}
+    ${props.fillWidth ? 'width: 100%;' : ''}
+    ${props.center ? 'justify-content: center; align-items: center;' : ''}
+    ${props.spaceBetween ? 'justify-content: space-between;' : ''}
+`;
+
+export const Flexbox = styled.div<FlexArgs>`
+    ${flexCss}
+    ${(props) => props.css ?? ''}
+`;
+
+// unstyled button
+const UButton = css2`
+    border: none;
+    background-color: transparent;
+    outline: none;
+    margin: 0;
+    padding: 0;
+`;
+
+export const CellButton = styled.button`
+    ${UButton}
+    ${flexCss({ center: true, dontFill: true })}
+    border-radius: 50%;
+    &:hover {
+        background-color: lightgray;
+    }
+    &:active {
+        background-color: gray;
+    }
+`;
+// transition: background-color 0.5s;
+// transition for color would be nice on click, but it also applies on hover (we want hover to be immediate for better user exprience)
